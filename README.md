@@ -44,6 +44,40 @@ Real-world implementation examples with best practices:
   - Comprehensive testing strategies
   - Deployment guides for Docker, Kubernetes, and AWS
 
+### 5. Infrastructure
+Modern DevOps practices and tools:
+
+- **[Infrastructure Overview](./infrastructure/README.md)** - DevOps and infrastructure patterns
+- **[Docker](./infrastructure/docker/README.md)** - Containerization with domain-specific examples
+- **[Kubernetes](./infrastructure/kubernetes/README.md)** - Container orchestration at scale
+- **[CI/CD](./infrastructure/cicd/README.md)** - Continuous Integration and Delivery pipelines
+- **[Terraform](./infrastructure/terraform/README.md)** - Infrastructure as Code
+- **[Monitoring](./infrastructure/monitoring/README.md)** - Observability and performance monitoring
+
+### 6. Domain Examples
+Quick-start templates across industries:
+
+- **[Domain Examples Overview](./domain-examples/README.md)** - Learning templates for multiple industries
+- **[Energy](./domain-examples/energy/README.md)** - Smart grid monitoring, IoT sensor networks
+- **[Finance](./domain-examples/finance/README.md)** - Trading platforms, portfolio management
+- **[Banking](./domain-examples/banking/README.md)** - Account management, transaction processing
+- **[Social Media](./domain-examples/social-media/README.md)** - User feeds, content moderation
+- **[Dating](./domain-examples/dating/README.md)** - Matching algorithms, user profiles
+- **[Retail](./domain-examples/retail/README.md)** - Inventory management, point-of-sale
+- **[Insurance](./domain-examples/insurance/README.md)** - Claims processing, risk assessment
+- **[Healthcare](./domain-examples/healthcare/README.md)** - Patient records, appointment scheduling
+- **[Logistics](./domain-examples/logistics/README.md)** - Package tracking, route optimization
+
+### 7. Quick Reference
+Fast lookup guides for common patterns:
+
+- **[Quick Reference](./quick-reference/README.md)** - Cheat sheets, code snippets, decision trees
+  - Pattern selection guide
+  - Technology stack recommendations
+  - Code snippet library
+  - Security checklist
+  - Performance benchmarks
+
 ## 🎯 For Software Testers
 
 As a software tester, understanding these concepts will help you:
@@ -55,29 +89,86 @@ As a software tester, understanding these concepts will help you:
 
 ## 🚀 How to Use This Repository
 
+### For Fast-Paced Learning
+1. **Check Quick Reference** - Start with [Quick Reference](./quick-reference/README.md) for immediate answers
+2. **Pick a Domain** - Choose a [domain example](./domain-examples/) that interests you
+3. **Run the Example** - Follow quick-start guides to see working code
+4. **Understand Patterns** - Read architecture guides to understand why
+5. **Adapt and Apply** - Use templates for your own projects
+
+### For Deep Learning
 1. **Start with the basics** - Begin with the architecture that interests you most
 2. **Understand the concepts** - Read through the high-level explanations
 3. **Think about testing** - Each topic includes testing considerations
-4. **Try the practical example** - Deploy the [microservices e-commerce app](./examples/microservices-ecommerce/README.md) to see concepts in action
-5. **Practice** - Try to identify how these patterns apply to your current projects
+4. **Try the practical examples** - Deploy examples to see concepts in action
+5. **Explore infrastructure** - Learn Docker, Kubernetes, CI/CD
+6. **Practice across domains** - See how patterns apply differently
+
+### For Quick Lookups
+- **Need a code snippet?** Check [Quick Reference](./quick-reference/README.md)
+- **Choosing a pattern?** See pattern selection guide
+- **Domain-specific?** Visit [Domain Examples](./domain-examples/)
+- **Infrastructure?** Check [Infrastructure](./infrastructure/)
 
 ## 📖 Learning Path Recommendations
 
 ### For Complete Beginners:
-1. Start with TDD and BDD methodologies
-2. Learn about Monorepo (simplest architecture)
-3. Progress to Microservices and Event-Driven architectures
-4. Explore one cloud platform (start with AWS)
+1. Start with [Quick Reference](./quick-reference/README.md) for overview
+2. Learn [TDD](./methodologies/test-driven-development/README.md) and [BDD](./methodologies/behaviour-driven-development/README.md) methodologies
+3. Try [Docker basics](./infrastructure/docker/README.md)
+4. Pick a simple domain ([Retail](./domain-examples/retail/README.md) or [Energy](./domain-examples/energy/README.md))
+5. Explore one cloud platform (start with [AWS](./cloud-stacks/aws/README.md))
 
 ### For Those with Some Experience:
-1. Compare Microservices vs Serverless architectures
-2. Understand Event-Driven patterns
-3. Explore all three cloud platforms
-4. Deep dive into testing strategies for each architecture
+1. Compare [Microservices](./architectures/microservices/README.md) vs [Serverless](./architectures/serverless/README.md) architectures
+2. Understand [Event-Driven](./architectures/event-driven/README.md) patterns
+3. Set up [Kubernetes](./infrastructure/kubernetes/README.md) and [CI/CD](./infrastructure/cicd/README.md)
+4. Try complex domains ([Finance](./domain-examples/finance/README.md), [Healthcare](./domain-examples/healthcare/README.md))
+5. Explore all three cloud platforms
 
-## 🔄 Future Additions
+### For Domain-Specific Learning:
+- **Finance/Banking**: Event Sourcing → CQRS → Saga Pattern
+- **Social Media**: Microservices → Caching → Real-time Processing
+- **Healthcare**: Security → Compliance → Data Encryption
+- **IoT/Energy**: Event-Driven → Time-Series → Real-time Analytics
+- **E-Commerce**: Microservices → API Gateway → Payment Integration
 
-- Sample reference implementations for each architecture
+## 🔄 What's Included
+
+This repository now includes:
+
+### ✅ Theoretical Knowledge
+- 4 Architecture patterns (Monorepo, Microservices, Serverless, Event-Driven)
+- 2 Development methodologies (TDD, BDD)
+- 3 Cloud platforms (AWS, GCP, Azure)
+
+### ✅ Practical Infrastructure
+- Docker containerization with domain examples
+- Kubernetes orchestration patterns
+- CI/CD pipeline configurations
+- Infrastructure as Code (Terraform)
+- Monitoring and observability setups
+
+### ✅ Domain-Specific Examples
+- 10 industry domains with quick-start templates
+- Real-world use cases and implementations
+- Domain-specific patterns and best practices
+- Complete code examples with tests
+
+### ✅ Quick References
+- Pattern selection guides
+- Code snippet library
+- Technology stack recommendations
+- Security checklists
+- Performance benchmarks
+- Decision trees for common choices
+
+### 🚧 Coming Soon
+- More domain implementations
+- Frontend examples (React, Vue, Angular)
+- Mobile development patterns
+- Machine Learning integration examples
+- GraphQL implementations
 - Code examples and tutorials
 - Testing frameworks and best practices
 - CI/CD pipeline examples
