@@ -57,7 +57,9 @@ Modern DevOps practices and tools:
 ### 6. Domain Examples
 Quick-start templates across industries:
 
-- **[Domain Examples Overview](./domain-examples/README.md)** - Learning templates for multiple industries
+- **[Domain Examples Overview](./domain-examples/README.md)** - Learning templates for 16 industries
+
+#### Core Business Domains
 - **[Energy](./domain-examples/energy/README.md)** - Smart grid monitoring, IoT sensor networks
 - **[Finance](./domain-examples/finance/README.md)** - Trading platforms, portfolio management
 - **[Banking](./domain-examples/banking/README.md)** - Account management, transaction processing
@@ -67,6 +69,14 @@ Quick-start templates across industries:
 - **[Insurance](./domain-examples/insurance/README.md)** - Claims processing, risk assessment
 - **[Healthcare](./domain-examples/healthcare/README.md)** - Patient records, appointment scheduling
 - **[Logistics](./domain-examples/logistics/README.md)** - Package tracking, route optimization
+
+#### Specialized Industry Domains
+- **[Aerospace](./domain-examples/aerospace/README.md)** - Flight tracking, satellite systems, aircraft maintenance
+- **[Mortgage](./domain-examples/mortgage/README.md)** - Loan origination, underwriting, servicing
+- **[Manufacturing](./domain-examples/manufacturing/README.md)** - Smart factory, IoT, predictive maintenance
+- **[Telecommunications](./domain-examples/telecommunications/README.md)** - Network ops, billing, subscriber management
+- **[Education](./domain-examples/education/README.md)** - Learning management, student information systems
+- **[Government](./domain-examples/government/README.md)** - Citizen services, permits, benefits administration
 
 ### 7. Quick Reference
 Fast lookup guides for common patterns:
