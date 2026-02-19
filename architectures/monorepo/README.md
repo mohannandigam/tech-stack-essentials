@@ -7,9 +7,11 @@ A **Monorepo** (monolithic repository) is a software development strategy where 
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Imagine a library where all books are organized in one building with different sections, rather than having separate buildings for each genre. You can easily move between sections, share resources, and maintain consistency.
 
 ### Core Characteristics
+
 - **Single Repository** - All code lives in one place
 - **Shared Dependencies** - Common libraries and tools are used across projects
 - **Unified Versioning** - All projects can be versioned together
@@ -68,6 +70,7 @@ Imagine a library where all books are organized in one building with different s
 ## 🛠️ Popular Tools
 
 ### Build & Dependency Management
+
 - **Nx** - Smart build system for monorepos (JavaScript/TypeScript)
 - **Turborepo** - High-performance build system
 - **Lerna** - Tool for managing JavaScript projects with multiple packages
@@ -75,6 +78,7 @@ Imagine a library where all books are organized in one building with different s
 - **Pants** - Build system from Twitter
 
 ### Version Control
+
 - **Git** - With tools like sparse checkout
 - **Mercurial** - Used by Facebook
 - **Perforce** - Enterprise version control
@@ -82,6 +86,7 @@ Imagine a library where all books are organized in one building with different s
 ## 🧪 Testing Considerations for QA
 
 ### What to Test
+
 1. **Cross-Project Dependencies**
    - Ensure changes in shared code don't break dependent projects
    - Test integration between projects
@@ -95,12 +100,14 @@ Imagine a library where all books are organized in one building with different s
    - Validate deployment strategies
 
 ### Testing Strategies
+
 - **Integration Testing** - More important due to shared dependencies
 - **Contract Testing** - Ensure APIs between projects remain compatible
 - **Smoke Tests** - Quick tests across all projects after changes
 - **Dependency Testing** - Validate shared library changes
 
 ### Common Issues to Watch For
+
 - Circular dependencies between projects
 - Version mismatches in shared dependencies
 - Build failures in unrelated projects after changes
@@ -109,6 +116,7 @@ Imagine a library where all books are organized in one building with different s
 ## 📊 When to Use Monorepo
 
 ### Good Fit
+
 ✅ Multiple related projects that share code
 ✅ Small to medium teams that work across projects
 ✅ Need for atomic changes across services
@@ -116,6 +124,7 @@ Imagine a library where all books are organized in one building with different s
 ✅ Microservices architecture (to manage services together)
 
 ### Not a Good Fit
+
 ❌ Very large teams with independent projects
 ❌ Projects with completely different tech stacks
 ❌ Open source projects with external contributors
@@ -124,19 +133,20 @@ Imagine a library where all books are organized in one building with different s
 
 ## 🔄 Monorepo vs Polyrepo
 
-| Aspect | Monorepo | Polyrepo |
-|--------|----------|----------|
-| **Code Location** | Single repository | Multiple repositories |
-| **Dependencies** | Direct references | Published packages |
-| **Versioning** | Unified | Independent |
-| **Tooling** | Specialized needed | Standard git tools |
-| **Code Sharing** | Easy | Requires publishing |
-| **Access Control** | Repository-level | Per-repository |
-| **Onboarding** | See all code | Smaller scope |
+| Aspect             | Monorepo           | Polyrepo              |
+| ------------------ | ------------------ | --------------------- |
+| **Code Location**  | Single repository  | Multiple repositories |
+| **Dependencies**   | Direct references  | Published packages    |
+| **Versioning**     | Unified            | Independent           |
+| **Tooling**        | Specialized needed | Standard git tools    |
+| **Code Sharing**   | Easy               | Requires publishing   |
+| **Access Control** | Repository-level   | Per-repository        |
+| **Onboarding**     | See all code       | Smaller scope         |
 
 ## 🎓 Learning Resources
 
 ### Concepts to Study Next
+
 1. Build systems and caching strategies
 2. Dependency graphs and impact analysis
 3. CI/CD optimization for monorepos
@@ -144,6 +154,7 @@ Imagine a library where all books are organized in one building with different s
 5. Monorepo migration strategies
 
 ### Practice Ideas
+
 1. Create a simple monorepo with 2-3 projects
 2. Set up shared dependencies between projects
 3. Configure a build tool like Nx or Turborepo
@@ -151,6 +162,7 @@ Imagine a library where all books are organized in one building with different s
 5. Try refactoring shared code and observe the impact
 
 ## 🔗 Related Topics
+
 - [Microservices](../microservices/README.md) - Often managed in monorepos
 - [CI/CD Practices](../../methodologies/test-driven-development/README.md)
 - Cloud deployment strategies

@@ -25,26 +25,26 @@ class InventoryService {
   async updateStock(sku: string, location: string, quantity: number) {
     // Optimistic locking to prevent overselling
     const item = await this.db.query(
-      'SELECT * FROM inventory WHERE sku = $1 AND location = $2 FOR UPDATE',
-      [sku, location]
+      "SELECT * FROM inventory WHERE sku = $1 AND location = $2 FOR UPDATE",
+      [sku, location],
     );
-    
+
     if (item.quantity + quantity < 0) {
-      throw new Error('Insufficient stock');
+      throw new Error("Insufficient stock");
     }
-    
+
     // Update stock
     await this.db.query(
-      'UPDATE inventory SET quantity = quantity + $1, updated_at = NOW() WHERE sku = $2 AND location = $3',
-      [quantity, sku, location]
+      "UPDATE inventory SET quantity = quantity + $1, updated_at = NOW() WHERE sku = $2 AND location = $3",
+      [quantity, sku, location],
     );
-    
+
     // Publish event
     await this.eventBus.publish({
-      type: 'inventory.updated',
-      data: { sku, location, quantity: item.quantity + quantity }
+      type: "inventory.updated",
+      data: { sku, location, quantity: item.quantity + quantity },
     });
-    
+
     // Check reorder threshold
     if (item.quantity + quantity < item.reorder_point) {
       await this.createReorderRequest(sku, location);
@@ -86,7 +86,7 @@ curl -X PATCH http://localhost:3000/api/inventory/SHIRT-001 \
 
 ```typescript
 // src/models/inventory.model.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const InventoryItemSchema = z.object({
   sku: z.string().min(1).max(50),
@@ -99,18 +99,26 @@ export const InventoryItemSchema = z.object({
   reorderQuantity: z.number().int(),
   lastRestocked: z.date().optional(),
   lastUpdated: z.date(),
-  version: z.number().int() // For optimistic locking
+  version: z.number().int(), // For optimistic locking
 });
 
 export const StockTransactionSchema = z.object({
   id: z.string().uuid(),
   sku: z.string(),
   location: z.string(),
-  type: z.enum(['RESTOCK', 'SALE', 'RETURN', 'ADJUSTMENT', 'TRANSFER', 'RESERVATION', 'RELEASE']),
+  type: z.enum([
+    "RESTOCK",
+    "SALE",
+    "RETURN",
+    "ADJUSTMENT",
+    "TRANSFER",
+    "RESERVATION",
+    "RELEASE",
+  ]),
   quantity: z.number().int(),
   reference: z.string().optional(), // Order ID, PO number, etc.
   timestamp: z.date(),
-  userId: z.string()
+  userId: z.string(),
 });
 
 export type InventoryItem = z.infer<typeof InventoryItemSchema>;
@@ -119,14 +127,14 @@ export type StockTransaction = z.infer<typeof StockTransactionSchema>;
 
 ```typescript
 // src/services/inventory.service.ts
-import { Pool } from 'pg';
-import { Kafka, Producer } from 'kafkajs';
-import { InventoryItem, StockTransaction } from '../models/inventory.model';
+import { Pool } from "pg";
+import { Kafka, Producer } from "kafkajs";
+import { InventoryItem, StockTransaction } from "../models/inventory.model";
 
 export class InventoryService {
   constructor(
     private readonly db: Pool,
-    private readonly eventProducer: Producer
+    private readonly eventProducer: Producer,
   ) {}
 
   // Update stock with optimistic locking to prevent overselling
@@ -134,21 +142,21 @@ export class InventoryService {
     sku: string,
     location: string,
     quantity: number,
-    type: StockTransaction['type'],
+    type: StockTransaction["type"],
     reference?: string,
-    userId?: string
+    userId?: string,
   ): Promise<void> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Get current inventory with row lock
       const result = await client.query<InventoryItem>(
         `SELECT * FROM inventory
          WHERE sku = $1 AND location = $2
          FOR UPDATE`,
-        [sku, location]
+        [sku, location],
       );
 
       if (result.rows.length === 0) {
@@ -159,8 +167,10 @@ export class InventoryService {
       const newQuantity = item.quantity + quantity;
 
       // Validate sufficient stock for sales/reservations
-      if (['SALE', 'RESERVATION'].includes(type) && newQuantity < 0) {
-        throw new Error(`Insufficient stock for ${sku} at ${location}. Available: ${item.quantity}, Requested: ${Math.abs(quantity)}`);
+      if (["SALE", "RESERVATION"].includes(type) && newQuantity < 0) {
+        throw new Error(
+          `Insufficient stock for ${sku} at ${location}. Available: ${item.quantity}, Requested: ${Math.abs(quantity)}`,
+        );
       }
 
       // Update inventory with optimistic locking
@@ -172,11 +182,11 @@ export class InventoryService {
              version = version + 1
          WHERE sku = $2 AND location = $3 AND version = $4
          RETURNING *`,
-        [newQuantity, sku, location, item.version]
+        [newQuantity, sku, location, item.version],
       );
 
       if (updateResult.rows.length === 0) {
-        throw new Error('Concurrent update detected. Please retry.');
+        throw new Error("Concurrent update detected. Please retry.");
       }
 
       const updatedItem = updateResult.rows[0];
@@ -186,19 +196,19 @@ export class InventoryService {
         `INSERT INTO stock_transactions
          (sku, location, type, quantity, reference, user_id)
          VALUES ($1, $2, $3, $4, $5, $6)`,
-        [sku, location, type, quantity, reference, userId]
+        [sku, location, type, quantity, reference, userId],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       // Publish event
       await this.publishInventoryEvent({
-        type: 'inventory.updated',
+        type: "inventory.updated",
         sku,
         location,
         quantity: updatedItem.quantity,
         available: updatedItem.available,
-        transactionType: type
+        transactionType: type,
       });
 
       // Check reorder point
@@ -206,7 +216,7 @@ export class InventoryService {
         await this.createReorderRequest(sku, location, item.reorderQuantity);
       }
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -214,11 +224,16 @@ export class InventoryService {
   }
 
   // Reserve stock for online orders
-  async reserveStock(sku: string, location: string, quantity: number, orderId: string): Promise<void> {
+  async reserveStock(
+    sku: string,
+    location: string,
+    quantity: number,
+    orderId: string,
+  ): Promise<void> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       const result = await client.query(
         `UPDATE inventory
@@ -228,31 +243,33 @@ export class InventoryService {
          WHERE sku = $2 AND location = $3
            AND (quantity - reserved) >= $1
          RETURNING *`,
-        [quantity, sku, location]
+        [quantity, sku, location],
       );
 
       if (result.rows.length === 0) {
-        throw new Error(`Unable to reserve ${quantity} units of ${sku} at ${location}`);
+        throw new Error(
+          `Unable to reserve ${quantity} units of ${sku} at ${location}`,
+        );
       }
 
       // Record reservation
       await client.query(
         `INSERT INTO stock_reservations (sku, location, quantity, order_id, expires_at)
          VALUES ($1, $2, $3, $4, NOW() + INTERVAL '15 minutes')`,
-        [sku, location, quantity, orderId]
+        [sku, location, quantity, orderId],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       await this.publishInventoryEvent({
-        type: 'inventory.reserved',
+        type: "inventory.reserved",
         sku,
         location,
         quantity,
-        orderId
+        orderId,
       });
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -264,7 +281,7 @@ export class InventoryService {
     const result = await this.db.query(
       `SELECT sku, location, quantity, order_id
        FROM stock_reservations
-       WHERE expires_at < NOW() AND released_at IS NULL`
+       WHERE expires_at < NOW() AND released_at IS NULL`,
     );
 
     for (const reservation of result.rows) {
@@ -272,43 +289,48 @@ export class InventoryService {
         reservation.sku,
         reservation.location,
         reservation.quantity,
-        reservation.order_id
+        reservation.order_id,
       );
     }
   }
 
-  async releaseReservation(sku: string, location: string, quantity: number, orderId: string): Promise<void> {
+  async releaseReservation(
+    sku: string,
+    location: string,
+    quantity: number,
+    orderId: string,
+  ): Promise<void> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       await client.query(
         `UPDATE inventory
          SET reserved = reserved - $1,
              available = quantity - (reserved - $1)
          WHERE sku = $2 AND location = $3`,
-        [quantity, sku, location]
+        [quantity, sku, location],
       );
 
       await client.query(
         `UPDATE stock_reservations
          SET released_at = NOW()
          WHERE sku = $1 AND location = $2 AND order_id = $3`,
-        [sku, location, orderId]
+        [sku, location, orderId],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       await this.publishInventoryEvent({
-        type: 'inventory.reservation_released',
+        type: "inventory.reservation_released",
         sku,
         location,
         quantity,
-        orderId
+        orderId,
       });
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -319,39 +341,45 @@ export class InventoryService {
   async getInventory(sku: string): Promise<InventoryItem[]> {
     const result = await this.db.query<InventoryItem>(
       `SELECT * FROM inventory WHERE sku = $1 ORDER BY location`,
-      [sku]
+      [sku],
     );
     return result.rows;
   }
 
   // Automatic reorder
-  async createReorderRequest(sku: string, location: string, quantity: number): Promise<void> {
+  async createReorderRequest(
+    sku: string,
+    location: string,
+    quantity: number,
+  ): Promise<void> {
     await this.db.query(
       `INSERT INTO reorder_requests (sku, location, quantity, status)
        VALUES ($1, $2, $3, 'PENDING')
        ON CONFLICT (sku, location) WHERE status = 'PENDING'
        DO UPDATE SET quantity = reorder_requests.quantity + $3, updated_at = NOW()`,
-      [sku, location, quantity]
+      [sku, location, quantity],
     );
 
     await this.publishInventoryEvent({
-      type: 'inventory.reorder_requested',
+      type: "inventory.reorder_requested",
       sku,
       location,
-      quantity
+      quantity,
     });
   }
 
   private async publishInventoryEvent(event: any): Promise<void> {
     await this.eventProducer.send({
-      topic: 'inventory-events',
-      messages: [{
-        key: `${event.sku}-${event.location}`,
-        value: JSON.stringify({
-          ...event,
-          timestamp: new Date().toISOString()
-        })
-      }]
+      topic: "inventory-events",
+      messages: [
+        {
+          key: `${event.sku}-${event.location}`,
+          value: JSON.stringify({
+            ...event,
+            timestamp: new Date().toISOString(),
+          }),
+        },
+      ],
     });
   }
 }
@@ -933,7 +961,7 @@ CREATE INDEX idx_price_history_sku ON price_history(sku, effective_date DESC);
 ## 🐳 Docker Compose Setup
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -1005,37 +1033,38 @@ volumes:
 ## 🧪 Testing Examples
 
 ### Unit Tests (TypeScript)
+
 ```typescript
-describe('InventoryService', () => {
-  describe('updateStock', () => {
-    it('should prevent overselling with optimistic locking', async () => {
+describe("InventoryService", () => {
+  describe("updateStock", () => {
+    it("should prevent overselling with optimistic locking", async () => {
       // Simulate concurrent updates
       const promises = [
-        service.updateStock('SKU-001', 'STORE-1', -5, 'SALE'),
-        service.updateStock('SKU-001', 'STORE-1', -5, 'SALE')
+        service.updateStock("SKU-001", "STORE-1", -5, "SALE"),
+        service.updateStock("SKU-001", "STORE-1", -5, "SALE"),
       ];
 
       const results = await Promise.allSettled(promises);
 
       // One should succeed, one should fail
-      const succeeded = results.filter(r => r.status === 'fulfilled');
-      const failed = results.filter(r => r.status === 'rejected');
+      const succeeded = results.filter((r) => r.status === "fulfilled");
+      const failed = results.filter((r) => r.status === "rejected");
 
       expect(succeeded).toHaveLength(1);
       expect(failed).toHaveLength(1);
-      expect(failed[0].reason.message).toContain('Concurrent update detected');
+      expect(failed[0].reason.message).toContain("Concurrent update detected");
     });
 
-    it('should create reorder request when below threshold', async () => {
-      await service.updateStock('SKU-002', 'STORE-1', -45, 'SALE');
+    it("should create reorder request when below threshold", async () => {
+      await service.updateStock("SKU-002", "STORE-1", -45, "SALE");
 
       const reorderRequests = await db.query(
-        'SELECT * FROM reorder_requests WHERE sku = $1 AND location = $2',
-        ['SKU-002', 'STORE-1']
+        "SELECT * FROM reorder_requests WHERE sku = $1 AND location = $2",
+        ["SKU-002", "STORE-1"],
       );
 
       expect(reorderRequests.rows).toHaveLength(1);
-      expect(reorderRequests.rows[0].status).toBe('PENDING');
+      expect(reorderRequests.rows[0].status).toBe("PENDING");
     });
   });
 });

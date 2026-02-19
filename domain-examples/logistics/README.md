@@ -24,16 +24,16 @@ Real-time package tracking and route optimization system for logistics and deliv
 class TrackingService:
     async def update_location(self, package_id: str, location: tuple):
         lat, lon = location
-        
+
         # Update current location
         await self.db.execute(
-            '''UPDATE packages 
+            '''UPDATE packages
                SET current_location = ST_SetSRID(ST_MakePoint($1, $2), 4326),
                    last_updated = NOW()
                WHERE id = $3''',
             lon, lat, package_id
         )
-        
+
         # Publish event
         await self.event_bus.publish({
             'type': 'package.location_updated',
@@ -41,11 +41,11 @@ class TrackingService:
             'location': {'lat': lat, 'lon': lon},
             'timestamp': datetime.now()
         })
-        
+
         # Check if near destination
         package = await self.get_package(package_id)
         distance = self.calculate_distance(location, package.destination)
-        
+
         if distance < 1000:  # Within 1km
             await self.notify_recipient(package_id, "Package arriving soon")
 ```
@@ -58,15 +58,15 @@ class RouteOptimizer:
     def optimize_route(self, start: Location, stops: List[Location]):
         # Build graph of delivery locations
         graph = self.build_graph(stops)
-        
+
         # Find optimal route using traveling salesman approximation
         route = self.nearest_neighbor(start, stops)
-        
+
         # Refine with 2-opt optimization
         route = self.two_opt(route)
-        
+
         return route
-    
+
     def calculate_eta(self, route: List[Location]):
         total_time = 0
         for i in range(len(route) - 1):
@@ -75,7 +75,7 @@ class RouteOptimizer:
             total_time += distance / 40
             # Add 5 minutes per stop
             total_time += 5/60
-        
+
         return total_time  # hours
 ```
 
@@ -461,7 +461,7 @@ class RouteOptimizer:
 
 ```typescript
 // services/warehouse.service.ts
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 interface WarehouseLocation {
   warehouse: string;
@@ -483,11 +483,14 @@ export class WarehouseService {
   constructor(private readonly db: Pool) {}
 
   // Pick items for shipment using optimal path
-  async pickItems(orderId: string, items: Array<{ sku: string; quantity: number }>): Promise<PickList> {
+  async pickItems(
+    orderId: string,
+    items: Array<{ sku: string; quantity: number }>,
+  ): Promise<PickList> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Get item locations
       const locations = await this.getItemLocations(items);
@@ -502,7 +505,7 @@ export class WarehouseService {
            SET reserved = reserved + $1
            WHERE sku = $2 AND warehouse = $3
              AND (quantity - reserved) >= $1`,
-          [item.quantity, item.sku, 'MAIN']
+          [item.quantity, item.sku, "MAIN"],
         );
       }
 
@@ -511,19 +514,19 @@ export class WarehouseService {
         `INSERT INTO pick_lists (order_id, items, path, status)
          VALUES ($1, $2, $3, 'PENDING')
          RETURNING id`,
-        [orderId, JSON.stringify(items), JSON.stringify(optimizedPath)]
+        [orderId, JSON.stringify(items), JSON.stringify(optimizedPath)],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       return {
         id: pickListId.rows[0].id,
         orderId,
         items: optimizedPath,
-        estimatedPickTime: this.calculatePickTime(optimizedPath)
+        estimatedPickTime: this.calculatePickTime(optimizedPath),
       };
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -536,10 +539,13 @@ export class WarehouseService {
       const locA = a.location;
       const locB = b.location;
 
-      if (locA.warehouse !== locB.warehouse) return locA.warehouse.localeCompare(locB.warehouse);
+      if (locA.warehouse !== locB.warehouse)
+        return locA.warehouse.localeCompare(locB.warehouse);
       if (locA.zone !== locB.zone) return locA.zone.localeCompare(locB.zone);
-      if (locA.aisle !== locB.aisle) return locA.aisle.localeCompare(locB.aisle);
-      if (locA.shelf !== locB.shelf) return locA.shelf.localeCompare(locB.shelf);
+      if (locA.aisle !== locB.aisle)
+        return locA.aisle.localeCompare(locB.aisle);
+      if (locA.shelf !== locB.shelf)
+        return locA.shelf.localeCompare(locB.shelf);
       return locA.bin.localeCompare(locB.bin);
     });
   }
@@ -615,7 +621,7 @@ CREATE INDEX idx_warehouse_inventory_sku ON warehouse_inventory(sku);
 ## 🐳 Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:

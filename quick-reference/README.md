@@ -8,34 +8,35 @@ This quick reference provides fast lookups for common patterns, code snippets, a
 
 ### When to Use Each Architecture
 
-| Scenario | Recommended Pattern | Why |
-|----------|-------------------|-----|
-| Starting new project | Monolith → Microservices | Start simple, evolve as needed |
-| High-scale web app | Microservices | Independent scaling, team autonomy |
-| Event processing | Event-Driven | Decoupled, asynchronous processing |
-| Infrequent workloads | Serverless | Cost-effective, auto-scaling |
-| Real-time data | Event-Driven + Streaming | Low latency, high throughput |
-| Multiple teams | Microservices + Monorepo | Code sharing with service independence |
+| Scenario             | Recommended Pattern      | Why                                    |
+| -------------------- | ------------------------ | -------------------------------------- |
+| Starting new project | Monolith → Microservices | Start simple, evolve as needed         |
+| High-scale web app   | Microservices            | Independent scaling, team autonomy     |
+| Event processing     | Event-Driven             | Decoupled, asynchronous processing     |
+| Infrequent workloads | Serverless               | Cost-effective, auto-scaling           |
+| Real-time data       | Event-Driven + Streaming | Low latency, high throughput           |
+| Multiple teams       | Microservices + Monorepo | Code sharing with service independence |
 
 ### Domain-Specific Patterns
 
-| Domain | Primary Pattern | Secondary Pattern | Database |
-|--------|----------------|-------------------|----------|
-| **Energy** | Event-Driven | CQRS | TimescaleDB, InfluxDB |
-| **Finance** | Event Sourcing | CQRS | PostgreSQL, EventStore |
-| **Banking** | Microservices | Saga Pattern | PostgreSQL, Oracle |
-| **Social Media** | Microservices | Event-Driven | MongoDB, Redis, Cassandra |
-| **Dating** | Microservices | Recommendation Engine | Neo4j, MongoDB |
-| **Retail** | Event-Driven | CQRS | PostgreSQL, MongoDB |
-| **Insurance** | Workflow Engine | Document Storage | PostgreSQL, S3 |
-| **Healthcare** | Microservices | Event-Driven | PostgreSQL + Encryption |
-| **Logistics** | Event-Driven | Geospatial | PostgreSQL/PostGIS |
+| Domain           | Primary Pattern | Secondary Pattern     | Database                  |
+| ---------------- | --------------- | --------------------- | ------------------------- |
+| **Energy**       | Event-Driven    | CQRS                  | TimescaleDB, InfluxDB     |
+| **Finance**      | Event Sourcing  | CQRS                  | PostgreSQL, EventStore    |
+| **Banking**      | Microservices   | Saga Pattern          | PostgreSQL, Oracle        |
+| **Social Media** | Microservices   | Event-Driven          | MongoDB, Redis, Cassandra |
+| **Dating**       | Microservices   | Recommendation Engine | Neo4j, MongoDB            |
+| **Retail**       | Event-Driven    | CQRS                  | PostgreSQL, MongoDB       |
+| **Insurance**    | Workflow Engine | Document Storage      | PostgreSQL, S3            |
+| **Healthcare**   | Microservices   | Event-Driven          | PostgreSQL + Encryption   |
+| **Logistics**    | Event-Driven    | Geospatial            | PostgreSQL/PostGIS        |
 
 ## 🔧 Technology Stack Cheat Sheet
 
 ### By Use Case
 
 **API Development:**
+
 ```
 REST: Express.js, FastAPI, Spring Boot, Go Gin
 GraphQL: Apollo Server, Hasura, PostGraphile
@@ -43,6 +44,7 @@ gRPC: Go, Java, C++
 ```
 
 **Databases:**
+
 ```
 Relational: PostgreSQL, MySQL, SQL Server
 NoSQL Document: MongoDB, CouchDB
@@ -52,6 +54,7 @@ Graph: Neo4j, Amazon Neptune
 ```
 
 **Message Queues:**
+
 ```
 General Purpose: RabbitMQ, Apache Kafka
 Cloud: AWS SQS/SNS, Google Pub/Sub, Azure Service Bus
@@ -59,6 +62,7 @@ Lightweight: Redis, NATS
 ```
 
 **Caching:**
+
 ```
 In-Memory: Redis, Memcached
 CDN: CloudFlare, CloudFront, Akamai
@@ -67,18 +71,20 @@ Application: Varnish, NGINX
 
 ## 🧩 Architecture Dependency Checklist
 
-| Architecture | Core runtime deps | Infra services | QA/Observability | Repo reference |
-|--------------|-------------------|----------------|------------------|----------------|
-| Monorepo | TypeScript toolchain, Nx/Turborepo or pnpm workspaces | Local PostgreSQL/Redis for shared dev data | Jest for units, Playwright/Cypress for app flows | Use across `architectures/monorepo` guidance |
-| Microservices | Node.js 18+, Express/Fastify, JWT, Joi/Zod | Docker + Compose, PostgreSQL, Redis, Kafka/RabbitMQ | Jest contract tests, k6/Locust for load, OpenTelemetry tracing | `examples/microservices-ecommerce` |
-| Event-Driven | Producer/consumer SDKs (Kafka/Redpanda), Avro/JSON schema libs | Kafka or cloud pub/sub, Schema Registry, object storage | Replay testing, dead-letter queues, consumer lag alerts | `architectures/event-driven` |
-| Serverless | Serverless/SAM CLI, esbuild/webpack bundler, AWS/GCP/Azure SDKs | Cloud emulators (LocalStack/Azure Storage Emulator), API Gateway | Canary + integration tests, cold-start profiling, structured logs | `architectures/serverless` |
+| Architecture  | Core runtime deps                                               | Infra services                                                   | QA/Observability                                                  | Repo reference                               |
+| ------------- | --------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------- |
+| Monorepo      | TypeScript toolchain, Nx/Turborepo or pnpm workspaces           | Local PostgreSQL/Redis for shared dev data                       | Jest for units, Playwright/Cypress for app flows                  | Use across `architectures/monorepo` guidance |
+| Microservices | Node.js 18+, Express/Fastify, JWT, Joi/Zod                      | Docker + Compose, PostgreSQL, Redis, Kafka/RabbitMQ              | Jest contract tests, k6/Locust for load, OpenTelemetry tracing    | `examples/microservices-ecommerce`           |
+| Event-Driven  | Producer/consumer SDKs (Kafka/Redpanda), Avro/JSON schema libs  | Kafka or cloud pub/sub, Schema Registry, object storage          | Replay testing, dead-letter queues, consumer lag alerts           | `architectures/event-driven`                 |
+| Serverless    | Serverless/SAM CLI, esbuild/webpack bundler, AWS/GCP/Azure SDKs | Cloud emulators (LocalStack/Azure Storage Emulator), API Gateway | Canary + integration tests, cold-start profiling, structured logs | `architectures/serverless`                   |
 
 **Missing deps to install for shipped examples**
+
 - `examples/microservices-ecommerce/shared`: add `jest`, `@types/jest`, `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` to run provided `test`/`lint` scripts.
 - `examples/microservices-ecommerce/services/user-service`: add `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` alongside the existing Jest setup used by `lint`.
 
 **Install snippets**
+
 ```bash
 # Shared package test/lint support
 cd examples/microservices-ecommerce/shared
@@ -94,14 +100,15 @@ npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ### Authentication (JWT)
 
 **Node.js/TypeScript:**
+
 ```typescript
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 // Generate token
 const token = jwt.sign(
   { userId: user.id, role: user.role },
   process.env.JWT_SECRET,
-  { expiresIn: '15m' }
+  { expiresIn: "15m" },
 );
 
 // Verify token
@@ -109,6 +116,7 @@ const decoded = jwt.verify(token, process.env.JWT_SECRET);
 ```
 
 **Python:**
+
 ```python
 import jwt
 from datetime import datetime, timedelta
@@ -127,8 +135,9 @@ decoded = jwt.decode(token, os.environ['JWT_SECRET'], algorithms=['HS256'])
 ### Database Connection Pooling
 
 **Node.js (PostgreSQL):**
+
 ```typescript
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -143,6 +152,7 @@ const pool = new Pool({
 ```
 
 **Python:**
+
 ```python
 import asyncpg
 
@@ -161,19 +171,21 @@ pool = await asyncpg.create_pool(
 ### Rate Limiting
 
 **Express.js:**
+
 ```typescript
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests',
+  message: "Too many requests",
 });
 
-app.use('/api/', limiter);
+app.use("/api/", limiter);
 ```
 
 **FastAPI:**
+
 ```python
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -189,6 +201,7 @@ async def endpoint(request: Request):
 ### Message Queue Publishing
 
 **Kafka (Python):**
+
 ```python
 from kafka import KafkaProducer
 import json
@@ -205,37 +218,39 @@ producer.send('topic-name', {
 ```
 
 **RabbitMQ (Node.js):**
-```typescript
-import amqp from 'amqplib';
 
-const connection = await amqp.connect('amqp://localhost');
+```typescript
+import amqp from "amqplib";
+
+const connection = await amqp.connect("amqp://localhost");
 const channel = await connection.createChannel();
 
-await channel.assertQueue('task-queue', { durable: true });
-channel.sendToQueue('task-queue', Buffer.from(JSON.stringify(task)));
+await channel.assertQueue("task-queue", { durable: true });
+channel.sendToQueue("task-queue", Buffer.from(JSON.stringify(task)));
 ```
 
 ### Structured Logging
 
 **Node.js (Winston):**
+
 ```typescript
-import winston from 'winston';
+import winston from "winston";
 
 const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ]
+    new winston.transports.File({ filename: "app.log" }),
+  ],
 });
 
-logger.info('User logged in', {
-  userId: '123',
+logger.info("User logged in", {
+  userId: "123",
   ip: req.ip,
-  correlationId: req.correlationId
+  correlationId: req.correlationId,
 });
 ```
 
@@ -288,22 +303,22 @@ Traffic pattern?
 
 ### Request Latency Targets
 
-| Operation Type | Target Latency | Acceptable |
-|---------------|----------------|------------|
-| Database query | < 10ms | < 50ms |
-| API call (internal) | < 50ms | < 200ms |
-| API call (external) | < 500ms | < 2s |
-| Page load | < 1s | < 3s |
-| Search query | < 100ms | < 500ms |
+| Operation Type      | Target Latency | Acceptable |
+| ------------------- | -------------- | ---------- |
+| Database query      | < 10ms         | < 50ms     |
+| API call (internal) | < 50ms         | < 200ms    |
+| API call (external) | < 500ms        | < 2s       |
+| Page load           | < 1s           | < 3s       |
+| Search query        | < 100ms        | < 500ms    |
 
 ### Scalability Guidelines
 
-| Scale Level | Users | Requests/sec | Infrastructure |
-|-------------|-------|--------------|----------------|
-| Small | < 1K | < 10 | Single server |
-| Medium | 1K-100K | 10-1K | Load-balanced VMs |
-| Large | 100K-1M | 1K-10K | Microservices + K8s |
-| Very Large | > 1M | > 10K | Distributed + CDN |
+| Scale Level | Users   | Requests/sec | Infrastructure      |
+| ----------- | ------- | ------------ | ------------------- |
+| Small       | < 1K    | < 10         | Single server       |
+| Medium      | 1K-100K | 10-1K        | Load-balanced VMs   |
+| Large       | 100K-1M | 1K-10K       | Microservices + K8s |
+| Very Large  | > 1M    | > 10K        | Distributed + CDN   |
 
 ## 🔒 Security Checklist
 
@@ -344,24 +359,24 @@ Traffic pattern?
        /E2E\        10% - End-to-End Tests
       /────\        - Full user flows
      /      \       - Slow, expensive
-    /────────\      
+    /────────\
    /Integration\    20% - Integration Tests
   /────────────\   - API tests, service interactions
  /              \  - Moderate speed
-/────────────────\ 
+/────────────────\
 |   Unit Tests    | 70% - Unit Tests
 |________________| - Fast, isolated, many
 ```
 
 ### Test Coverage Goals
 
-| Code Type | Coverage Target |
-|-----------|----------------|
-| Business Logic | 90-100% |
-| API Endpoints | 80-90% |
-| Utilities | 80-100% |
-| UI Components | 60-80% |
-| Configuration | 50-70% |
+| Code Type      | Coverage Target |
+| -------------- | --------------- |
+| Business Logic | 90-100%         |
+| API Endpoints  | 80-90%          |
+| Utilities      | 80-100%         |
+| UI Components  | 60-80%          |
+| Configuration  | 50-70%          |
 
 ## 🚀 Deployment Checklist
 
@@ -397,18 +412,21 @@ Traffic pattern?
 ### Key Metrics to Track
 
 **Application Metrics:**
+
 - Request rate (requests/second)
 - Error rate (%)
 - Response time (p50, p95, p99)
 - Active users
 
 **Infrastructure Metrics:**
+
 - CPU usage (%)
 - Memory usage (%)
 - Disk usage (%)
 - Network I/O
 
 **Business Metrics:**
+
 - Transactions completed
 - Revenue generated
 - User signups
@@ -416,13 +434,13 @@ Traffic pattern?
 
 ### Alert Thresholds
 
-| Metric | Warning | Critical |
-|--------|---------|----------|
-| Error rate | > 1% | > 5% |
-| Response time (p95) | > 500ms | > 2s |
-| CPU usage | > 70% | > 90% |
-| Memory usage | > 80% | > 95% |
-| Disk usage | > 80% | > 95% |
+| Metric              | Warning | Critical |
+| ------------------- | ------- | -------- |
+| Error rate          | > 1%    | > 5%     |
+| Response time (p95) | > 500ms | > 2s     |
+| CPU usage           | > 70%   | > 90%    |
+| Memory usage        | > 80%   | > 95%    |
+| Disk usage          | > 80%   | > 95%    |
 
 ## 🔗 Quick Links
 

@@ -18,6 +18,7 @@ A scalable social media platform demonstrating user feeds, content moderation, r
 **Secondary**: CQRS, Caching
 
 ### Services
+
 - User Service (profiles, followers)
 - Post Service (create, edit, delete posts)
 - Feed Service (aggregate and rank content)
@@ -43,47 +44,47 @@ class FeedService:
         cached = await self.redis.get(f"feed:{user_id}")
         if cached:
             return json.loads(cached)
-        
+
         # Get user's following list
         following = await self.user_service.get_following(user_id)
-        
+
         # Aggregate posts from followed users
         posts = await self.post_service.get_posts_by_users(
             following,
             limit=limit * 2  # Get more for ranking
         )
-        
+
         # Rank posts by engagement and recency
         ranked = self.rank_posts(posts, user_id)[:limit]
-        
+
         # Cache for 5 minutes
         await self.redis.setex(
             f"feed:{user_id}",
             300,
             json.dumps(ranked)
         )
-        
+
         return ranked
-    
+
     def rank_posts(self, posts, user_id):
         """Rank posts by engagement score"""
         for post in posts:
             # Time decay factor
             hours_old = (datetime.now() - post.created_at).total_seconds() / 3600
             time_factor = 1 / (1 + hours_old)
-            
+
             # Engagement score
             engagement = (
                 post.likes * 1.0 +
                 post.comments * 2.0 +
                 post.shares * 3.0
             )
-            
+
             # Personalization bonus
             personalization = self.get_affinity_score(user_id, post.author_id)
-            
+
             post.score = (engagement * time_factor) + personalization
-        
+
         return sorted(posts, key=lambda p: p.score, reverse=True)
 ```
 
@@ -111,26 +112,26 @@ curl http://localhost:3000/api/feed \
 
 ```javascript
 // WebSocket for real-time updates
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
   const userId = socket.user.id;
-  
+
   // Join user's room
   socket.join(`user:${userId}`);
-  
+
   // Listen for new posts from following
-  socket.on('post:created', async (post) => {
+  socket.on("post:created", async (post) => {
     const followers = await getFollowers(post.authorId);
-    
+
     // Notify all followers
-    followers.forEach(followerId => {
-      io.to(`user:${followerId}`).emit('feed:new-post', post);
+    followers.forEach((followerId) => {
+      io.to(`user:${followerId}`).emit("feed:new-post", post);
     });
   });
-  
+
   // Presence tracking
-  socket.on('presence:online', () => {
-    redis.sadd('online_users', userId);
-    io.emit('presence:update', { userId, status: 'online' });
+  socket.on("presence:online", () => {
+    redis.sadd("online_users", userId);
+    io.emit("presence:update", { userId, status: "online" });
   });
 });
 ```
@@ -143,16 +144,16 @@ class ModerationService:
     async def moderate_content(self, post: Post):
         # Text analysis
         text_score = await self.text_classifier.predict(post.content)
-        
+
         # Image analysis (if images present)
         image_scores = []
         for image_url in post.images:
             score = await self.image_classifier.predict(image_url)
             image_scores.append(score)
-        
+
         # Determine action
         max_score = max([text_score] + image_scores)
-        
+
         if max_score > 0.9:  # High confidence inappropriate
             await self.post_service.delete_post(post.id)
             await self.notify_user(post.author_id, "content_removed")

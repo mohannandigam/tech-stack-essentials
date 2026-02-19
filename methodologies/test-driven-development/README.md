@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of building with LEGO following instructions:
+
 1. **Read the instruction** (write test) - Know what piece you need next
 2. **Find and place the piece** (write code) - Add just that piece
 3. **Check it matches** (test passes) - Verify it looks right
@@ -26,6 +28,7 @@ Think of building with LEGO following instructions:
 ```
 
 ### Core Principles
+
 - **Test First** - Always write test before code
 - **Minimal Code** - Write only enough to pass the test
 - **Incremental** - Build functionality piece by piece
@@ -92,9 +95,10 @@ Think of building with LEGO following instructions:
 ### Step 1: 🔴 Write a Failing Test (Red)
 
 **Before writing any code:**
+
 ```javascript
 // Example: Testing a calculator add function
-test('should add two numbers', () => {
+test("should add two numbers", () => {
   const calculator = new Calculator();
   const result = calculator.add(2, 3);
   expect(result).toBe(5);
@@ -106,6 +110,7 @@ test('should add two numbers', () => {
 ### Step 2: 🟢 Write Minimal Code (Green)
 
 **Write just enough to make test pass:**
+
 ```javascript
 class Calculator {
   add(a, b) {
@@ -119,12 +124,13 @@ class Calculator {
 ### Step 3: 🔵 Refactor
 
 **Improve code without changing behavior:**
+
 ```javascript
 class Calculator {
   add(a, b) {
     // Add validation if needed
-    if (typeof a !== 'number' || typeof b !== 'number') {
-      throw new Error('Arguments must be numbers');
+    if (typeof a !== "number" || typeof b !== "number") {
+      throw new Error("Arguments must be numbers");
     }
     return a + b;
   }
@@ -140,34 +146,37 @@ Write next test, implement, refactor, repeat...
 ## 🧪 Types of Tests in TDD
 
 ### 1. Unit Tests (Primary Focus)
+
 - Test individual functions/methods
 - Fast and isolated
 - Most common in TDD
 - Mock external dependencies
 
 ```javascript
-test('user validation rejects invalid email', () => {
-  const user = new User('invalid-email');
+test("user validation rejects invalid email", () => {
+  const user = new User("invalid-email");
   expect(user.isValid()).toBe(false);
 });
 ```
 
 ### 2. Integration Tests
+
 - Test components working together
 - Test with real dependencies
 - Fewer but important
 - Catch integration issues
 
 ```javascript
-test('user service saves to database', async () => {
+test("user service saves to database", async () => {
   const userService = new UserService(database);
-  await userService.createUser('john@example.com');
-  const user = await database.findUser('john@example.com');
+  await userService.createUser("john@example.com");
+  const user = await database.findUser("john@example.com");
   expect(user).toBeDefined();
 });
 ```
 
 ### 3. Acceptance Tests (Outside TDD)
+
 - Test complete user scenarios
 - Written from user perspective
 - Usually complement TDD
@@ -176,27 +185,29 @@ test('user service saves to database', async () => {
 ## 🎯 TDD Best Practices
 
 ### 1. Keep Tests Simple
+
 ```javascript
 // Good: Clear and focused
-test('returns empty array for no users', () => {
+test("returns empty array for no users", () => {
   expect(getUsers([])).toEqual([]);
 });
 
 // Bad: Too complex
-test('complex scenario', () => {
+test("complex scenario", () => {
   // 50 lines of setup and assertions
 });
 ```
 
 ### 2. Test One Thing at a Time
+
 ```javascript
 // Good: One assertion
-test('calculates total price', () => {
+test("calculates total price", () => {
   expect(calculateTotal([10, 20])).toBe(30);
 });
 
 // Less ideal: Multiple unrelated assertions
-test('calculator works', () => {
+test("calculator works", () => {
   expect(calc.add(1, 2)).toBe(3);
   expect(calc.subtract(5, 2)).toBe(3);
   expect(calc.multiply(2, 3)).toBe(6);
@@ -204,31 +215,34 @@ test('calculator works', () => {
 ```
 
 ### 3. Use Descriptive Test Names
+
 ```javascript
 // Good: Describes behavior
-test('returns error when email is invalid')
-test('allows admin to delete posts')
+test("returns error when email is invalid");
+test("allows admin to delete posts");
 
 // Bad: Vague
-test('test1')
-test('it works')
+test("test1");
+test("it works");
 ```
 
 ### 4. Follow AAA Pattern
+
 ```javascript
-test('user can be created', () => {
+test("user can be created", () => {
   // Arrange: Setup
-  const userData = { name: 'John', email: 'john@example.com' };
-  
+  const userData = { name: "John", email: "john@example.com" };
+
   // Act: Perform action
   const user = new User(userData);
-  
+
   // Assert: Verify result
-  expect(user.name).toBe('John');
+  expect(user.name).toBe("John");
 });
 ```
 
 ### 5. Keep Tests Independent
+
 - Each test should run independently
 - No shared state between tests
 - Can run in any order
@@ -239,6 +253,7 @@ test('user can be created', () => {
 ### As a Tester in a TDD Environment
 
 **Your Role Changes:**
+
 - Less focus on finding unit-level bugs (developers already tested)
 - More focus on integration and system testing
 - Verify acceptance criteria
@@ -279,37 +294,44 @@ test('user can be created', () => {
 ## 🛠️ TDD Tools & Frameworks
 
 ### JavaScript/TypeScript
+
 - **Jest** - Popular all-in-one framework
 - **Mocha + Chai** - Flexible combination
 - **Vitest** - Fast, Vite-powered
 - **Jasmine** - Behavior-driven
 
 ### Python
+
 - **pytest** - Most popular
 - **unittest** - Built-in
 - **nose2** - Extended unittest
 
 ### Java
+
 - **JUnit 5** - Standard framework
 - **TestNG** - Advanced features
 - **Mockito** - Mocking framework
 
 ### C#/.NET
+
 - **NUnit** - Popular choice
 - **xUnit** - Modern framework
 - **MSTest** - Microsoft's framework
 
 ### Ruby
+
 - **RSpec** - BDD-style testing
 - **Minitest** - Lightweight
 
 ### Go
+
 - **testing** - Built-in package
 - **testify** - Assertion toolkit
 
 ## 🏢 Real-World Examples
 
 **Companies Using TDD:**
+
 - **Spotify** - Extensive TDD practice
 - **Google** - Strong testing culture
 - **Microsoft** - Adopted TDD widely
@@ -317,6 +339,7 @@ test('user can be created', () => {
 - **Pivotal Labs** - TDD experts
 
 **Success Stories:**
+
 - Reduced bug density by 40-90%
 - Fewer production defects
 - Faster development over time
@@ -324,15 +347,15 @@ test('user can be created', () => {
 
 ## 📊 TDD vs Traditional Testing
 
-| Aspect | TDD | Traditional |
-|--------|-----|-------------|
-| **When** | Before code | After code |
-| **Focus** | Design + Testing | Finding bugs |
-| **Bugs Found** | During development | After development |
-| **Code Coverage** | Usually high | Varies |
-| **Refactoring** | Safe and easy | Risky |
-| **Design** | Test-driven | Code-driven |
-| **Documentation** | Tests = docs | Separate docs |
+| Aspect            | TDD                | Traditional       |
+| ----------------- | ------------------ | ----------------- |
+| **When**          | Before code        | After code        |
+| **Focus**         | Design + Testing   | Finding bugs      |
+| **Bugs Found**    | During development | After development |
+| **Code Coverage** | Usually high       | Varies            |
+| **Refactoring**   | Safe and easy      | Risky             |
+| **Design**        | Test-driven        | Code-driven       |
+| **Documentation** | Tests = docs       | Separate docs     |
 
 ## 🎓 Learning Resources
 
@@ -359,6 +382,7 @@ test('user can be created', () => {
    - See patterns and practices
 
 ### Recommended Katas
+
 - **FizzBuzz** - Classic beginner kata
 - **Roman Numerals** - Practice incremental development
 - **Bowling Game** - Complex rules, good for TDD
@@ -366,11 +390,13 @@ test('user can be created', () => {
 - **Bank Account** - State management practice
 
 ### Books & Resources
+
 - "Test Driven Development: By Example" - Kent Beck
 - "Growing Object-Oriented Software, Guided by Tests" - Freeman & Pryce
 - "The Art of Unit Testing" - Roy Osherove
 
 ## 🔗 Related Topics
+
 - [Behaviour-Driven Development](../behaviour-driven-development/README.md)
 - [Unit Testing Best Practices]
 - [Continuous Integration/Deployment]

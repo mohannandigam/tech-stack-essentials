@@ -1,12 +1,13 @@
 # AI/ML Team Structure - Part 2: Anomaly Detection and Unity Catalog
 
-*Continued from [Part 1: Team Structure](./TEAM_STRUCTURE.md)*
+_Continued from [Part 1: Team Structure](./TEAM_STRUCTURE.md)_
 
 ## Anomaly Detection Use Case
 
 ### Business Context
 
 **Scenario**: A financial services company needs to detect fraudulent transactions in real-time. They have:
+
 - Transaction data stored in Snowflake
 - Need to process 10,000+ transactions per second
 - Require < 100ms latency for fraud detection
@@ -447,6 +448,7 @@ if df_results['true_fraud'].sum() > 100:  # Need sufficient fraud examples
 ### What is Unity Catalog?
 
 Unity Catalog is Databricks' unified governance solution for data and AI assets. It provides:
+
 - **Centralized Metadata**: Single source of truth for all data assets
 - **Fine-grained Access Control**: Row, column, and table-level security
 - **Data Lineage**: Track data flow from source to model
@@ -780,14 +782,17 @@ performance_df = monitor_model_performance(model_name, days=7)
 #### Morning Standup
 
 **Data Engineer**:
+
 - "I completed the ETL pipeline from Snowflake yesterday. Bronze and Silver layers are updated hourly."
 - "Today I'll add data quality checks for the new merchant_category field."
 
 **Data Scientist**:
+
 - "I trained the new anomaly detection model with 95% precision. Will work on improving recall today."
 - "Blocked: Need access to customer demographic data for feature engineering."
 
 **ML Engineer**:
+
 - "Deployed model v2 to staging environment. Latency is 45ms (below 50ms target)."
 - "Today I'll set up A/B testing framework to compare v1 vs v2 in production."
 
@@ -796,16 +801,19 @@ performance_df = monitor_model_performance(model_name, days=7)
 **Objective**: Improve fraud detection recall from 80% to 90%
 
 **Data Engineer Tasks**:
+
 1. Add streaming pipeline for real-time transaction features
 2. Implement feature store for reusable features
 3. Set up data quality monitoring with Great Expectations
 
 **Data Scientist Tasks**:
+
 1. Research and experiment with ensemble methods
 2. Feature engineering: add time-series patterns
 3. Perform error analysis on false negatives
 
 **ML Engineer Tasks**:
+
 1. Implement online learning pipeline for model updates
 2. Set up canary deployment for model v3
 3. Build drift detection monitoring
@@ -930,4 +938,4 @@ features = fs.read_table(name="main.gold.customer_transaction_features")
 
 ---
 
-*Continue reading in [Part 3: Real-World Examples](./TEAM_STRUCTURE_PART3.md)*
+_Continue reading in [Part 3: Real-World Examples](./TEAM_STRUCTURE_PART3.md)_

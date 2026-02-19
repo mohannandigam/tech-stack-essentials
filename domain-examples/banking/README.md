@@ -18,6 +18,7 @@ A modern core banking system demonstrating account management, transaction proce
 **Secondary**: Event-Driven, CQRS
 
 ### Services
+
 - Account Service
 - Transaction Service
 - Fraud Detection Service
@@ -39,23 +40,23 @@ A modern core banking system demonstrating account management, transaction proce
 class TransferSaga {
   async execute(fromAccount: string, toAccount: string, amount: Decimal) {
     const sagaId = uuid();
-    
+
     try {
       // Step 1: Debit source account
       await this.accountService.debit(fromAccount, amount, sagaId);
-      
+
       // Step 2: Credit destination account
       await this.accountService.credit(toAccount, amount, sagaId);
-      
+
       // Step 3: Record transaction
       await this.transactionService.record({
         sagaId,
         from: fromAccount,
         to: toAccount,
         amount,
-        status: 'COMPLETED'
+        status: "COMPLETED",
       });
-      
+
       return { success: true, sagaId };
     } catch (error) {
       // Compensating transactions
@@ -63,7 +64,7 @@ class TransferSaga {
       throw error;
     }
   }
-  
+
   async compensate(sagaId: string) {
     // Rollback all saga steps
   }
@@ -113,34 +114,34 @@ curl -X POST http://localhost:3000/api/transfers \
 
 ```typescript
 // src/models/account.model.ts
-import { z } from 'zod';
-import Decimal from 'decimal.js';
+import { z } from "zod";
+import Decimal from "decimal.js";
 
 export const AccountSchema = z.object({
   id: z.string().uuid(),
   customerId: z.string().uuid(),
   accountNumber: z.string().length(16),
-  accountType: z.enum(['CHECKING', 'SAVINGS', 'MONEY_MARKET', 'CD']),
+  accountType: z.enum(["CHECKING", "SAVINGS", "MONEY_MARKET", "CD"]),
   balance: z.instanceof(Decimal),
   availableBalance: z.instanceof(Decimal),
-  currency: z.string().length(3).default('USD'),
-  status: z.enum(['ACTIVE', 'FROZEN', 'CLOSED']),
+  currency: z.string().length(3).default("USD"),
+  status: z.enum(["ACTIVE", "FROZEN", "CLOSED"]),
   interestRate: z.number().min(0).max(100).optional(),
   overdraftLimit: z.instanceof(Decimal).optional(),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 });
 
 export const TransactionSchema = z.object({
   id: z.string().uuid(),
   accountId: z.string().uuid(),
-  type: z.enum(['DEBIT', 'CREDIT']),
+  type: z.enum(["DEBIT", "CREDIT"]),
   amount: z.instanceof(Decimal),
   description: z.string(),
   reference: z.string().optional(),
   balanceAfter: z.instanceof(Decimal),
   timestamp: z.date(),
-  status: z.enum(['PENDING', 'COMPLETED', 'FAILED', 'REVERSED'])
+  status: z.enum(["PENDING", "COMPLETED", "FAILED", "REVERSED"]),
 });
 
 export type Account = z.infer<typeof AccountSchema>;
@@ -149,10 +150,10 @@ export type Transaction = z.infer<typeof TransactionSchema>;
 
 ```typescript
 // src/services/transfer-saga.service.ts
-import { Pool } from 'pg';
-import Decimal from 'decimal.js';
-import { v4 as uuid } from 'uuid';
-import { EventEmitter } from 'events';
+import { Pool } from "pg";
+import Decimal from "decimal.js";
+import { v4 as uuid } from "uuid";
+import { EventEmitter } from "events";
 
 interface SagaStep {
   execute: () => Promise<void>;
@@ -166,7 +167,7 @@ export class TransferSaga {
   constructor(
     private readonly db: Pool,
     private readonly eventBus: EventEmitter,
-    private readonly auditService: AuditService
+    private readonly auditService: AuditService,
   ) {}
 
   async executeTransfer(
@@ -174,7 +175,7 @@ export class TransferSaga {
     toAccountId: string,
     amount: Decimal,
     reference: string,
-    userId: string
+    userId: string,
   ): Promise<string> {
     const sagaId = uuid();
 
@@ -186,27 +187,27 @@ export class TransferSaga {
         },
         compensate: async () => {
           // No compensation needed for validation
-        }
+        },
       });
 
       // Step 2: Reserve funds (debit hold)
       this.addStep({
         execute: async () => {
-          await this.debitAccount(fromAccountId, amount, sagaId, 'PENDING');
+          await this.debitAccount(fromAccountId, amount, sagaId, "PENDING");
         },
         compensate: async () => {
           await this.releaseDebitHold(fromAccountId, amount, sagaId);
-        }
+        },
       });
 
       // Step 3: Credit destination account
       this.addStep({
         execute: async () => {
-          await this.creditAccount(toAccountId, amount, sagaId, 'PENDING');
+          await this.creditAccount(toAccountId, amount, sagaId, "PENDING");
         },
         compensate: async () => {
           await this.reverseCreditHold(toAccountId, amount, sagaId);
-        }
+        },
       });
 
       // Step 4: Finalize transaction
@@ -216,7 +217,7 @@ export class TransferSaga {
         },
         compensate: async () => {
           // Cannot compensate finalized transfer
-        }
+        },
       });
 
       // Execute all steps
@@ -226,33 +227,39 @@ export class TransferSaga {
       }
 
       // Record successful transfer
-      await this.recordTransfer(sagaId, fromAccountId, toAccountId, amount, reference, userId);
+      await this.recordTransfer(
+        sagaId,
+        fromAccountId,
+        toAccountId,
+        amount,
+        reference,
+        userId,
+      );
 
       // Publish event
-      this.eventBus.emit('transfer.completed', {
+      this.eventBus.emit("transfer.completed", {
         sagaId,
         fromAccountId,
         toAccountId,
         amount: amount.toString(),
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       return sagaId;
-
     } catch (error) {
       // Compensate in reverse order
       await this.compensate();
 
       await this.auditService.log({
         userId,
-        action: 'TRANSFER_FAILED',
+        action: "TRANSFER_FAILED",
         details: {
           sagaId,
           fromAccountId,
           toAccountId,
           amount: amount.toString(),
-          error: (error as Error).message
-        }
+          error: (error as Error).message,
+        },
       });
 
       throw error;
@@ -278,7 +285,7 @@ export class TransferSaga {
   private async validateAccounts(
     fromAccountId: string,
     toAccountId: string,
-    amount: Decimal
+    amount: Decimal,
   ): Promise<void> {
     const client = await this.db.connect();
 
@@ -287,18 +294,18 @@ export class TransferSaga {
         `SELECT id, status, balance, available_balance, overdraft_limit
          FROM accounts
          WHERE id = ANY($1::uuid[])`,
-        [[fromAccountId, toAccountId]]
+        [[fromAccountId, toAccountId]],
       );
 
       if (result.rows.length !== 2) {
-        throw new Error('One or both accounts not found');
+        throw new Error("One or both accounts not found");
       }
 
-      const fromAccount = result.rows.find(r => r.id === fromAccountId);
-      const toAccount = result.rows.find(r => r.id === toAccountId);
+      const fromAccount = result.rows.find((r) => r.id === fromAccountId);
+      const toAccount = result.rows.find((r) => r.id === toAccountId);
 
-      if (fromAccount.status !== 'ACTIVE' || toAccount.status !== 'ACTIVE') {
-        throw new Error('Account is not active');
+      if (fromAccount.status !== "ACTIVE" || toAccount.status !== "ACTIVE") {
+        throw new Error("Account is not active");
       }
 
       const availableBalance = new Decimal(fromAccount.available_balance);
@@ -307,7 +314,7 @@ export class TransferSaga {
         : new Decimal(0);
 
       if (availableBalance.plus(overdraftLimit).lessThan(amount)) {
-        throw new Error('Insufficient funds');
+        throw new Error("Insufficient funds");
       }
     } finally {
       client.release();
@@ -318,12 +325,12 @@ export class TransferSaga {
     accountId: string,
     amount: Decimal,
     sagaId: string,
-    status: string
+    status: string,
   ): Promise<void> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Update balance
       const result = await client.query(
@@ -333,19 +340,19 @@ export class TransferSaga {
              updated_at = NOW()
          WHERE id = $2
          RETURNING balance, available_balance`,
-        [amount.toString(), accountId]
+        [amount.toString(), accountId],
       );
 
       // Record transaction
       await client.query(
         `INSERT INTO transactions (account_id, type, amount, description, reference, balance_after, status)
          VALUES ($1, 'DEBIT', $2, 'Transfer out', $3, $4, $5)`,
-        [accountId, amount.toString(), sagaId, result.rows[0].balance, status]
+        [accountId, amount.toString(), sagaId, result.rows[0].balance, status],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -356,12 +363,12 @@ export class TransferSaga {
     accountId: string,
     amount: Decimal,
     sagaId: string,
-    status: string
+    status: string,
   ): Promise<void> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       const result = await client.query(
         `UPDATE accounts
@@ -370,18 +377,18 @@ export class TransferSaga {
              updated_at = NOW()
          WHERE id = $2
          RETURNING balance`,
-        [amount.toString(), accountId]
+        [amount.toString(), accountId],
       );
 
       await client.query(
         `INSERT INTO transactions (account_id, type, amount, description, reference, balance_after, status)
          VALUES ($1, 'CREDIT', $2, 'Transfer in', $3, $4, $5)`,
-        [accountId, amount.toString(), sagaId, result.rows[0].balance, status]
+        [accountId, amount.toString(), sagaId, result.rows[0].balance, status],
       );
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -393,37 +400,45 @@ export class TransferSaga {
       `UPDATE transactions
        SET status = 'COMPLETED'
        WHERE reference = $1 AND status = 'PENDING'`,
-      [sagaId]
+      [sagaId],
     );
   }
 
-  private async releaseDebitHold(accountId: string, amount: Decimal, sagaId: string): Promise<void> {
+  private async releaseDebitHold(
+    accountId: string,
+    amount: Decimal,
+    sagaId: string,
+  ): Promise<void> {
     await this.db.query(
       `UPDATE accounts
        SET balance = balance + $1,
            available_balance = available_balance + $1
        WHERE id = $2`,
-      [amount.toString(), accountId]
+      [amount.toString(), accountId],
     );
 
     await this.db.query(
       `UPDATE transactions SET status = 'REVERSED' WHERE reference = $1 AND account_id = $2`,
-      [sagaId, accountId]
+      [sagaId, accountId],
     );
   }
 
-  private async reverseCreditHold(accountId: string, amount: Decimal, sagaId: string): Promise<void> {
+  private async reverseCreditHold(
+    accountId: string,
+    amount: Decimal,
+    sagaId: string,
+  ): Promise<void> {
     await this.db.query(
       `UPDATE accounts
        SET balance = balance - $1,
            available_balance = available_balance - $1
        WHERE id = $2`,
-      [amount.toString(), accountId]
+      [amount.toString(), accountId],
     );
 
     await this.db.query(
       `UPDATE transactions SET status = 'REVERSED' WHERE reference = $1 AND account_id = $2`,
-      [sagaId, accountId]
+      [sagaId, accountId],
     );
   }
 
@@ -433,12 +448,19 @@ export class TransferSaga {
     toAccountId: string,
     amount: Decimal,
     reference: string,
-    userId: string
+    userId: string,
   ): Promise<void> {
     await this.db.query(
       `INSERT INTO transfer_records (id, from_account_id, to_account_id, amount, reference, user_id, status)
        VALUES ($1, $2, $3, $4, $5, $6, 'COMPLETED')`,
-      [sagaId, fromAccountId, toAccountId, amount.toString(), reference, userId]
+      [
+        sagaId,
+        fromAccountId,
+        toAccountId,
+        amount.toString(),
+        reference,
+        userId,
+      ],
     );
   }
 }
@@ -1083,7 +1105,7 @@ CREATE INDEX idx_audit_log_user ON audit_log(user_id, timestamp DESC);
 ## 🐳 Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:

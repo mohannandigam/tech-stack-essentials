@@ -1,6 +1,6 @@
 # AI/ML Team Structure - Part 3: Real-World Examples
 
-*Continued from [Part 2: Anomaly Detection](./TEAM_STRUCTURE_PART2.md)*
+_Continued from [Part 2: Anomaly Detection](./TEAM_STRUCTURE_PART2.md)_
 
 ## Real-World Examples
 
@@ -11,6 +11,7 @@ This section provides comprehensive real-world examples across different industr
 ## Example 1: E-Commerce - Product Recommendation System
 
 ### Business Problem
+
 An e-commerce company wants to increase sales by 20% through personalized product recommendations.
 
 ### Team Collaboration
@@ -812,42 +813,42 @@ spec:
         version: v1
     spec:
       containers:
-      - name: api
-        image: ecommerce/recommendation-api:v1.0.0
-        ports:
-        - containerPort: 8000
-        env:
-        - name: REDIS_HOST
-          value: "redis-service"
-        - name: MODEL_PATH
-          value: "/models"
-        volumeMounts:
-        - name: models
-          mountPath: /models
-          readOnly: true
-        resources:
-          requests:
-            cpu: "1000m"
-            memory: "2Gi"
-          limits:
-            cpu: "2000m"
-            memory: "4Gi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: api
+          image: ecommerce/recommendation-api:v1.0.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: REDIS_HOST
+              value: "redis-service"
+            - name: MODEL_PATH
+              value: "/models"
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-      - name: models
-        persistentVolumeClaim:
-          claimName: ml-models-pvc
+        - name: models
+          persistentVolumeClaim:
+            claimName: ml-models-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -858,8 +859,8 @@ spec:
   selector:
     app: recommendation-api
   ports:
-  - port: 80
-    targetPort: 8000
+    - port: 80
+      targetPort: 8000
   type: LoadBalancer
 ---
 apiVersion: autoscaling/v2
@@ -875,18 +876,18 @@ spec:
   minReplicas: 5
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 #### Phase 4: Monitoring and Optimization (All teams - Ongoing)
@@ -1098,12 +1099,14 @@ ab_results = analyze_ab_test()
 ### Results
 
 **Business Impact**:
+
 - 📈 Sales increased by 23% (exceeded 20% target)
 - 🎯 Recommendation click-through rate: 15%
 - 💰 Average order value increased by 12%
 - 🔄 User engagement (sessions per user) increased by 18%
 
 **Technical Metrics**:
+
 - ⚡ API latency: p50 = 12ms, p95 = 45ms, p99 = 78ms
 - 📊 Model metrics: Precision@10 = 0.23, Recall@10 = 0.18
 - 🎯 Cache hit rate: 82%
@@ -1111,21 +1114,22 @@ ab_results = analyze_ab_test()
 
 ---
 
-*Continue to [Example 2: Healthcare](#example-2-healthcare---patient-risk-prediction) or [Example 3: Financial Services](#example-3-financial-services---real-time-fraud-detection)*
+_Continue to [Example 2: Healthcare](#example-2-healthcare---patient-risk-prediction) or [Example 3: Financial Services](#example-3-financial-services---real-time-fraud-detection)_
 
 ## Example 2: Healthcare - Patient Risk Prediction
 
-*[Content for healthcare example would go here - similar depth and detail]*
+_[Content for healthcare example would go here - similar depth and detail]_
 
 ## Example 3: Financial Services - Real-Time Fraud Detection
 
-*[Content for financial services example would go here - similar depth and detail]*
+_[Content for financial services example would go here - similar depth and detail]_
 
 ---
 
 ## Summary: Key Takeaways
 
 ### For Data Engineers
+
 1. **Build reliable data pipelines** with proper error handling and monitoring
 2. **Implement data quality checks** at every stage (Bronze → Silver → Gold)
 3. **Use medallion architecture** for clear separation of concerns
@@ -1133,6 +1137,7 @@ ab_results = analyze_ab_test()
 5. **Document data lineage** for traceability and debugging
 
 ### For Data Scientists
+
 1. **Start with EDA** before jumping into modeling
 2. **Try multiple approaches** (supervised, unsupervised, ensemble)
 3. **Focus on business metrics** not just model metrics
@@ -1140,6 +1145,7 @@ ab_results = analyze_ab_test()
 5. **Communicate results** effectively to stakeholders
 
 ### For ML Engineers
+
 1. **Build production-ready APIs** with proper error handling
 2. **Implement comprehensive monitoring** (latency, accuracy, drift)
 3. **Use caching** for frequently requested predictions
@@ -1147,6 +1153,7 @@ ab_results = analyze_ab_test()
 5. **Automate model deployment** with CI/CD
 
 ### Team Collaboration Best Practices
+
 1. **Daily standups** for quick sync-ups
 2. **Shared notebooks** for collaboration
 3. **Clear interfaces** between team responsibilities

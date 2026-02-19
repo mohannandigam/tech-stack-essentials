@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of a restaurant: Instead of one person doing everything (taking orders, cooking, serving, billing), you have specialists:
+
 - A waiter takes orders
 - Chefs cook different types of food
 - A cashier handles payments
@@ -16,6 +18,7 @@ Think of a restaurant: Instead of one person doing everything (taking orders, co
 Each person (service) does their job independently but communicates to deliver the complete experience.
 
 ### Core Characteristics
+
 - **Independently Deployable** - Each service can be updated without affecting others
 - **Business-Focused** - Each service represents a business capability
 - **Decentralized** - No central control; services make their own decisions
@@ -79,31 +82,37 @@ Each person (service) does their job independently but communicates to deliver t
 ## 🏗️ Key Components
 
 ### 1. API Gateway
+
 - Entry point for all client requests
 - Routes requests to appropriate services
 - Handles authentication and rate limiting
 
 ### 2. Service Discovery
+
 - Services register themselves
 - Other services find them dynamically
 - Examples: Consul, Eureka, etcd
 
 ### 3. Load Balancer
+
 - Distributes traffic across service instances
 - Health checks to route to healthy instances
 - Examples: NGINX, HAProxy, AWS ALB
 
 ### 4. Message Queue/Event Bus
+
 - Asynchronous communication between services
 - Decouples services from each other
 - Examples: RabbitMQ, Apache Kafka, AWS SQS
 
 ### 5. Configuration Server
+
 - Centralized configuration management
 - Services fetch their configuration at startup
 - Examples: Spring Cloud Config, Consul
 
 ### 6. Monitoring & Logging
+
 - Centralized logging from all services
 - Distributed tracing to follow requests
 - Examples: ELK Stack, Prometheus, Jaeger
@@ -111,11 +120,13 @@ Each person (service) does their job independently but communicates to deliver t
 ## 🔄 Communication Patterns
 
 ### Synchronous (Request/Response)
+
 - **REST APIs** - HTTP-based communication
 - **gRPC** - High-performance RPC framework
 - **GraphQL** - Query language for APIs
 
 ### Asynchronous (Event-Based)
+
 - **Message Queues** - Point-to-point messaging
 - **Publish/Subscribe** - One-to-many event distribution
 - **Event Streaming** - Continuous flow of events
@@ -142,22 +153,26 @@ Each person (service) does their job independently but communicates to deliver t
 ### Testing Strategies
 
 **Contract Testing**
+
 - Define contracts between services
 - Both consumer and provider test against contract
 - Prevents breaking changes
 - Tools: Pact, Spring Cloud Contract
 
 **Service Virtualization**
+
 - Create virtual versions of services for testing
 - Test without needing all services running
 - Tools: WireMock, Mountebank
 
 **Chaos Testing**
+
 - Intentionally break things to test resilience
 - Verify system handles failures gracefully
 - Tools: Chaos Monkey, Gremlin
 
 **Performance Testing**
+
 - Test under realistic load
 - Find bottlenecks and scaling limits
 - Tools: JMeter, Gatling, k6
@@ -194,37 +209,42 @@ Each person (service) does their job independently but communicates to deliver t
 
 ## 📊 Monolith vs Microservices
 
-| Aspect | Monolith | Microservices |
-|--------|----------|---------------|
-| **Structure** | Single application | Multiple services |
-| **Deployment** | All-or-nothing | Independent |
-| **Scaling** | Scale entire app | Scale specific services |
-| **Technology** | Usually one stack | Can be polyglot |
-| **Development** | Simpler initially | More complex |
-| **Team Size** | Works for small teams | Better for large teams |
-| **Communication** | Function calls | Network calls |
-| **Data** | Single database | Database per service |
+| Aspect            | Monolith              | Microservices           |
+| ----------------- | --------------------- | ----------------------- |
+| **Structure**     | Single application    | Multiple services       |
+| **Deployment**    | All-or-nothing        | Independent             |
+| **Scaling**       | Scale entire app      | Scale specific services |
+| **Technology**    | Usually one stack     | Can be polyglot         |
+| **Development**   | Simpler initially     | More complex            |
+| **Team Size**     | Works for small teams | Better for large teams  |
+| **Communication** | Function calls        | Network calls           |
+| **Data**          | Single database       | Database per service    |
 
 ## 📐 Design Principles
 
 ### 1. Single Responsibility
+
 - Each service does one thing well
 - Clear boundaries and purpose
 
 ### 2. Loose Coupling
+
 - Services are independent
 - Changes don't ripple across services
 
 ### 3. High Cohesion
+
 - Related functionality together in same service
 - Minimize cross-service calls
 
 ### 4. API First
+
 - Well-defined interfaces
 - Versioned APIs
 - Backward compatibility
 
 ### 5. Design for Failure
+
 - Services will fail
 - Use circuit breakers
 - Implement retries and timeouts
@@ -232,16 +252,19 @@ Each person (service) does their job independently but communicates to deliver t
 ## 🛠️ Technology Stack Examples
 
 ### Container Orchestration
+
 - **Kubernetes** - Industry standard
 - **Docker Swarm** - Simpler alternative
 - **Amazon ECS** - AWS container service
 
 ### Service Mesh
+
 - **Istio** - Advanced traffic management
 - **Linkerd** - Lightweight service mesh
 - **Consul Connect** - Service mesh from HashiCorp
 
 ### API Gateway
+
 - **Kong** - Open source API gateway
 - **AWS API Gateway** - Managed service
 - **Apigee** - Enterprise API management
@@ -249,6 +272,7 @@ Each person (service) does their job independently but communicates to deliver t
 ## 🎓 Learning Resources
 
 ### Concepts to Study Next
+
 1. Domain-Driven Design (DDD)
 2. Event-Driven Architecture
 3. CQRS and Event Sourcing
@@ -256,6 +280,7 @@ Each person (service) does their job independently but communicates to deliver t
 5. Saga pattern for distributed transactions
 
 ### Practice Ideas
+
 1. Break down a monolithic app into services
 2. Implement service-to-service communication
 3. Set up API gateway and load balancing
@@ -271,12 +296,14 @@ Each person (service) does their job independently but communicates to deliver t
 **Problem**: One slow/failing service causes downstream services to fail.
 
 **Symptoms:**
+
 - Timeout errors across multiple services
 - Thread pool exhaustion
 - Memory leaks
 - System-wide slowdown
 
 **Debug:**
+
 ```bash
 # Check service dependencies
 kubectl get pods -A | grep -v Running
@@ -291,6 +318,7 @@ GET /actuator/metrics/tomcat.threads.config.max
 ```
 
 **Solutions:**
+
 ```python
 # 1. Circuit Breaker Pattern
 from circuitbreaker import circuit
@@ -329,18 +357,19 @@ payment_service_pool = ThreadPoolExecutor(max_workers=5)
 ```
 
 **Node.js Solution:**
+
 ```javascript
-const CircuitBreaker = require('opossum');
+const CircuitBreaker = require("opossum");
 
 const options = {
   timeout: 3000, // 3 seconds
   errorThresholdPercentage: 50,
-  resetTimeout: 30000 // 30 seconds
+  resetTimeout: 30000, // 30 seconds
 };
 
 const breaker = new CircuitBreaker(callUserService, options);
 
-breaker.fallback(() => ({ error: 'Service unavailable' }));
+breaker.fallback(() => ({ error: "Service unavailable" }));
 
 async function callUserService(userId) {
   const response = await axios.get(`${USER_SERVICE_URL}/users/${userId}`);
@@ -400,6 +429,7 @@ def get_order(order_id):
 ```
 
 **Debug Traces:**
+
 ```bash
 # Access Jaeger UI
 http://localhost:16686
@@ -519,6 +549,7 @@ class OrderService:
 **Problem**: Services can't find each other.
 
 **Debug:**
+
 ```bash
 # Kubernetes DNS
 kubectl exec -it service-pod -- nslookup user-service
@@ -536,6 +567,7 @@ kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
 ```
 
 **Solutions:**
+
 ```yaml
 # Kubernetes Service
 apiVersion: v1
@@ -566,6 +598,7 @@ spec:
 ```
 
 **Application Code:**
+
 ```python
 import os
 
@@ -587,6 +620,7 @@ USER_SERVICE_URL = 'http://user-service.default.svc.cluster.local:8080'
 **Problem**: API Gateway becomes single point of failure/bottleneck.
 
 **Debug:**
+
 ```bash
 # Check gateway metrics
 curl http://api-gateway:8080/actuator/metrics/http.server.requests
@@ -600,6 +634,7 @@ curl -i http://api-gateway:8080/api/users/1
 ```
 
 **Solutions:**
+
 ```yaml
 # 1. Horizontal scaling
 apiVersion: apps/v1
@@ -607,18 +642,18 @@ kind: Deployment
 metadata:
   name: api-gateway
 spec:
-  replicas: 3  # Multiple instances
+  replicas: 3 # Multiple instances
   template:
     spec:
       containers:
-      - name: gateway
-        resources:
-          requests:
-            cpu: 500m
-            memory: 512Mi
-          limits:
-            cpu: 1000m
-            memory: 1Gi
+        - name: gateway
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
 
 ---
 # 2. Autoscaling
@@ -634,15 +669,16 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 **Gateway Configuration:**
+
 ```yaml
 # Spring Cloud Gateway with circuit breaker
 spring:
@@ -650,7 +686,7 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: lb://user-service  # Load balanced
+          uri: lb://user-service # Load balanced
           predicates:
             - Path=/api/users/**
           filters:
@@ -661,7 +697,7 @@ spring:
             - name: RequestRateLimiter
               args:
                 redis-rate-limiter:
-                  replenishRate: 10  # tokens per second
+                  replenishRate: 10 # tokens per second
                   burstCapacity: 20
             - name: Retry
               args:
@@ -676,6 +712,7 @@ spring:
 ### Debugging Tools
 
 **1. Distributed Tracing:**
+
 ```bash
 # Jaeger
 docker run -d --name jaeger \
@@ -687,6 +724,7 @@ docker run -d --name jaeger \
 ```
 
 **2. Service Mesh (Istio):**
+
 ```bash
 # Install Istio
 istioctl install --set profile=demo
@@ -706,6 +744,7 @@ istioctl dashboard grafana
 ```
 
 **3. Log Aggregation:**
+
 ```bash
 # Centralized logging with ELK
 # See infrastructure/monitoring/README.md for full setup
@@ -727,6 +766,7 @@ curl -X POST "localhost:9200/logs-*/_search" -H 'Content-Type: application/json'
 ```
 
 **4. API Testing:**
+
 ```bash
 # Test service endpoints
 # Install: npm install -g newman
@@ -744,24 +784,29 @@ pact-broker can-i-deploy \
 ## ⚠️ Anti-Patterns and Common Pitfalls
 
 ### 1. **Distributed Monolith**
+
 **Problem**: Microservices that are tightly coupled, requiring coordinated deployments.
 
 **Signs:**
+
 - Services call each other synchronously in chains
 - Shared database across services
 - Changes require updates to multiple services
 - Can't deploy services independently
 
 **Solution:**
+
 - Use async communication (events, message queues)
 - Each service owns its data
 - Define clear service boundaries (Domain-Driven Design)
 - Implement API versioning
 
 ### 2. **Chatty Services**
+
 **Problem**: Too many network calls between services.
 
 **Example:**
+
 ```python
 # BAD: Multiple calls to get user details
 user = get_user(user_id)          # Call 1
@@ -771,6 +816,7 @@ orders = get_orders(user_id)       # Call 4
 ```
 
 **Solution:**
+
 ```python
 # GOOD: Aggregate data in backend-for-frontend (BFF)
 user_data = get_user_aggregate(user_id)  # Single call returns all data
@@ -787,33 +833,41 @@ query {
 ```
 
 ### 3. **Lack of Ownership**
+
 **Problem**: No clear team ownership of services.
 
 **Consequences:**
+
 - Bug fixing delays (who should fix it?)
 - No one monitors service health
 - Code quality degradation
 
 **Solution:**
+
 - Each team owns specific services end-to-end
 - Teams handle development, deployment, monitoring, and support
 - Clear documentation of ownership (RACI matrix)
 
 ### 4. **Death by a Thousand Cuts (Nano-services)**
+
 **Problem**: Services too small, creating excessive overhead.
 
 **Example**: Separate services for:
+
 - UserName Service
 - UserEmail Service
 - UserAddress Service
 
 **Solution:**
+
 - Combine into UserService
 - Services should align with business capabilities
 - Consider team size (two-pizza team rule)
 
 ### 5. **Ignoring the Fallacies of Distributed Computing**
+
 **Fallacies:**
+
 1. The network is reliable
 2. Latency is zero
 3. Bandwidth is infinite
@@ -824,21 +878,25 @@ query {
 8. The network is homogeneous
 
 **Solution:**
+
 - Implement retries, timeouts, circuit breakers
 - Design for failure
 - Encrypt data in transit
 - Monitor network performance
 
 ### 6. **Shared Database**
+
 **Problem**: Multiple services accessing same database.
 
 **Issues:**
+
 - Tight coupling
 - Schema changes affect multiple services
 - Can't scale services independently
 - Database becomes bottleneck
 
 **Solution:**
+
 ```
 BAD:  Service A ──┐
                   ├──> Shared DB
@@ -851,9 +909,11 @@ GOOD: Service A ──> DB A
 ```
 
 ### 7. **Treating Network Calls Like Local Calls**
+
 **Problem**: Not handling network failures gracefully.
 
 **Bad Example:**
+
 ```python
 def get_order_details(order_id):
     user = user_service.get_user(order.user_id)  # What if this fails?
@@ -861,6 +921,7 @@ def get_order_details(order_id):
 ```
 
 **Good Example:**
+
 ```python
 def get_order_details(order_id):
     try:
@@ -878,12 +939,13 @@ def get_order_details(order_id):
     return {"order": order, "user": user}
 ```
 
-## 💡 Interview Questions
+## 💡 Common Questions
 
 ### Basic Level
 
 **Q1: What are microservices?**
 **A:** Microservices is an architectural style where an application is composed of small, independent services that:
+
 - Focus on specific business capabilities
 - Can be deployed independently
 - Communicate via APIs (REST, gRPC, events)
@@ -892,6 +954,7 @@ def get_order_details(order_id):
 
 **Q2: What are the main differences between monolith and microservices?**
 **A:**
+
 - **Deployment**: Monolith = all-or-nothing; Microservices = independent
 - **Scaling**: Monolith = scale entire app; Microservices = scale specific services
 - **Technology**: Monolith = single stack; Microservices = polyglot
@@ -900,6 +963,7 @@ def get_order_details(order_id):
 
 **Q3: What is an API Gateway?**
 **A:** An API Gateway is the single entry point for all client requests. It:
+
 - Routes requests to appropriate services
 - Handles authentication and authorization
 - Implements rate limiting
@@ -909,6 +973,7 @@ def get_order_details(order_id):
 
 **Q4: What is service discovery?**
 **A:** Service discovery is the mechanism for services to find each other dynamically:
+
 - Services register themselves on startup
 - Other services query registry to find instances
 - Handles dynamic scaling (instances come and go)
@@ -916,6 +981,7 @@ def get_order_details(order_id):
 
 **Q5: What communication patterns exist in microservices?**
 **A:**
+
 1. **Synchronous**: REST, gRPC, GraphQL (request-response)
 2. **Asynchronous**: Message queues, Pub/Sub, Event streaming
 3. **Hybrid**: Combination based on use case
@@ -926,11 +992,13 @@ def get_order_details(order_id):
 **A:** Circuit Breaker prevents cascading failures by monitoring service calls:
 
 **States:**
+
 - **Closed**: Normal operation, calls pass through
 - **Open**: Too many failures, reject calls immediately (fail fast)
 - **Half-Open**: After timeout, allow test calls to check recovery
 
 **Implementation:**
+
 ```python
 States: Closed → Open (on failures) → Half-Open (after timeout) → Closed (if successful)
 
@@ -944,16 +1012,19 @@ Benefits:
 **A:**
 
 **Orchestration** (Centralized):
+
 - Central coordinator controls flow
 - Services called in sequence
 - Example: Order service orchestrates inventory → payment → shipping
 
 **Choreography** (Decentralized):
+
 - Services react to events independently
 - No central controller
 - Example: Order created event → Inventory service reserves → Payment service charges
 
 **When to use:**
+
 - Orchestration: Complex workflows, need transaction control
 - Choreography: Loose coupling, scalability, flexibility
 
@@ -961,10 +1032,12 @@ Benefits:
 **A:** Use **Saga Pattern**:
 
 **Two approaches:**
+
 1. **Orchestration-based**: Central coordinator manages steps and compensations
 2. **Choreography-based**: Services emit events, others react
 
 **Example:**
+
 ```
 Order Saga:
 1. Reserve inventory
@@ -978,6 +1051,7 @@ If step 2 fails:
 
 **Q9: What is eventual consistency?**
 **A:** In microservices, data across services becomes consistent eventually, not immediately:
+
 - Services have their own databases
 - Updates propagate via events/messages
 - Temporary inconsistency is acceptable
@@ -987,6 +1061,7 @@ If step 2 fails:
 
 **Q10: How do you test microservices?**
 **A:**
+
 1. **Unit Tests**: Test individual service logic with mocks
 2. **Integration Tests**: Test service with real dependencies (DB, message queue)
 3. **Contract Tests**: Verify API contracts between services (Pact)
@@ -1000,6 +1075,7 @@ If step 2 fails:
 **A:**
 
 **Services:**
+
 1. **User Service**: Authentication, profiles, preferences
 2. **Product Service**: Catalog, search, inventory
 3. **Order Service**: Order creation, status tracking
@@ -1009,6 +1085,7 @@ If step 2 fails:
 7. **Recommendation Service**: Product recommendations (ML)
 
 **Infrastructure:**
+
 ```
 Clients → API Gateway → Load Balancer → Services
                               ↓
@@ -1026,6 +1103,7 @@ Clients → API Gateway → Load Balancer → Services
 ```
 
 **Data Flow:**
+
 - Synchronous: API Gateway → Services (REST/gRPC)
 - Asynchronous: Services → Kafka → Services (events)
 
@@ -1035,23 +1113,27 @@ Clients → API Gateway → Load Balancer → Services
 **Strategies:**
 
 1. **URL Versioning**:
+
 ```
 /api/v1/users
 /api/v2/users
 ```
 
 2. **Header Versioning**:
+
 ```
 GET /api/users
 Accept: application/vnd.company.v1+json
 ```
 
 3. **Query Parameter**:
+
 ```
 /api/users?version=1
 ```
 
 **Best Practices:**
+
 - Support multiple versions simultaneously
 - Deprecate old versions gradually (6-12 months)
 - Document breaking changes
@@ -1062,6 +1144,7 @@ Accept: application/vnd.company.v1+json
 **A:** Strangler pattern gradually replaces a monolith with microservices:
 
 **Steps:**
+
 1. Identify bounded context/feature to extract
 2. Build new microservice
 3. Route new requests to microservice
@@ -1071,6 +1154,7 @@ Accept: application/vnd.company.v1+json
 7. Repeat for next feature
 
 **Implementation:**
+
 ```
         ┌─────────────┐
 Client →│ API Gateway │→ Routing Logic:
@@ -1081,6 +1165,7 @@ Client →│ API Gateway │→ Routing Logic:
 ```
 
 **Benefits:**
+
 - Low risk (incremental migration)
 - Can test in production
 - Easy rollback
@@ -1091,6 +1176,7 @@ Client →│ API Gateway │→ Routing Logic:
 **Layers:**
 
 1. **API Gateway Level**:
+
 ```
 - Client authentication (OAuth 2.0, JWT)
 - Rate limiting
@@ -1099,6 +1185,7 @@ Client →│ API Gateway │→ Routing Logic:
 ```
 
 2. **Service-to-Service**:
+
 ```
 - mTLS (mutual TLS) for encrypted communication
 - Service mesh (Istio) for automatic mTLS
@@ -1106,6 +1193,7 @@ Client →│ API Gateway │→ Routing Logic:
 ```
 
 3. **Application Level**:
+
 ```python
 # JWT validation
 from flask import request
@@ -1129,6 +1217,7 @@ def get_orders():
 ```
 
 4. **Data Level**:
+
 ```
 - Encrypt sensitive data at rest
 - Use secrets management (Vault, AWS Secrets Manager)
@@ -1139,36 +1228,39 @@ def get_orders():
 **A:**
 
 **Four Golden Signals (SRE):**
+
 1. **Latency**: Response time (p50, p95, p99)
 2. **Traffic**: Requests per second
 3. **Errors**: Error rate
 4. **Saturation**: Resource utilization
 
 **Tools Setup:**
+
 ```yaml
 Metrics:
-- Prometheus: Collect metrics from all services
-- Grafana: Visualize metrics, create dashboards
-- Alertmanager: Send alerts on threshold breaches
+  - Prometheus: Collect metrics from all services
+  - Grafana: Visualize metrics, create dashboards
+  - Alertmanager: Send alerts on threshold breaches
 
 Logs:
-- Filebeat: Collect logs from containers
-- Logstash: Parse and enrich logs
-- Elasticsearch: Store logs
-- Kibana: Search and analyze logs
+  - Filebeat: Collect logs from containers
+  - Logstash: Parse and enrich logs
+  - Elasticsearch: Store logs
+  - Kibana: Search and analyze logs
 
 Traces:
-- Jaeger/Zipkin: Distributed tracing
-- Track requests across services
-- Identify bottlenecks
+  - Jaeger/Zipkin: Distributed tracing
+  - Track requests across services
+  - Identify bottlenecks
 
 APM:
-- New Relic, Datadog, or Elastic APM
-- End-to-end monitoring
-- Performance insights
+  - New Relic, Datadog, or Elastic APM
+  - End-to-end monitoring
+  - Performance insights
 ```
 
 **Debug Workflow:**
+
 ```
 1. Alert fires (high error rate)
 2. Check Grafana dashboard (which service?)
@@ -1183,28 +1275,33 @@ APM:
 **A:** Service mesh is infrastructure layer for service-to-service communication:
 
 **Features:**
+
 - Traffic management (load balancing, retries, circuit breakers)
 - Security (mTLS, authentication)
 - Observability (metrics, traces, logs)
 - Policy enforcement
 
 **Popular Options:**
+
 - **Istio**: Feature-rich, complex
 - **Linkerd**: Lightweight, simpler
 - **Consul Connect**: HashiCorp ecosystem
 
 **When to use:**
+
 - Many services (>10-20)
 - Need consistent security/observability
 - Complex traffic management requirements
 - Multiple teams managing services
 
 **When NOT to use:**
+
 - Small number of services (<10)
 - Simple architecture
 - Limited resources (service mesh adds overhead)
 
 ## 🔗 Related Topics
+
 - [Event-Driven Architecture](../event-driven/README.md)
 - [Serverless Architecture](../serverless/README.md)
 - [Monorepo](../monorepo/README.md) - Managing microservices code

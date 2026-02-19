@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of Terraform as architectural blueprints for buildings:
+
 - **Blueprints (Terraform Code)** - Written specifications of what you want
 - **Construction Team (Terraform Engine)** - Builds according to blueprints
 - **Building Inspector (State File)** - Tracks what's been built
@@ -15,6 +17,7 @@ Think of Terraform as architectural blueprints for buildings:
 - **Multiple Contractors (Providers)** - Can work with different services (AWS, GCP, Azure)
 
 ### Core Benefits
+
 - **Declarative** - Describe desired state, Terraform figures out how
 - **Multi-Cloud** - Single tool for AWS, GCP, Azure, and 100+ providers
 - **Version Control** - Infrastructure definitions in Git
@@ -25,6 +28,7 @@ Think of Terraform as architectural blueprints for buildings:
 ## 🏗️ Terraform Core Concepts
 
 ### 1. HCL (HashiCorp Configuration Language)
+
 The language used to write Terraform configurations:
 
 ```hcl
@@ -41,12 +45,14 @@ resource "aws_instance" "web" {
 ```
 
 **Key Elements:**
+
 - `resource` - Infrastructure object to manage
 - `"aws_instance"` - Resource type
 - `"web"` - Resource name (local identifier)
 - Block `{}` - Configuration parameters
 
 ### 2. Providers
+
 Plugins that interact with cloud platforms and services:
 
 ```hcl
@@ -70,6 +76,7 @@ provider "azurerm" {
 ```
 
 **Popular Providers:**
+
 - AWS, GCP, Azure (Cloud platforms)
 - Kubernetes, Docker (Container orchestration)
 - GitHub, GitLab (Version control)
@@ -77,6 +84,7 @@ provider "azurerm" {
 - 1000+ community providers
 
 ### 3. Resources
+
 Infrastructure components you want to create:
 
 ```hcl
@@ -105,9 +113,11 @@ resource "aws_security_group" "web" {
 ```
 
 ### 4. Variables
+
 Make configurations reusable and flexible:
 
 **variables.tf**
+
 ```hcl
 variable "instance_type" {
   description = "EC2 instance type"
@@ -134,6 +144,7 @@ variable "tags" {
 ```
 
 **Usage:**
+
 ```hcl
 resource "aws_instance" "app" {
   ami           = "ami-0c55b159cbfafe1f0"
@@ -150,6 +161,7 @@ resource "aws_instance" "app" {
 ```
 
 **Passing Variables:**
+
 ```bash
 # Command line
 terraform apply -var="environment=production"
@@ -164,9 +176,11 @@ export TF_VAR_environment="production"
 ```
 
 ### 5. Outputs
+
 Extract values from your infrastructure:
 
 **outputs.tf**
+
 ```hcl
 output "instance_ip" {
   description = "Public IP of the instance"
@@ -186,6 +200,7 @@ output "database_endpoint" {
 ```
 
 **Access Outputs:**
+
 ```bash
 # After apply
 terraform output instance_ip
@@ -195,6 +210,7 @@ terraform output -json  # Get all outputs as JSON
 ```
 
 ### 6. Data Sources
+
 Query existing infrastructure:
 
 ```hcl
@@ -222,6 +238,7 @@ resource "aws_instance" "app" {
 ```
 
 ### 7. State File
+
 Terraform tracks your infrastructure in a state file:
 
 ```json
@@ -247,12 +264,14 @@ Terraform tracks your infrastructure in a state file:
 ```
 
 **State Management:**
+
 - Default: `terraform.tfstate` (local file)
 - Best Practice: Remote backend (S3, Terraform Cloud)
 - **Never edit state manually**
 - Use `terraform state` commands
 
 **Remote State (S3 Backend):**
+
 ```hcl
 terraform {
   backend "s3" {
@@ -266,9 +285,11 @@ terraform {
 ```
 
 ### 8. Modules
+
 Reusable Terraform configurations:
 
 **Directory Structure:**
+
 ```
 modules/
   web-server/
@@ -279,6 +300,7 @@ main.tf
 ```
 
 **Module Definition (modules/web-server/main.tf):**
+
 ```hcl
 variable "instance_type" {
   type = string
@@ -303,6 +325,7 @@ output "instance_id" {
 ```
 
 **Using Module (main.tf):**
+
 ```hcl
 module "web_server" {
   source        = "./modules/web-server"
@@ -317,6 +340,7 @@ output "web_server_id" {
 ```
 
 **Public Modules:**
+
 ```hcl
 # From Terraform Registry
 module "vpc" {
@@ -335,6 +359,7 @@ module "vpc" {
 ## 🔄 Terraform Workflow
 
 ### 1. Write Configuration
+
 Create `.tf` files defining your infrastructure:
 
 ```hcl
@@ -346,6 +371,7 @@ resource "aws_instance" "web" {
 ```
 
 ### 2. Initialize (`terraform init`)
+
 Download provider plugins and initialize backend:
 
 ```bash
@@ -353,12 +379,14 @@ terraform init
 ```
 
 **What it does:**
+
 - Downloads provider plugins
 - Initializes backend
 - Downloads modules
 - Creates `.terraform/` directory
 
 ### 3. Plan (`terraform plan`)
+
 Preview changes before applying:
 
 ```bash
@@ -366,6 +394,7 @@ terraform plan
 ```
 
 **Output Example:**
+
 ```
 Terraform will perform the following actions:
 
@@ -381,12 +410,14 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 ```
 
 **Save Plan:**
+
 ```bash
 terraform plan -out=tfplan
 terraform apply tfplan  # Apply saved plan
 ```
 
 ### 4. Apply (`terraform apply`)
+
 Create/update infrastructure:
 
 ```bash
@@ -394,11 +425,13 @@ terraform apply
 ```
 
 **With auto-approve:**
+
 ```bash
 terraform apply -auto-approve
 ```
 
 ### 5. Destroy (`terraform destroy`)
+
 Remove all managed infrastructure:
 
 ```bash
@@ -406,6 +439,7 @@ terraform destroy
 ```
 
 **Destroy specific resource:**
+
 ```bash
 terraform destroy -target=aws_instance.web
 ```
@@ -415,6 +449,7 @@ terraform destroy -target=aws_instance.web
 ### Example 1: Complete AWS Web Application
 
 **Directory Structure:**
+
 ```
 terraform-web-app/
   main.tf
@@ -424,6 +459,7 @@ terraform-web-app/
 ```
 
 **main.tf:**
+
 ```hcl
 terraform {
   required_version = ">= 1.5.0"
@@ -621,6 +657,7 @@ data "aws_ami" "amazon_linux" {
 ```
 
 **variables.tf:**
+
 ```hcl
 variable "aws_region" {
   description = "AWS region"
@@ -670,6 +707,7 @@ variable "admin_cidr_blocks" {
 ```
 
 **outputs.tf:**
+
 ```hcl
 output "vpc_id" {
   description = "VPC ID"
@@ -693,6 +731,7 @@ output "instance_public_ips" {
 ```
 
 **terraform.tfvars:**
+
 ```hcl
 environment = "production"
 instance_type = "t2.small"
@@ -702,6 +741,7 @@ admin_cidr_blocks = ["203.0.113.0/24"]
 ```
 
 **Deploy:**
+
 ```bash
 terraform init
 terraform plan
@@ -848,6 +888,7 @@ terraform workspace list
 ```
 
 **Configuration with workspaces:**
+
 ```hcl
 locals {
   environment = terraform.workspace
@@ -884,6 +925,7 @@ resource "aws_instance" "app" {
 #### 1. **State Lock Errors**
 
 **Error:**
+
 ```
 Error: Error acquiring the state lock
 Error message: ConditionalCheckFailedException
@@ -895,11 +937,13 @@ Lock Info:
 ```
 
 **Causes:**
+
 - Previous operation crashed
 - Multiple users/CI jobs running simultaneously
 - Stale lock from failed operation
 
 **Solutions:**
+
 ```bash
 # Option 1: Wait for lock to expire (usually 5-15 minutes)
 
@@ -925,17 +969,20 @@ terraform {
 #### 2. **Resource Already Exists**
 
 **Error:**
+
 ```
 Error: Error creating S3 bucket: BucketAlreadyExists
 Error: creating EC2 Instance: InvalidKeyPair.Duplicate
 ```
 
 **Causes:**
+
 - Resource created outside Terraform
 - State file out of sync
 - Previous failed apply
 
 **Solutions:**
+
 ```bash
 # Option 1: Import existing resource
 terraform import aws_s3_bucket.data my-existing-bucket
@@ -955,6 +1002,7 @@ terraform refresh
 #### 3. **Provider Authentication Issues**
 
 **Error:**
+
 ```
 Error: error configuring Terraform AWS Provider: no valid credential sources
 Error: google: could not find default credentials
@@ -963,6 +1011,7 @@ Error: google: could not find default credentials
 **Solutions:**
 
 **AWS:**
+
 ```bash
 # Option 1: Environment variables
 export AWS_ACCESS_KEY_ID="your-access-key"
@@ -988,6 +1037,7 @@ provider "aws" {
 ```
 
 **GCP:**
+
 ```bash
 # Option 1: Application Default Credentials
 gcloud auth application-default login
@@ -1006,12 +1056,14 @@ provider "google" {
 #### 4. **Dependency Errors**
 
 **Error:**
+
 ```
 Error: Reference to undeclared resource
 Error: Cycle detected in resource dependencies
 ```
 
 **Solutions:**
+
 ```hcl
 # Use explicit depends_on when implicit dependency isn't working
 resource "aws_instance" "app" {
@@ -1041,6 +1093,7 @@ resource "aws_subnet" "new" {
 #### 5. **Module Errors**
 
 **Error:**
+
 ```
 Error: Module not installed
 Error: Failed to download module
@@ -1048,6 +1101,7 @@ Error: Unsupported argument in module call
 ```
 
 **Solutions:**
+
 ```bash
 # Reinitialize to download modules
 terraform init -upgrade
@@ -1074,12 +1128,14 @@ terraform get -update
 #### 6. **Variable Validation Errors**
 
 **Error:**
+
 ```
 Error: Invalid value for variable
 Error: Required variable not set
 ```
 
 **Solutions:**
+
 ```hcl
 # Add validation rules
 variable "instance_type" {
@@ -1108,12 +1164,14 @@ export TF_VAR_environment="prod"
 #### 7. **State Drift**
 
 **Error:**
+
 ```
 Warning: Resource has been modified outside Terraform
 Error: Provider configuration changed
 ```
 
 **Solutions:**
+
 ```bash
 # Detect drift
 terraform plan -refresh-only
@@ -1418,7 +1476,7 @@ jobs:
         run: terraform apply -auto-approve
 ```
 
-## 💡 Interview Questions
+## 💡 Common Questions
 
 ### Basic Level
 
@@ -1427,12 +1485,14 @@ jobs:
 
 **Q2: What is the difference between Terraform and CloudFormation?**
 **A:**
+
 - **Terraform**: Multi-cloud, uses HCL, open-source, provider-agnostic
 - **CloudFormation**: AWS-only, uses JSON/YAML, AWS-native integration
 - Both are declarative IaC tools
 
 **Q3: Explain the Terraform workflow.**
 **A:**
+
 1. **Write** - Create `.tf` configuration files
 2. **Init** - Initialize backend and download providers
 3. **Plan** - Preview changes before applying
@@ -1449,14 +1509,16 @@ jobs:
 
 **Q6: What are Terraform modules and why use them?**
 **A:** Modules are containers for multiple resources used together. Benefits:
+
 - Reusability
 - Encapsulation
 - Organization
 - Versioning
-Example: VPC module reused across environments.
+  Example: VPC module reused across environments.
 
 **Q7: How do you handle secrets in Terraform?**
 **A:**
+
 - Use environment variables: `TF_VAR_db_password`
 - Use secret management: AWS Secrets Manager, Vault
 - Mark outputs as sensitive: `sensitive = true`
@@ -1465,12 +1527,14 @@ Example: VPC module reused across environments.
 
 **Q8: Explain Terraform state locking.**
 **A:** State locking prevents concurrent modifications to state file. Implemented using:
+
 - DynamoDB table for S3 backend (AWS)
 - Built-in for Terraform Cloud
 - Prevents race conditions and corruption
 
 **Q9: What is the difference between `count` and `for_each`?**
 **A:**
+
 ```hcl
 # count - creates indexed list
 resource "aws_instance" "server" {
@@ -1484,10 +1548,12 @@ resource "aws_instance" "server" {
   # Creates: server["web"], server["app"], server["db"]
 }
 ```
+
 `for_each` is better when resources might be added/removed from middle.
 
 **Q10: How do you manage multiple environments?**
 **A:**
+
 - **Option 1**: Terraform workspaces (simple, same code)
 - **Option 2**: Separate directories (better for prod, different state files)
 - **Option 3**: Separate repositories (maximum isolation)
@@ -1497,24 +1563,27 @@ resource "aws_instance" "server" {
 **Q11: What are Terraform provisioners and when should you avoid them?**
 **A:** Provisioners run scripts on resources after creation (local-exec, remote-exec).
 **Avoid because:**
+
 - Not declarative
 - Error-prone
 - Hard to maintain
-**Better alternatives:**
+  **Better alternatives:**
 - User data scripts
 - Configuration management tools (Ansible)
 - Container images (pre-baked AMIs)
 
 **Q12: Explain Terraform's graph and dependency management.**
 **A:** Terraform builds a dependency graph of resources:
+
 - Implicit dependencies (references like `aws_subnet.main.id`)
 - Explicit dependencies (`depends_on`)
 - Parallel execution where possible
 - Proper ordering during create/destroy
-View with: `terraform graph`
+  View with: `terraform graph`
 
 **Q13: How do you perform a blue-green deployment with Terraform?**
 **A:**
+
 ```hcl
 # Create new (green) infrastructure
 resource "aws_instance" "green" {
@@ -1534,12 +1603,14 @@ resource "aws_lb_target_group_attachment" "active" {
 
 **Q14: What is the difference between `terraform taint` and `terraform apply -replace`?**
 **A:**
+
 - `terraform taint` (deprecated): Marked resource for recreation in state
 - `terraform apply -replace` (new): Immediately recreates resource
-Both force resource recreation, but `-replace` is preferred in Terraform 0.15.2+
+  Both force resource recreation, but `-replace` is preferred in Terraform 0.15.2+
 
 **Q15: How do you import existing infrastructure into Terraform?**
 **A:**
+
 ```bash
 # 1. Write resource block (without attributes)
 resource "aws_instance" "imported" {
@@ -1564,6 +1635,7 @@ import {
 
 **Q16: What strategies do you use for handling Terraform state drift?**
 **A:**
+
 - Regular `terraform plan` in CI/CD to detect drift
 - Use `-refresh-only` to safely update state
 - Implement resource policies to prevent manual changes
@@ -1573,6 +1645,7 @@ import {
 
 **Q17: How do you test Terraform code?**
 **A:**
+
 - **Static analysis**: `terraform validate`, `terraform fmt`
 - **Security scanning**: tfsec, Checkov, Terrascan
 - **Unit tests**: Terratest (Go), kitchen-terraform

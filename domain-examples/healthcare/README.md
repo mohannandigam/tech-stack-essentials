@@ -28,36 +28,36 @@ class PatientService {
       ...record,
       ssn: await this.encrypt(record.ssn),
       diagnosis: await this.encrypt(record.diagnosis),
-      medications: await this.encrypt(JSON.stringify(record.medications))
+      medications: await this.encrypt(JSON.stringify(record.medications)),
     };
-    
+
     // Store with audit log
     await this.db.transaction(async (tx) => {
-      await tx.insert('medical_records', encrypted);
-      await tx.insert('audit_log', {
+      await tx.insert("medical_records", encrypted);
+      await tx.insert("audit_log", {
         userId: this.currentUser.id,
-        action: 'CREATE_RECORD',
+        action: "CREATE_RECORD",
         patientId,
         timestamp: new Date(),
-        ipAddress: this.currentUser.ip
+        ipAddress: this.currentUser.ip,
       });
     });
-    
+
     return encrypted.id;
   }
-  
+
   async getRecord(patientId: string, recordId: string) {
     // Check access permissions
     await this.checkAccess(patientId, this.currentUser);
-    
+
     // Retrieve and decrypt
-    const record = await this.db.get('medical_records', recordId);
-    
+    const record = await this.db.get("medical_records", recordId);
+
     return {
       ...record,
       ssn: await this.decrypt(record.ssn),
       diagnosis: await this.decrypt(record.diagnosis),
-      medications: JSON.parse(await this.decrypt(record.medications))
+      medications: JSON.parse(await this.decrypt(record.medications)),
     };
   }
 }
@@ -89,7 +89,7 @@ class PatientService {
 
 ```typescript
 // src/models/patient.model.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const PatientSchema = z.object({
   id: z.string().uuid(),
@@ -97,7 +97,7 @@ export const PatientSchema = z.object({
   lastName: z.string().min(1).max(100),
   dateOfBirth: z.date(),
   ssn: z.string().regex(/^\d{3}-\d{2}-\d{4}$/), // Encrypted in storage
-  gender: z.enum(['male', 'female', 'other', 'prefer-not-to-say']),
+  gender: z.enum(["male", "female", "other", "prefer-not-to-say"]),
   email: z.string().email().optional(),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/),
   address: z.object({
@@ -105,20 +105,22 @@ export const PatientSchema = z.object({
     city: z.string(),
     state: z.string(),
     zipCode: z.string(),
-    country: z.string()
+    country: z.string(),
   }),
   emergencyContact: z.object({
     name: z.string(),
     relationship: z.string(),
-    phone: z.string()
+    phone: z.string(),
   }),
-  insuranceInfo: z.object({
-    provider: z.string(),
-    policyNumber: z.string(),
-    groupNumber: z.string().optional()
-  }).optional(),
+  insuranceInfo: z
+    .object({
+      provider: z.string(),
+      policyNumber: z.string(),
+      groupNumber: z.string().optional(),
+    })
+    .optional(),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 });
 
 export const MedicalRecordSchema = z.object({
@@ -127,32 +129,38 @@ export const MedicalRecordSchema = z.object({
   providerId: z.string().uuid(),
   visitDate: z.date(),
   chiefComplaint: z.string(),
-  diagnosis: z.array(z.object({
-    code: z.string(), // ICD-10 code
-    description: z.string(),
-    severity: z.enum(['mild', 'moderate', 'severe', 'critical'])
-  })),
-  vitalSigns: z.object({
-    temperature: z.number().min(90).max(110),
-    bloodPressure: z.object({
-      systolic: z.number(),
-      diastolic: z.number()
+  diagnosis: z.array(
+    z.object({
+      code: z.string(), // ICD-10 code
+      description: z.string(),
+      severity: z.enum(["mild", "moderate", "severe", "critical"]),
     }),
-    heartRate: z.number().min(30).max(220),
-    respiratoryRate: z.number(),
-    oxygenSaturation: z.number().min(0).max(100)
-  }).optional(),
-  medications: z.array(z.object({
-    name: z.string(),
-    dosage: z.string(),
-    frequency: z.string(),
-    startDate: z.date(),
-    endDate: z.date().optional()
-  })),
+  ),
+  vitalSigns: z
+    .object({
+      temperature: z.number().min(90).max(110),
+      bloodPressure: z.object({
+        systolic: z.number(),
+        diastolic: z.number(),
+      }),
+      heartRate: z.number().min(30).max(220),
+      respiratoryRate: z.number(),
+      oxygenSaturation: z.number().min(0).max(100),
+    })
+    .optional(),
+  medications: z.array(
+    z.object({
+      name: z.string(),
+      dosage: z.string(),
+      frequency: z.string(),
+      startDate: z.date(),
+      endDate: z.date().optional(),
+    }),
+  ),
   labResults: z.array(z.string()).optional(),
   notes: z.string(),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 });
 
 export type Patient = z.infer<typeof PatientSchema>;
@@ -161,36 +169,44 @@ export type MedicalRecord = z.infer<typeof MedicalRecordSchema>;
 
 ```typescript
 // src/services/patient-record.service.ts
-import crypto from 'crypto';
-import { Pool } from 'pg';
-import { Patient, MedicalRecord } from '../models/patient.model';
+import crypto from "crypto";
+import { Pool } from "pg";
+import { Patient, MedicalRecord } from "../models/patient.model";
 
 export class PatientRecordService {
-  private readonly ALGORITHM = 'aes-256-gcm';
+  private readonly ALGORITHM = "aes-256-gcm";
   private readonly encryptionKey: Buffer;
 
   constructor(
     private readonly db: Pool,
-    private readonly auditService: AuditService
+    private readonly auditService: AuditService,
   ) {
     // In production, use AWS KMS, Azure Key Vault, or similar
-    this.encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+    this.encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY!, "hex");
   }
 
   // Encrypt sensitive PHI data
-  private encrypt(text: string): { encrypted: string; iv: string; tag: string } {
+  private encrypt(text: string): {
+    encrypted: string;
+    iv: string;
+    tag: string;
+  } {
     const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(this.ALGORITHM, this.encryptionKey, iv);
+    const cipher = crypto.createCipheriv(
+      this.ALGORITHM,
+      this.encryptionKey,
+      iv,
+    );
 
-    let encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
+    let encrypted = cipher.update(text, "utf8", "hex");
+    encrypted += cipher.final("hex");
 
     const tag = cipher.getAuthTag();
 
     return {
       encrypted,
-      iv: iv.toString('hex'),
-      tag: tag.toString('hex')
+      iv: iv.toString("hex"),
+      tag: tag.toString("hex"),
     };
   }
 
@@ -199,26 +215,26 @@ export class PatientRecordService {
     const decipher = crypto.createDecipheriv(
       this.ALGORITHM,
       this.encryptionKey,
-      Buffer.from(iv, 'hex')
+      Buffer.from(iv, "hex"),
     );
 
-    decipher.setAuthTag(Buffer.from(tag, 'hex'));
+    decipher.setAuthTag(Buffer.from(tag, "hex"));
 
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
+    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    decrypted += decipher.final("utf8");
 
     return decrypted;
   }
 
   // Create patient with encrypted sensitive data
   async createPatient(
-    patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>,
-    userId: string
+    patient: Omit<Patient, "id" | "createdAt" | "updatedAt">,
+    userId: string,
   ): Promise<string> {
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Encrypt SSN
       const encryptedSSN = this.encrypt(patient.ssn);
@@ -242,8 +258,8 @@ export class PatientRecordService {
           patient.phone,
           JSON.stringify(patient.address),
           JSON.stringify(patient.emergencyContact),
-          JSON.stringify(patient.insuranceInfo)
-        ]
+          JSON.stringify(patient.insuranceInfo),
+        ],
       );
 
       const patientId = result.rows[0].id;
@@ -251,17 +267,17 @@ export class PatientRecordService {
       // Audit log
       await this.auditService.log({
         userId,
-        action: 'CREATE_PATIENT',
-        resourceType: 'patient',
+        action: "CREATE_PATIENT",
+        resourceType: "patient",
         resourceId: patientId,
-        details: { firstName: patient.firstName, lastName: patient.lastName }
+        details: { firstName: patient.firstName, lastName: patient.lastName },
       });
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       return patientId;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -271,15 +287,15 @@ export class PatientRecordService {
   // Get patient with decrypted data (with access control)
   async getPatient(patientId: string, userId: string): Promise<Patient> {
     // Check access permissions
-    await this.checkAccess(patientId, userId, 'READ_PATIENT');
+    await this.checkAccess(patientId, userId, "READ_PATIENT");
 
     const result = await this.db.query(
       `SELECT * FROM patients WHERE id = $1 AND deleted_at IS NULL`,
-      [patientId]
+      [patientId],
     );
 
     if (result.rows.length === 0) {
-      throw new Error('Patient not found');
+      throw new Error("Patient not found");
     }
 
     const row = result.rows[0];
@@ -290,9 +306,9 @@ export class PatientRecordService {
     // Audit log
     await this.auditService.log({
       userId,
-      action: 'READ_PATIENT',
-      resourceType: 'patient',
-      resourceId: patientId
+      action: "READ_PATIENT",
+      resourceType: "patient",
+      resourceId: patientId,
     });
 
     return {
@@ -308,25 +324,27 @@ export class PatientRecordService {
       emergencyContact: row.emergency_contact,
       insuranceInfo: row.insurance_info,
       createdAt: row.created_at,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
     };
   }
 
   // Create medical record with encryption
   async createMedicalRecord(
-    record: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt'>,
-    userId: string
+    record: Omit<MedicalRecord, "id" | "createdAt" | "updatedAt">,
+    userId: string,
   ): Promise<string> {
-    await this.checkAccess(record.patientId, userId, 'CREATE_RECORD');
+    await this.checkAccess(record.patientId, userId, "CREATE_RECORD");
 
     const client = await this.db.connect();
 
     try {
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       // Encrypt diagnosis and medications
       const encryptedDiagnosis = this.encrypt(JSON.stringify(record.diagnosis));
-      const encryptedMedications = this.encrypt(JSON.stringify(record.medications));
+      const encryptedMedications = this.encrypt(
+        JSON.stringify(record.medications),
+      );
       const encryptedNotes = this.encrypt(record.notes);
 
       const result = await client.query(
@@ -354,8 +372,8 @@ export class PatientRecordService {
           JSON.stringify(record.labResults),
           encryptedNotes.encrypted,
           encryptedNotes.iv,
-          encryptedNotes.tag
-        ]
+          encryptedNotes.tag,
+        ],
       );
 
       const recordId = result.rows[0].id;
@@ -363,17 +381,17 @@ export class PatientRecordService {
       // Audit log
       await this.auditService.log({
         userId,
-        action: 'CREATE_MEDICAL_RECORD',
-        resourceType: 'medical_record',
+        action: "CREATE_MEDICAL_RECORD",
+        resourceType: "medical_record",
         resourceId: recordId,
-        details: { patientId: record.patientId, visitDate: record.visitDate }
+        details: { patientId: record.patientId, visitDate: record.visitDate },
       });
 
-      await client.query('COMMIT');
+      await client.query("COMMIT");
 
       return recordId;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
@@ -384,23 +402,23 @@ export class PatientRecordService {
   private async checkAccess(
     patientId: string,
     userId: string,
-    action: string
+    action: string,
   ): Promise<void> {
     const result = await this.db.query(
       `SELECT can_access($1, $2, $3) as allowed`,
-      [userId, patientId, action]
+      [userId, patientId, action],
     );
 
     if (!result.rows[0].allowed) {
       await this.auditService.log({
         userId,
-        action: 'ACCESS_DENIED',
-        resourceType: 'patient',
+        action: "ACCESS_DENIED",
+        resourceType: "patient",
         resourceId: patientId,
-        details: { attemptedAction: action }
+        details: { attemptedAction: action },
       });
 
-      throw new Error('Access denied');
+      throw new Error("Access denied");
     }
   }
 }
@@ -427,8 +445,8 @@ export class AuditService {
         JSON.stringify(entry.details),
         // These would come from request context
         null, // IP address
-        null  // User agent
-      ]
+        null, // User agent
+      ],
     );
   }
 }
@@ -1048,7 +1066,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 ## 🐳 Docker Compose Setup
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -1122,9 +1140,10 @@ volumes:
 ## 🧪 Testing Strategies
 
 ### Unit Tests
+
 ```typescript
 // __tests__/patient-record.service.test.ts
-describe('PatientRecordService', () => {
+describe("PatientRecordService", () => {
   let service: PatientRecordService;
   let mockDb: jest.Mocked<Pool>;
   let mockAudit: jest.Mocked<AuditService>;
@@ -1135,10 +1154,10 @@ describe('PatientRecordService', () => {
     service = new PatientRecordService(mockDb, mockAudit);
   });
 
-  describe('createPatient', () => {
-    it('should encrypt SSN before storing', async () => {
+  describe("createPatient", () => {
+    it("should encrypt SSN before storing", async () => {
       const patient = createMockPatient();
-      const userId = 'user-123';
+      const userId = "user-123";
 
       await service.createPatient(patient, userId);
 
@@ -1148,59 +1167,65 @@ describe('PatientRecordService', () => {
       expect(dbCall[1][5]).toBeTruthy(); // Tag
     });
 
-    it('should create audit log entry', async () => {
+    it("should create audit log entry", async () => {
       const patient = createMockPatient();
-      const userId = 'user-123';
+      const userId = "user-123";
 
       await service.createPatient(patient, userId);
 
       expect(mockAudit.log).toHaveBeenCalledWith({
         userId,
-        action: 'CREATE_PATIENT',
-        resourceType: 'patient',
+        action: "CREATE_PATIENT",
+        resourceType: "patient",
         resourceId: expect.any(String),
         details: expect.objectContaining({
           firstName: patient.firstName,
-          lastName: patient.lastName
-        })
+          lastName: patient.lastName,
+        }),
       });
     });
   });
 
-  describe('getPatient', () => {
-    it('should deny access when user lacks permission', async () => {
+  describe("getPatient", () => {
+    it("should deny access when user lacks permission", async () => {
       mockDb.query.mockResolvedValueOnce({
-        rows: [{ allowed: false }]
+        rows: [{ allowed: false }],
       });
 
       await expect(
-        service.getPatient('patient-123', 'unauthorized-user')
-      ).rejects.toThrow('Access denied');
+        service.getPatient("patient-123", "unauthorized-user"),
+      ).rejects.toThrow("Access denied");
     });
 
-    it('should decrypt sensitive data', async () => {
-      const encryptedData = service['encrypt']('123-45-6789');
+    it("should decrypt sensitive data", async () => {
+      const encryptedData = service["encrypt"]("123-45-6789");
       mockDb.query
         .mockResolvedValueOnce({ rows: [{ allowed: true }] })
         .mockResolvedValueOnce({
-          rows: [{
-            id: 'patient-123',
-            ssn_encrypted: encryptedData.encrypted,
-            ssn_iv: encryptedData.iv,
-            ssn_tag: encryptedData.tag,
-            // ... other fields
-          }]
+          rows: [
+            {
+              id: "patient-123",
+              ssn_encrypted: encryptedData.encrypted,
+              ssn_iv: encryptedData.iv,
+              ssn_tag: encryptedData.tag,
+              // ... other fields
+            },
+          ],
         });
 
-      const patient = await service.getPatient('patient-123', 'authorized-user');
+      const patient = await service.getPatient(
+        "patient-123",
+        "authorized-user",
+      );
 
-      expect(patient.ssn).toBe('123-45-6789');
+      expect(patient.ssn).toBe("123-45-6789");
     });
   });
 });
 ```
 
 ### Integration Tests
+
 ```python
 # tests/integration/test_appointment_service.py
 import pytest

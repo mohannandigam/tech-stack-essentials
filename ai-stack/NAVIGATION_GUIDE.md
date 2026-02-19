@@ -7,18 +7,21 @@ This comprehensive guide explains how AI/ML teams work together to build product
 ## 🎯 What You'll Learn
 
 ### Understanding Team Dynamics
+
 - How Data Engineers, Data Scientists, and ML Engineers collaborate
 - Daily workflows and responsibilities for each role
 - Communication patterns and handoff processes
 - Tools and technologies used by each team
 
 ### Technical Implementation
+
 - Complete ETL pipeline from Snowflake to Databricks
 - Building anomaly detection models with Unity Catalog
 - Production deployment with Kubernetes
 - Monitoring and performance optimization
 
 ### Real-World Use Cases
+
 - Fraud detection in financial services
 - Product recommendations for e-commerce
 - Patient risk prediction in healthcare
@@ -29,13 +32,17 @@ This comprehensive guide explains how AI/ML teams work together to build product
 ### Choose Your Path:
 
 #### 🚀 **Quick Start (30 minutes)**
+
 Read the executive summaries and code snippets:
+
 1. [Team Structure Overview](./TEAM_STRUCTURE.md#team-structure-and-roles) - 10 min
 2. [Data Flow Diagram](./TEAM_STRUCTURE.md#data-flow-from-raw-data-to-production-models) - 5 min
 3. [Example: E-Commerce Recommendations](./TEAM_STRUCTURE_PART3.md#example-1-e-commerce---product-recommendation-system) - 15 min
 
 #### 📚 **Deep Dive (2-3 hours)**
+
 Follow the complete journey from data to production:
+
 1. **[Part 1: Team Structure](./TEAM_STRUCTURE.md)** (45 min)
    - Learn about each role and their responsibilities
    - See real code examples from daily work
@@ -54,21 +61,25 @@ Follow the complete journey from data to production:
 #### 🎓 **Role-Specific Learning**
 
 **For Data Engineers:**
+
 - [Building ETL Pipelines](./TEAM_STRUCTURE.md#step-2-etl-pipeline-data-engineer)
 - [Data Quality Validation](./TEAM_STRUCTURE.md#silver-layer-data-cleaning-and-validation)
 - [Feature Tables in Gold Layer](./TEAM_STRUCTURE.md#gold-layer-feature-engineering-for-ml)
 
 **For Data Scientists:**
+
 - [Model Training Workflow](./TEAM_STRUCTURE_PART2.md#step-4-model-training-data-scientist)
 - [Experiment Tracking with MLflow](./TEAM_STRUCTURE_PART2.md#model-training-with-mlflow)
 - [Feature Engineering Examples](./TEAM_STRUCTURE_PART3.md#phase-2-model-development-data-scientist---week-3-4)
 
 **For ML Engineers:**
+
 - [Production API Design](./TEAM_STRUCTURE.md#example-daily-tasks)
 - [Kubernetes Deployment](./TEAM_STRUCTURE_PART2.md#kubernetes-deployment-configuration)
 - [Monitoring and Drift Detection](./TEAM_STRUCTURE_PART3.md#phase-4-monitoring-and-optimization-all-teams---ongoing)
 
 **For Managers/Architects:**
+
 - [Team Collaboration Patterns](./TEAM_STRUCTURE_PART2.md#team-collaboration-patterns)
 - [Technology Stack Decisions](./README.md#technology-stack-recommendations)
 - [Business Impact Analysis](./TEAM_STRUCTURE_PART3.md#results)
@@ -106,18 +117,22 @@ AI/ML Team Structure Guide
 ## 💡 Key Concepts Explained
 
 ### Medallion Architecture (Bronze/Silver/Gold)
+
 - **Bronze**: Raw data, exactly as received from source systems
 - **Silver**: Cleaned, validated, and enriched data
 - **Gold**: Business-level aggregated data and ML features
 
 ### Unity Catalog
+
 Databricks' unified governance solution providing:
+
 - Centralized metadata management
 - Fine-grained access control
 - Data lineage tracking
 - Model versioning and governance
 
 ### MLOps Workflow
+
 1. **Data Engineering**: Build reliable data pipelines
 2. **Model Training**: Experiment and train models
 3. **Model Registry**: Version and govern models
@@ -127,24 +142,28 @@ Databricks' unified governance solution providing:
 ## 🛠️ Technologies Covered
 
 ### Data Platforms
+
 - **Snowflake**: Data warehouse and storage
 - **Databricks**: Unified analytics platform
 - **Delta Lake**: ACID transactions for data lakes
 - **Unity Catalog**: Data and model governance
 
 ### ML Tools
+
 - **MLflow**: Experiment tracking and model registry
 - **scikit-learn**: Traditional ML algorithms
 - **XGBoost**: Gradient boosting
 - **PyTorch/TensorFlow**: Deep learning
 
 ### Production Infrastructure
+
 - **FastAPI**: High-performance API framework
 - **Kubernetes**: Container orchestration
 - **Redis**: Caching for low-latency serving
 - **Prometheus/Grafana**: Monitoring and observability
 
 ### Development Tools
+
 - **PySpark**: Distributed data processing
 - **dbt**: Data transformation
 - **Great Expectations**: Data quality testing
@@ -153,18 +172,21 @@ Databricks' unified governance solution providing:
 ## 📊 Use Cases Covered
 
 ### 1. Fraud Detection (Financial Services)
+
 - **Problem**: Detect fraudulent transactions in real-time
 - **Approach**: Isolation Forest for anomaly detection
 - **Scale**: 10,000+ transactions/second
 - **Latency**: < 100ms
 
 ### 2. Product Recommendations (E-Commerce)
+
 - **Problem**: Increase sales through personalization
 - **Approach**: Hybrid (collaborative + content-based filtering)
 - **Result**: 23% increase in sales
 - **Technologies**: ALS, TF-IDF, FastAPI
 
 ### 3. Patient Risk Prediction (Healthcare)
+
 - **Problem**: Identify high-risk patients early
 - **Approach**: Supervised learning with XGBoost
 - **Compliance**: HIPAA-compliant infrastructure
@@ -217,4 +239,4 @@ Found this helpful? Have suggestions for improvement? Please let us know!
 
 **Happy Learning! 🎓**
 
-*Last Updated: 2026-02-19*
+_Last Updated: 2026-02-19_

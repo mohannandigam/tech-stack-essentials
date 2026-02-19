@@ -20,12 +20,14 @@ This guide covers the security best practices implemented in the microservices e
 The application uses JSON Web Tokens (JWT) for stateless authentication:
 
 **Access Tokens:**
+
 - Short-lived (15 minutes)
 - Contains user ID, email, and role
 - Used for API authentication
 - Signed with HS256 algorithm
 
 **Refresh Tokens:**
+
 - Long-lived (7 days)
 - Used to obtain new access tokens
 - Stored in database (can be revoked)
@@ -46,20 +48,23 @@ The application uses JSON Web Tokens (JWT) for stateless authentication:
 ### Password Security
 
 **Hashing:**
+
 - Using bcrypt with cost factor 12
 - Salting is automatic with bcrypt
 - Never store plaintext passwords
 
 **Password Requirements:**
+
 - Minimum 8 characters
 - At least one uppercase letter
 - At least one lowercase letter
 - At least one number
-- At least one special character (!@#$%^&*)
+- At least one special character (!@#$%^&\*)
 
 **Example:**
+
 ```typescript
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 // Hash password
 const passwordHash = await bcrypt.hash(password, 12);
@@ -71,20 +76,22 @@ const isValid = await bcrypt.compare(password, passwordHash);
 ### Role-Based Access Control (RBAC)
 
 **Roles:**
+
 - `customer` - Regular users
 - `admin` - Administrative users
 - `support` - Support staff
 
 **Authorization Middleware:**
+
 ```typescript
 // Require authentication
-app.use('/api/users', authenticate);
+app.use("/api/users", authenticate);
 
 // Require specific role
-app.use('/api/admin', authorize('admin'));
+app.use("/api/admin", authorize("admin"));
 
 // Allow multiple roles
-app.use('/api/orders', authorize('customer', 'admin'));
+app.use("/api/orders", authorize("customer", "admin"));
 ```
 
 ## Input Validation
@@ -101,7 +108,7 @@ All user input is validated before processing:
 ### Example Validation
 
 ```typescript
-import Joi from 'joi';
+import Joi from "joi";
 
 const userSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -113,7 +120,7 @@ const userSchema = Joi.object({
 // Validate request
 const { error, value } = userSchema.validate(req.body);
 if (error) {
-  throw new ApiError(400, 'Validation failed', error.details);
+  throw new ApiError(400, "Validation failed", error.details);
 }
 ```
 
@@ -124,11 +131,11 @@ Sanitize user input to prevent Cross-Site Scripting:
 ```typescript
 function sanitizeInput(input: string): string {
   return input
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
 }
 ```
 
@@ -140,15 +147,10 @@ function sanitizeInput(input: string): string {
 
 ```typescript
 // ✅ SAFE: Parameterized query
-const user = await db.query(
-  'SELECT * FROM users WHERE email = $1',
-  [email]
-);
+const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
 
 // ❌ UNSAFE: String concatenation
-const user = await db.query(
-  `SELECT * FROM users WHERE email = '${email}'`
-);
+const user = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
 ```
 
 ## Data Protection
@@ -156,44 +158,51 @@ const user = await db.query(
 ### Encryption at Rest
 
 **Database:**
+
 - Use encrypted connections (SSL/TLS)
 - Enable transparent data encryption (TDE)
 - Encrypt sensitive columns
 
 **File Storage:**
+
 - Encrypt files before storing
 - Use cloud provider encryption (S3 encryption, etc.)
 
 ### Encryption in Transit
 
 **HTTPS Only:**
+
 - All API communication over HTTPS
 - TLS 1.2 or higher
 - Valid SSL certificates
 - HTTP Strict Transport Security (HSTS)
 
 **Configuration:**
+
 ```typescript
-app.use(helmet({
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true,
-  },
-}));
+app.use(
+  helmet({
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+  }),
+);
 ```
 
 ### Sensitive Data Handling
 
 **Never Log Sensitive Data:**
+
 ```typescript
 const SENSITIVE_PATTERNS = [
-  'password',
-  'token',
-  'secret',
-  'apiKey',
-  'creditCard',
-  'ssn',
+  "password",
+  "token",
+  "secret",
+  "apiKey",
+  "creditCard",
+  "ssn",
 ];
 
 // Redact before logging
@@ -203,6 +212,7 @@ function redactSensitiveData(obj: any): any {
 ```
 
 **PII Protection:**
+
 - Collect only necessary data
 - Anonymize when possible
 - Implement data retention policies
@@ -215,23 +225,26 @@ function redactSensitiveData(obj: any): any {
 Using Helmet.js to set security headers:
 
 ```typescript
-import helmet from 'helmet';
+import helmet from "helmet";
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+      },
     },
-  },
-  frameguard: { action: 'deny' },
-  noSniff: true,
-  xssFilter: true,
-}));
+    frameguard: { action: "deny" },
+    noSniff: true,
+    xssFilter: true,
+  }),
+);
 ```
 
 **Headers Set:**
+
 - `Content-Security-Policy` - Prevent XSS
 - `X-Frame-Options: DENY` - Prevent clickjacking
 - `X-Content-Type-Options: nosniff` - Prevent MIME sniffing
@@ -241,15 +254,17 @@ app.use(helmet({
 ### CORS Configuration
 
 ```typescript
-import cors from 'cors';
+import cors from "cors";
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true,
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: true,
+    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 ```
 
 ### Rate Limiting
@@ -258,19 +273,25 @@ Prevent brute force and DDoS attacks:
 
 ```typescript
 // General rate limiting
-app.use(rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: 100,
-}));
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 100,
+  }),
+);
 
 // Stricter for auth endpoints
-app.use('/api/auth', rateLimiter({
-  windowMs: 15 * 60 * 1000,
-  maxRequests: 5,
-}));
+app.use(
+  "/api/auth",
+  rateLimiter({
+    windowMs: 15 * 60 * 1000,
+    maxRequests: 5,
+  }),
+);
 ```
 
 **Rate Limit Headers:**
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -298,6 +319,7 @@ CREATE TABLE audit_logs (
 ```
 
 **Events to Log:**
+
 - User authentication (success/failure)
 - Password changes
 - Role changes
@@ -308,6 +330,7 @@ CREATE TABLE audit_logs (
 ### Security Monitoring
 
 **Monitor for:**
+
 - Multiple failed login attempts
 - Access from unusual locations
 - Unusual API usage patterns
@@ -315,6 +338,7 @@ CREATE TABLE audit_logs (
 - Data exfiltration patterns
 
 **Alerting:**
+
 - Set up alerts for security events
 - Integrate with SIEM tools
 - Real-time notifications for critical events

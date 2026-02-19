@@ -7,6 +7,7 @@ Modern manufacturing system demonstrating IoT-enabled production monitoring, pre
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - **Production Monitoring**: Real-time equipment status, OEE (Overall Equipment Effectiveness)
 - **Quality Control**: Automated inspection, defect detection, statistical process control
 - **Predictive Maintenance**: Equipment failure prediction, scheduled maintenance optimization
@@ -14,6 +15,7 @@ Modern manufacturing system demonstrating IoT-enabled production monitoring, pre
 - **Traceability**: Product genealogy, batch tracking, recall management
 
 ### Technical Challenges
+
 - **IoT Scale**: 10,000+ sensors across factory floor
 - **Real-Time Processing**: Sub-second response for production control
 - **Edge Computing**: Local processing for latency-sensitive operations

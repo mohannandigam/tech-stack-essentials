@@ -26,12 +26,12 @@ class ClaimsWorkflow:
         # Step 1: Validate claim
         if not await self.validate_claim(claim):
             return await self.reject_claim(claim, "Invalid claim data")
-        
+
         # Step 2: Fraud detection
         fraud_score = await self.fraud_detector.analyze(claim)
         if fraud_score > 0.8:
             return await self.flag_for_investigation(claim)
-        
+
         # Step 3: Auto-adjudication
         if await self.can_auto_adjudicate(claim):
             decision = await self.auto_adjudicate(claim)
@@ -42,19 +42,19 @@ class ClaimsWorkflow:
         else:
             # Route to manual review
             await self.assign_to_adjuster(claim)
-        
+
     async def auto_adjudicate(self, claim: Claim):
         # Check policy coverage
         policy = await self.get_policy(claim.policy_id)
-        
+
         if claim.amount > policy.max_claim_amount:
             return Decision(approved=False, reason="Exceeds policy limit")
-        
+
         # Check claim history
         history = await self.get_claim_history(policy.id)
         if len(history) > 3:  # More than 3 claims this year
             return Decision(approved=False, reason="Requires manual review")
-        
+
         # Approve
         return Decision(approved=True, amount=claim.amount)
 ```
@@ -617,7 +617,7 @@ CREATE TABLE claim_payments (
 ## 🐳 Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:

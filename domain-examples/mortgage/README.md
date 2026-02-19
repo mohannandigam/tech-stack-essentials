@@ -7,6 +7,7 @@ Comprehensive mortgage lending system demonstrating loan origination, underwriti
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - **Loan Origination**: Digital application, document collection, credit evaluation
 - **Automated Underwriting**: Risk assessment, eligibility determination, pricing
 - **Compliance**: RESPA, TILA, HMDA, Fair Lending regulations
@@ -14,6 +15,7 @@ Comprehensive mortgage lending system demonstrating loan origination, underwriti
 - **Secondary Market**: Loan pooling, securitization, investor reporting
 
 ### Technical Challenges
+
 - **Regulatory Compliance**: Complex federal and state regulations (TRID, QM rules)
 - **Document Management**: Secure storage, e-signatures, audit trails
 - **Integration Complexity**: Credit bureaus, title companies, appraisers, investors
@@ -681,6 +683,7 @@ class AmortizationCalculator:
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - Python 3.9+ or Node.js 18+
 - PostgreSQL, Kafka, Redis, S3-compatible storage
@@ -793,6 +796,7 @@ def test_amortization_schedule():
 ## 🔒 Security & Compliance
 
 ### Regulatory Compliance
+
 - **TRID (TILA-RESPA)**: 3-day disclosure rules, fee tolerances
 - **HMDA**: Loan application register, annual reporting
 - **Fair Lending**: ECOA, FHA compliance, disparate impact analysis
@@ -800,6 +804,7 @@ def test_amortization_schedule():
 - **RESPA Section 8**: Anti-kickback, referral fee restrictions
 
 ### Data Security
+
 - **Encryption**: AES-256 at rest, TLS 1.3 in transit
 - **PII Protection**: SSN encryption, access logging, data masking
 - **SOC 2 Type II**: Annual compliance audit
@@ -819,21 +824,25 @@ def test_amortization_schedule():
 ## 🤖 AI/ML Applications
 
 ### Automated Valuation Models (AVM)
+
 - **Algorithm**: Gradient boosting (XGBoost)
 - **Features**: Property characteristics, comparable sales, market trends
 - **Accuracy**: ±5% of appraised value (target)
 
 ### Default Risk Prediction
+
 - **Algorithm**: Random forest, neural networks
 - **Features**: Credit, income, employment, property, economic indicators
 - **Output**: Probability of default in next 12/24/36 months
 
 ### Document Classification
+
 - **Algorithm**: CNN for document image classification
 - **Classes**: W-2, pay stub, bank statement, tax return, etc.
 - **Accuracy**: 95%+ on standard documents
 
 ### Fraud Detection
+
 - **Algorithm**: Isolation forest, graph neural networks
 - **Features**: Application data, behavioral patterns, entity relationships
 - **Validation**: Manual review of flagged applications

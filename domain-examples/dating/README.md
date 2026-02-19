@@ -24,10 +24,10 @@ Dating app demonstrating user matching algorithms, real-time messaging, and prof
 class MatchingService:
     async def find_matches(self, user_id: str, limit: int = 20):
         user = await self.get_user_profile(user_id)
-        
+
         # Get user preferences
         prefs = user.preferences
-        
+
         # Query potential matches with filters
         candidates = await self.db.query('''
             SELECT * FROM users
@@ -46,39 +46,39 @@ class MatchingService:
             LIMIT 100
         ''', user_id, prefs.genders, prefs.age_min, prefs.age_max,
              user.location, prefs.max_distance * 1000)
-        
+
         # Calculate compatibility scores
         scored = []
         for candidate in candidates:
             score = self.calculate_compatibility(user, candidate)
             scored.append((candidate, score))
-        
+
         # Sort by score and return top matches
         scored.sort(key=lambda x: x[1], reverse=True)
         return [c for c, s in scored[:limit]]
-    
+
     def calculate_compatibility(self, user1, user2):
         score = 0.0
-        
+
         # Interest overlap (0-40 points)
         common_interests = set(user1.interests) & set(user2.interests)
         score += len(common_interests) * 4
-        
+
         # Age compatibility (0-20 points)
         age_diff = abs(user1.age - user2.age)
         score += max(0, 20 - age_diff)
-        
+
         # Education level match (0-15 points)
         if user1.education_level == user2.education_level:
             score += 15
-        
+
         # Activity level match (0-15 points)
         activity_diff = abs(user1.activity_score - user2.activity_score)
         score += max(0, 15 - activity_diff)
-        
+
         # Profile completeness bonus (0-10 points)
         score += user2.profile_completeness * 10
-        
+
         return min(score, 100)  # Cap at 100
 ```
 
@@ -89,34 +89,34 @@ class MatchingService:
 class ChatService {
   handleConnection(socket: Socket) {
     const userId = socket.user.id;
-    
+
     // Join user's chat rooms
-    socket.on('chat:join', async (matchId) => {
+    socket.on("chat:join", async (matchId) => {
       // Verify match exists
       const match = await this.verifyMatch(userId, matchId);
       if (match) {
         socket.join(`match:${matchId}`);
       }
     });
-    
+
     // Handle messages
-    socket.on('chat:message', async (data) => {
+    socket.on("chat:message", async (data) => {
       const { matchId, message } = data;
-      
+
       // Validate and sanitize
       const sanitized = this.sanitize(message);
-      
+
       // Store message
       const msg = await this.storeMessage({
         matchId,
         senderId: userId,
         content: sanitized,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       // Send to recipient
-      io.to(`match:${matchId}`).emit('chat:message', msg);
-      
+      io.to(`match:${matchId}`).emit("chat:message", msg);
+
       // Send push notification if recipient offline
       await this.sendPushNotification(matchId, userId, sanitized);
     });

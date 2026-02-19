@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of BDD like writing a movie script:
+
 - **Feature** - The scene you're filming
 - **Scenario** - What happens in the scene
 - **Given-When-Then** - Setup → Action → Expected outcome
@@ -15,6 +17,7 @@ Think of BDD like writing a movie script:
 Everyone (director, actors, crew) can read and understand the script, just as everyone (developers, testers, business) can understand BDD scenarios.
 
 ### Core Principles
+
 - **Collaboration** - Business, developers, and testers work together
 - **Shared Understanding** - Everyone speaks the same language
 - **Living Documentation** - Tests document expected behavior
@@ -98,35 +101,41 @@ Feature: User Login
 ### Gherkin Keywords
 
 **Feature**: High-level description of functionality
+
 ```gherkin
 Feature: Shopping Cart
   Description of the feature
 ```
 
 **Scenario**: Specific example of behavior
+
 ```gherkin
 Scenario: Add item to empty cart
 ```
 
 **Given**: Initial context/setup
+
 ```gherkin
 Given I have an empty shopping cart
 Given I am logged in as "john@example.com"
 ```
 
 **When**: Action/event
+
 ```gherkin
 When I add a product to the cart
 When I click the "Checkout" button
 ```
 
 **Then**: Expected outcome
+
 ```gherkin
 Then I should see 1 item in my cart
 Then the total should be $29.99
 ```
 
 **And/But**: Connect multiple steps
+
 ```gherkin
 Given I am on the homepage
 And I am logged in
@@ -136,6 +145,7 @@ Then I should see "No items found"
 ```
 
 **Background**: Common setup for all scenarios
+
 ```gherkin
 Background:
   Given I am logged in
@@ -143,6 +153,7 @@ Background:
 ```
 
 **Scenario Outline**: Data-driven tests
+
 ```gherkin
 Scenario Outline: Login with various credentials
   Given I am on the login page
@@ -159,9 +170,11 @@ Scenario Outline: Login with various credentials
 ## 🔄 BDD Process (Three Amigos)
 
 ### 1. Discovery Phase
+
 **Who**: Business Analyst/Product Owner + Developer + Tester
 
 **Activities**:
+
 - Discuss user stories
 - Identify scenarios
 - Ask questions
@@ -171,9 +184,11 @@ Scenario Outline: Login with various credentials
 **Output**: Concrete examples of behavior
 
 ### 2. Formulation Phase
+
 **Who**: Whole team
 
 **Activities**:
+
 - Write scenarios in Gherkin
 - Review and refine
 - Ensure clarity
@@ -182,9 +197,11 @@ Scenario Outline: Login with various credentials
 **Output**: BDD scenarios everyone agrees on
 
 ### 3. Automation Phase
+
 **Who**: Developers + Testers
 
 **Activities**:
+
 - Implement step definitions
 - Write glue code
 - Execute scenarios
@@ -195,6 +212,7 @@ Scenario Outline: Login with various credentials
 ## 🧪 BDD Testing Levels
 
 ### 1. Feature-Level BDD (Most Common)
+
 ```gherkin
 Feature: User Registration
   Scenario: Register with valid data
@@ -202,26 +220,30 @@ Feature: User Registration
     When I fill in valid registration details
     Then I should receive a confirmation email
 ```
+
 - Tests complete features
 - End-to-end perspective
 - Slower but comprehensive
 
 ### 2. Unit-Level BDD (Spec-style)
+
 ```javascript
-describe('User', () => {
-  describe('validation', () => {
-    it('should reject invalid email addresses', () => {
-      const user = new User('invalid-email');
+describe("User", () => {
+  describe("validation", () => {
+    it("should reject invalid email addresses", () => {
+      const user = new User("invalid-email");
       expect(user.isValid()).toBe(false);
     });
   });
 });
 ```
+
 - BDD style for unit tests
 - Fast and focused
 - Developer-centric
 
 ### 3. Component-Level BDD
+
 ```gherkin
 Feature: Shopping Cart Component
   Scenario: Calculate total price
@@ -229,6 +251,7 @@ Feature: Shopping Cart Component
     When I request the total
     Then the total should be $30
 ```
+
 - Test components in isolation
 - Faster than feature tests
 - Good for complex components
@@ -236,32 +259,38 @@ Feature: Shopping Cart Component
 ## 🛠️ BDD Tools & Frameworks
 
 ### JavaScript/TypeScript
+
 - **Cucumber.js** - Official Cucumber implementation
 - **Jest-Cucumber** - BDD with Jest
 - **CodeceptJS** - End-to-end testing with Gherkin
 - **Cypress-Cucumber** - Cypress with Gherkin
 
 ### Python
+
 - **Behave** - Popular BDD framework
 - **pytest-bdd** - BDD for pytest
 - **Lettuce** - Cucumber-inspired
 
 ### Java
+
 - **Cucumber-JVM** - Cucumber for Java
 - **JBehave** - Story-based BDD
 - **Serenity BDD** - Advanced reporting
 
 ### Ruby
+
 - **Cucumber** - Original BDD framework
 - **RSpec** - BDD-style testing
 - **Turnip** - Gherkin for RSpec
 
 ### C#/.NET
+
 - **SpecFlow** - Popular .NET BDD
 - **BDDfy** - Simple BDD framework
 - **NBehave** - .NET BDD tool
 
 ### PHP
+
 - **Behat** - BDD for PHP
 - **Codeception** - Full-stack testing
 
@@ -332,6 +361,7 @@ Feature: Online Shopping Cart
 ### As a Tester in BDD
 
 **Your Critical Role:**
+
 - **Scenario Design** - You're the expert on edge cases
 - **Collaboration** - Bridge business and technical
 - **Quality Champion** - Ensure scenarios cover important cases
@@ -357,6 +387,7 @@ Feature: Online Shopping Cart
 ### Example: Good vs Bad Scenarios
 
 **❌ Bad: Too technical**
+
 ```gherkin
 Given the database table "users" is empty
 When I execute a POST request to "/api/users"
@@ -364,6 +395,7 @@ Then the HTTP status should be 201
 ```
 
 **✅ Good: User-focused**
+
 ```gherkin
 Given no users exist
 When I register a new account
@@ -371,12 +403,14 @@ Then I should receive a welcome email
 ```
 
 **❌ Bad: Too vague**
+
 ```gherkin
 When I do things
 Then it works
 ```
 
 **✅ Good: Specific**
+
 ```gherkin
 When I add a product to my cart
 Then the cart icon should show "1"
@@ -385,11 +419,13 @@ Then the cart icon should show "1"
 ## 🎯 BDD Best Practices
 
 ### 1. Involve Everyone Early
+
 - Three Amigos sessions
 - Discuss scenarios before coding
 - Get agreement from all
 
 ### 2. Focus on Behavior, Not Implementation
+
 ```gherkin
 # Good - What the user does
 When I log in with valid credentials
@@ -399,6 +435,7 @@ When I send a POST to /auth/login with username and password
 ```
 
 ### 3. Keep Scenarios Declarative
+
 ```gherkin
 # Good - Declarative (what)
 Given I have added items to my cart
@@ -413,27 +450,30 @@ And I click "Checkout"
 ```
 
 ### 4. Use Background Wisely
+
 - Only for steps common to ALL scenarios
 - Keep background short
 - Don't overuse
 
 ### 5. One Scenario = One Behavior
+
 - Test one thing per scenario
 - Makes failures easier to diagnose
 - Scenarios stay focused
 
 ## 🔗 BDD vs TDD
 
-| Aspect | BDD | TDD |
-|--------|-----|-----|
-| **Focus** | Behavior & business value | Code correctness |
+| Aspect       | BDD                        | TDD                  |
+| ------------ | -------------------------- | -------------------- |
+| **Focus**    | Behavior & business value  | Code correctness     |
 | **Language** | Natural language (Gherkin) | Programming language |
-| **Audience** | Everyone | Developers |
-| **Level** | Often higher level | Usually unit level |
-| **When** | Before development | During development |
-| **Purpose** | Define requirements | Drive design |
+| **Audience** | Everyone                   | Developers           |
+| **Level**    | Often higher level         | Usually unit level   |
+| **When**     | Before development         | During development   |
+| **Purpose**  | Define requirements        | Drive design         |
 
 **Relationship**: BDD and TDD complement each other!
+
 - Use BDD for acceptance criteria
 - Use TDD for implementation
 
@@ -459,6 +499,7 @@ And I click "Checkout"
    - Automate step definitions
 
 ### Practice Ideas
+
 1. Write scenarios for a login feature
 2. Model a shopping cart
 3. Describe a payment process
@@ -466,11 +507,13 @@ And I click "Checkout"
 5. Model a booking system
 
 ### Books & Resources
+
 - "Specification by Example" - Gojko Adzic
 - "The Cucumber Book" - Matt Wynne & Aslak Hellesøy
 - "BDD in Action" - John Ferguson Smart
 
 ## 🔗 Related Topics
+
 - [Test-Driven Development](../test-driven-development/README.md)
 - [Agile Testing]
 - [Acceptance Test-Driven Development]

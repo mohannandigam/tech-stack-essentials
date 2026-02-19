@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of Kubernetes as a **smart office building manager**:
+
 - **Pods** are office spaces where teams (containers) work
 - **Services** are the reception desks that route visitors to the right office
 - **Deployments** are the building plans specifying how many offices you need
@@ -15,7 +17,9 @@ Think of Kubernetes as a **smart office building manager**:
 - **The control plane** is the building management that ensures everything runs smoothly
 
 ### Why Kubernetes?
+
 Without Kubernetes, running containers at scale means:
+
 - Manually starting containers when they crash
 - Manually distributing containers across servers
 - Manually updating containers without downtime
@@ -26,6 +30,7 @@ Kubernetes automates all of this!
 ## 🏗️ Core Components
 
 ### 1. Control Plane (The Brain)
+
 Manages the cluster and makes decisions about scheduling and scaling:
 
 - **API Server**: Front-end for K8s, handles all REST commands
@@ -34,6 +39,7 @@ Manages the cluster and makes decisions about scheduling and scaling:
 - **Controller Manager**: Maintains desired state (handles replication, endpoints, etc.)
 
 ### 2. Worker Nodes (The Workers)
+
 Run your containerized applications:
 
 - **kubelet**: Agent that ensures containers are running in pods
@@ -43,7 +49,9 @@ Run your containerized applications:
 ### 3. Key Kubernetes Objects
 
 #### **Pod**
+
 Smallest deployable unit; one or more containers that share storage/network
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -51,14 +59,16 @@ metadata:
   name: nginx-pod
 spec:
   containers:
-  - name: nginx
-    image: nginx:1.21
-    ports:
-    - containerPort: 80
+    - name: nginx
+      image: nginx:1.21
+      ports:
+        - containerPort: 80
 ```
 
 #### **Deployment**
+
 Manages replica sets and provides declarative updates
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -75,21 +85,23 @@ spec:
         app: web
     spec:
       containers:
-      - name: web
-        image: myapp:1.0
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "250m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
+        - name: web
+          image: myapp:1.0
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
 ```
 
 #### **Service**
+
 Exposes pods to network traffic (ClusterIP, NodePort, LoadBalancer)
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -100,13 +112,15 @@ spec:
   selector:
     app: web
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
 ```
 
 #### **ConfigMap**
+
 Store non-sensitive configuration data
+
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -118,7 +132,9 @@ data:
 ```
 
 #### **Secret**
+
 Store sensitive data (passwords, tokens, keys)
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -126,11 +142,13 @@ metadata:
   name: db-secret
 type: Opaque
 data:
-  password: cGFzc3dvcmQxMjM=  # base64 encoded
+  password: cGFzc3dvcmQxMjM= # base64 encoded
 ```
 
 #### **Ingress**
+
 Manage external access to services (HTTP/HTTPS routing)
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -140,21 +158,22 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: myapp.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-service
-            port:
-              number: 80
+    - host: myapp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
 ```
 
 ## 🚀 Quick Start
 
 ### 1. Install kubectl (CLI tool)
+
 ```bash
 # macOS
 brew install kubectl
@@ -171,6 +190,7 @@ kubectl version --client
 ### 2. Local Kubernetes Cluster
 
 **Option A: Minikube** (for local development)
+
 ```bash
 # Install minikube
 brew install minikube  # macOS
@@ -184,6 +204,7 @@ kubectl get nodes
 ```
 
 **Option B: Kind** (Kubernetes in Docker)
+
 ```bash
 # Install kind
 brew install kind
@@ -215,6 +236,7 @@ minikube service nginx
 ## 📊 Common kubectl Commands
 
 ### Cluster & Node Management
+
 ```bash
 # Get cluster info
 kubectl cluster-info
@@ -228,6 +250,7 @@ kubectl get all --all-namespaces
 ```
 
 ### Pod Management
+
 ```bash
 # List pods
 kubectl get pods
@@ -248,6 +271,7 @@ kubectl delete pod <pod-name>
 ```
 
 ### Deployment Management
+
 ```bash
 # Create deployment
 kubectl create deployment myapp --image=myapp:1.0
@@ -269,6 +293,7 @@ kubectl rollout history deployment/myapp
 ```
 
 ### Service Management
+
 ```bash
 # List services
 kubectl get services
@@ -281,6 +306,7 @@ kubectl delete service <service-name>
 ```
 
 ### ConfigMap & Secret
+
 ```bash
 # Create ConfigMap from literal
 kubectl create configmap app-config --from-literal=key1=value1
@@ -296,6 +322,7 @@ kubectl get secret db-secret -o yaml
 ```
 
 ### Debugging
+
 ```bash
 # Get pod logs
 kubectl logs <pod-name>
@@ -344,40 +371,40 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: mycompany/frontend:v1.2.0
-        ports:
-        - containerPort: 3000
-        env:
-        - name: API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: api_url
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: password
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: frontend
+          image: mycompany/frontend:v1.2.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: api_url
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 
 ---
 apiVersion: v1
@@ -389,9 +416,9 @@ spec:
   selector:
     app: frontend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3000
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
   type: ClusterIP
 
 ---
@@ -411,29 +438,29 @@ spec:
         app: backend
     spec:
       containers:
-      - name: api
-        image: mycompany/backend-api:v2.1.0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: database_url
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
+        - name: api
+          image: mycompany/backend-api:v2.1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: database_url
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
 
 ---
 apiVersion: v1
@@ -445,9 +472,9 @@ spec:
   selector:
     app: backend
   ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
   type: ClusterIP
 
 ---
@@ -461,30 +488,31 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   tls:
-  - hosts:
-    - myapp.example.com
-    secretName: app-tls
+    - hosts:
+        - myapp.example.com
+      secretName: app-tls
   rules:
-  - host: myapp.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
-            port:
-              number: 80
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: backend-service
-            port:
-              number: 8080
+    - host: myapp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 8080
 ```
 
 Deploy:
+
 ```bash
 kubectl apply -f web-app-deployment.yaml
 kubectl get all -n production
@@ -500,7 +528,7 @@ metadata:
   name: postgres
 spec:
   ports:
-  - port: 5432
+    - port: 5432
   clusterIP: None
   selector:
     app: postgres
@@ -522,28 +550,28 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:14
-        ports:
-        - containerPort: 5432
-          name: postgres
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:14
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
-  - metadata:
-      name: postgres-storage
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
 ```
 
 ### Example 3: Horizontal Pod Autoscaler (HPA)
@@ -562,18 +590,18 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ### Example 4: CronJob for Scheduled Tasks
@@ -585,19 +613,19 @@ kind: CronJob
 metadata:
   name: database-backup
 spec:
-  schedule: "0 2 * * *"  # Daily at 2 AM
+  schedule: "0 2 * * *" # Daily at 2 AM
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: backup
-            image: mycompany/db-backup:latest
-            env:
-            - name: DB_HOST
-              value: postgres.default.svc.cluster.local
-            - name: BACKUP_BUCKET
-              value: s3://my-backups
+            - name: backup
+              image: mycompany/db-backup:latest
+              env:
+                - name: DB_HOST
+                  value: postgres.default.svc.cluster.local
+                - name: BACKUP_BUCKET
+                  value: s3://my-backups
           restartPolicy: OnFailure
 ```
 
@@ -606,6 +634,7 @@ spec:
 ### Common Issues and Solutions
 
 #### 1. Pod Stuck in Pending State
+
 ```bash
 # Check pod events
 kubectl describe pod <pod-name>
@@ -621,6 +650,7 @@ kubectl describe node <node-name>
 ```
 
 #### 2. Pod CrashLoopBackOff
+
 ```bash
 # Check logs
 kubectl logs <pod-name>
@@ -637,6 +667,7 @@ kubectl describe pod <pod-name> | grep -A 5 Limits
 ```
 
 #### 3. Service Not Accessible
+
 ```bash
 # Check service endpoints
 kubectl get endpoints <service-name>
@@ -654,6 +685,7 @@ kubectl get pods --show-labels
 ```
 
 #### 4. ImagePullBackOff
+
 ```bash
 # Check image name and tag
 kubectl describe pod <pod-name> | grep Image
@@ -693,44 +725,54 @@ kubectl cp <pod-name>:/path/to/file ./local-file
 kubectl cp ./local-file <pod-name>:/path/to/destination
 ```
 
-## 🎓 Interview Questions
+## 🎓 Common Questions
 
 ### Basic Level
 
 **Q1: What is a Pod in Kubernetes?**
+
 - A: A Pod is the smallest deployable unit in Kubernetes that represents one or more containers that share storage, network, and specifications for how to run.
 
 **Q2: What's the difference between a Deployment and a StatefulSet?**
+
 - A: Deployments are for stateless applications where pods are interchangeable. StatefulSets maintain stable identities and persistent storage for stateful applications like databases.
 
 **Q3: What are the main components of Kubernetes control plane?**
+
 - A: API Server, etcd, Scheduler, and Controller Manager.
 
 ### Intermediate Level
 
 **Q4: Explain how a Service discovers pods.**
+
 - A: Services use label selectors to match pods. When a service is created, Kubernetes creates an endpoint that tracks all pods matching the selector. The service then load-balances traffic across these endpoints.
 
 **Q5: What's the purpose of readiness and liveness probes?**
+
 - A: Liveness probes check if a container is running; if it fails, Kubernetes restarts the container. Readiness probes check if a container is ready to serve traffic; if it fails, the pod is removed from service endpoints.
 
 **Q6: How does Horizontal Pod Autoscaler work?**
+
 - A: HPA automatically scales the number of pods based on observed metrics (CPU, memory, or custom metrics). It checks metrics periodically and adjusts replicas to maintain the target utilization.
 
 ### Advanced Level
 
 **Q7: Explain the difference between ClusterIP, NodePort, and LoadBalancer services.**
+
 - A: ClusterIP exposes service internally within the cluster. NodePort exposes service on each node's IP at a static port. LoadBalancer provisions an external load balancer (cloud provider) that routes to the service.
 
 **Q8: How would you perform a zero-downtime deployment?**
+
 - A: Use rolling updates with proper readiness probes, set maxUnavailable and maxSurge in deployment strategy, ensure sufficient replicas, and configure appropriate health checks.
 
 **Q9: What strategies can you use for managing secrets in Kubernetes?**
+
 - A: Native Secrets (base64), external secret managers (HashiCorp Vault, AWS Secrets Manager), Sealed Secrets, encryption at rest using KMS, and tools like SOPS for GitOps.
 
 ## 📚 Best Practices
 
 ### 1. Resource Management
+
 ```yaml
 # Always set resource requests and limits
 resources:
@@ -743,6 +785,7 @@ resources:
 ```
 
 ### 2. Health Checks
+
 ```yaml
 # Configure both liveness and readiness probes
 livenessProbe:
@@ -760,6 +803,7 @@ readinessProbe:
 ```
 
 ### 3. Use Namespaces
+
 ```bash
 # Separate environments
 kubectl create namespace dev
@@ -768,6 +812,7 @@ kubectl create namespace production
 ```
 
 ### 4. Labels and Selectors
+
 ```yaml
 # Use meaningful labels
 metadata:
@@ -779,6 +824,7 @@ metadata:
 ```
 
 ### 5. Security
+
 ```yaml
 # Use security context
 securityContext:
@@ -787,23 +833,24 @@ securityContext:
   readOnlyRootFilesystem: true
   capabilities:
     drop:
-    - ALL
+      - ALL
 ```
 
 ### 6. ConfigMap and Secrets
+
 ```yaml
 # Don't hardcode configuration
 env:
-- name: DATABASE_URL
-  valueFrom:
-    configMapKeyRef:
-      name: app-config
-      key: database_url
-- name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: db-secret
-      key: password
+  - name: DATABASE_URL
+    valueFrom:
+      configMapKeyRef:
+        name: app-config
+        key: database_url
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: db-secret
+        key: password
 ```
 
 ## 🔗 Related Resources

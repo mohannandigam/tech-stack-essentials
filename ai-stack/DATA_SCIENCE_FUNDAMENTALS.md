@@ -648,7 +648,7 @@ class FeatureSelector:
 
 ---
 
-*Continue in next section...*
+_Continue in next section..._
 
 ## Model Selection and Evaluation
 
@@ -696,8 +696,9 @@ def compare_models_cv(X, y, models):
 ---
 
 **Related Resources**:
+
 - [Anomaly Detection Guide](./ANOMALY_DETECTION.md)
 - [MLOps Guide](./MLOPS_GUIDE.md)
 - [Team Structure](./TEAM_STRUCTURE.md)
 
-*Last Updated: 2026-02-19*
+_Last Updated: 2026-02-19_

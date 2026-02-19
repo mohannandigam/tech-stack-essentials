@@ -19,6 +19,7 @@ Docker allows you to package applications with all their dependencies into stand
 Docker is a platform for developing, shipping, and running applications in containers. Containers are lightweight, portable, and isolated environments.
 
 **Key Concepts:**
+
 - **Image**: Template for creating containers
 - **Container**: Running instance of an image
 - **Dockerfile**: Instructions to build an image
@@ -70,8 +71,9 @@ CMD ["python", "src/grid_monitor.py"]
 ```
 
 **docker-compose.yml for Energy System:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   grid-monitor:
@@ -161,8 +163,9 @@ CMD ["node", "dist/index.js"]
 ```
 
 **docker-compose.yml for Trading Platform:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   trading-api:
@@ -261,8 +264,9 @@ CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
 ```
 
 **docker-compose.yml for Social Media:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   moderation-service:
@@ -281,7 +285,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
 
   message-queue:
@@ -357,8 +361,9 @@ CMD ["./patient-service"]
 ```
 
 **docker-compose.yml for Healthcare:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   patient-service:
@@ -450,8 +455,9 @@ CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
 ```
 
 **docker-compose.yml for Retail:**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   inventory-api:
@@ -522,6 +528,7 @@ CMD ["myapp"]
 ```
 
 **Benefits:**
+
 - Smaller final images
 - No build tools in production
 - Better security (minimal attack surface)
@@ -529,6 +536,7 @@ CMD ["myapp"]
 ## Best Practices
 
 ### 1. Security
+
 ```dockerfile
 # ✅ DO: Run as non-root user
 RUN adduser -D myuser
@@ -548,6 +556,7 @@ RUN apk add --no-cache curl && \
 ```
 
 ### 2. Optimize Image Size
+
 ```dockerfile
 # ✅ DO: Use .dockerignore
 # Create .dockerignore file:
@@ -558,12 +567,14 @@ tests
 ```
 
 ### 3. Use Health Checks
+
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 ```
 
 ### 4. Handle Signals Properly
+
 ```dockerfile
 # Use exec form to properly handle SIGTERM
 CMD ["node", "app.js"]
@@ -632,6 +643,7 @@ docker-compose ps  # Check status
 ## Troubleshooting
 
 ### Container Won't Start
+
 ```bash
 # Check logs
 docker logs <container-name>
@@ -644,6 +656,7 @@ docker events
 ```
 
 ### Network Issues
+
 ```bash
 # List networks
 docker network ls
@@ -656,6 +669,7 @@ docker exec container1 ping container2
 ```
 
 ### Performance Issues
+
 ```bash
 # Check resource usage
 docker stats
@@ -667,29 +681,34 @@ docker run --memory="512m" --cpus="1.0" myapp
 ## Domain-Specific Considerations
 
 ### Energy
+
 - Time-series databases (InfluxDB, TimescaleDB)
 - Real-time data processing
 - IoT device communication protocols
 
 ### Finance/Banking
+
 - Encryption at rest and in transit
 - Secret management (Vault, AWS Secrets Manager)
 - Audit logging
 - PCI-DSS compliance
 
 ### Healthcare
+
 - HIPAA compliance
 - Data encryption
 - Access controls
 - Audit trails
 
 ### Social Media/Dating
+
 - High throughput messaging
 - Content caching (Redis, Memcached)
 - Media processing (images, videos)
 - Real-time features (WebSocket)
 
 ### Retail
+
 - Point-of-sale integration
 - Inventory synchronization
 - Payment processing

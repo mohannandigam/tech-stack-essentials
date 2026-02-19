@@ -7,6 +7,7 @@ Comprehensive telecommunications platform demonstrating network operations, subs
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - **Network Operations**: Real-time network monitoring, capacity planning, fault management
 - **Subscriber Management**: Customer accounts, service provisioning, SIM management
 - **Billing & Rating**: Real-time charging, usage-based billing, invoice generation
@@ -14,6 +15,7 @@ Comprehensive telecommunications platform demonstrating network operations, subs
 - **Fraud Detection**: Usage anomalies, subscription fraud, revenue assurance
 
 ### Technical Challenges
+
 - **Scale**: Millions of subscribers, billions of CDRs (Call Detail Records) per day
 - **Real-Time**: Sub-second rating for prepaid services
 - **5G Requirements**: Network slicing, edge computing, ultra-low latency

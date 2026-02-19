@@ -46,6 +46,7 @@ Modern AI/ML teams consist of three core roles that work together in a continuou
 **Primary Responsibility**: Build and maintain the data infrastructure that feeds ML models.
 
 **Key Activities**:
+
 - Design and build ETL/ELT pipelines
 - Ensure data quality, consistency, and availability
 - Optimize data storage and query performance
@@ -53,6 +54,7 @@ Modern AI/ML teams consist of three core roles that work together in a continuou
 - Create reusable data assets for data scientists
 
 **Technology Stack**:
+
 - **Data Warehouses**: Snowflake, BigQuery, Redshift
 - **Data Lakes**: S3, ADLS, GCS
 - **Processing**: Spark, Airflow, dbt, Fivetran
@@ -60,6 +62,7 @@ Modern AI/ML teams consist of three core roles that work together in a continuou
 - **Languages**: SQL, Python, Scala, Java
 
 **Example Daily Tasks**:
+
 ```python
 # Data Engineer: Building ETL pipeline in Databricks
 from pyspark.sql import SparkSession
@@ -160,6 +163,7 @@ print("ETL pipeline completed successfully")
 **Primary Responsibility**: Research, experiment, and train ML models to solve business problems.
 
 **Key Activities**:
+
 - Exploratory data analysis (EDA)
 - Feature engineering and selection
 - Model training and evaluation
@@ -168,6 +172,7 @@ print("ETL pipeline completed successfully")
 - Communicate insights to stakeholders
 
 **Technology Stack**:
+
 - **Languages**: Python, R
 - **ML Libraries**: scikit-learn, XGBoost, LightGBM, PyTorch, TensorFlow
 - **Experiment Tracking**: MLflow, Weights & Biases, Neptune
@@ -175,6 +180,7 @@ print("ETL pipeline completed successfully")
 - **Visualization**: Matplotlib, Seaborn, Plotly, Tableau
 
 **Example Daily Tasks**:
+
 ```python
 # Data Scientist: Training anomaly detection model in Databricks
 import mlflow
@@ -322,6 +328,7 @@ top_anomalies.to_csv('/tmp/top_anomalies_for_review.csv', index=False)
 **Primary Responsibility**: Deploy, monitor, and maintain ML models in production.
 
 **Key Activities**:
+
 - Productionize research code from data scientists
 - Build model serving infrastructure
 - Implement CI/CD pipelines for models
@@ -330,6 +337,7 @@ top_anomalies.to_csv('/tmp/top_anomalies_for_review.csv', index=False)
 - Handle model retraining and versioning
 
 **Technology Stack**:
+
 - **Serving**: FastAPI, Flask, TorchServe, TensorFlow Serving
 - **Orchestration**: Kubernetes, Docker, Airflow
 - **Monitoring**: Prometheus, Grafana, Evidently AI
@@ -338,6 +346,7 @@ top_anomalies.to_csv('/tmp/top_anomalies_for_review.csv', index=False)
 - **Model Stores**: MLflow, DVC, SageMaker Model Registry
 
 **Example Daily Tasks**:
+
 ```python
 # ML Engineer: Deploying model with monitoring in production
 from fastapi import FastAPI, HTTPException
@@ -529,6 +538,7 @@ if __name__ == "__main__":
 ```
 
 **Kubernetes Deployment Configuration**:
+
 ```yaml
 # ml-engineer: k8s/anomaly-detection-deployment.yaml
 apiVersion: apps/v1
@@ -548,42 +558,42 @@ spec:
         version: v1
     spec:
       containers:
-      - name: api
-        image: myregistry/anomaly-detection-api:v1.0.0
-        ports:
-        - containerPort: 8000
-          name: http
-        - containerPort: 9090
-          name: metrics
-        env:
-        - name: MLFLOW_TRACKING_URI
-          valueFrom:
-            secretKeyRef:
-              name: mlflow-credentials
-              key: tracking_uri
-        - name: MODEL_NAME
-          value: "fraud_detection_isolation_forest"
-        - name: MODEL_VERSION
-          value: "1"
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "1Gi"
-          limits:
-            cpu: "2000m"
-            memory: "4Gi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: api
+          image: myregistry/anomaly-detection-api:v1.0.0
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 9090
+              name: metrics
+          env:
+            - name: MLFLOW_TRACKING_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials
+                  key: tracking_uri
+            - name: MODEL_NAME
+              value: "fraud_detection_isolation_forest"
+            - name: MODEL_VERSION
+              value: "1"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -594,12 +604,12 @@ spec:
   selector:
     app: anomaly-detection-api
   ports:
-  - name: http
-    port: 80
-    targetPort: 8000
-  - name: metrics
-    port: 9090
-    targetPort: 9090
+    - name: http
+      port: 80
+      targetPort: 8000
+    - name: metrics
+      port: 9090
+      targetPort: 9090
   type: LoadBalancer
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -612,8 +622,8 @@ spec:
     matchLabels:
       app: anomaly-detection-api
   endpoints:
-  - port: metrics
-    interval: 30s
+    - port: metrics
+      interval: 30s
 ```
 
 ---
@@ -704,16 +714,16 @@ spec:
 
 ### Roles in Each Stage
 
-| Stage | Data Engineer | Data Scientist | ML Engineer |
-|-------|--------------|----------------|-------------|
-| **Data Ingestion** | ✅ Primary Owner | ❌ | ❌ |
-| **Bronze Layer** | ✅ Primary Owner | ❌ | ❌ |
-| **Silver Layer** | ✅ Primary Owner | 🤝 Collaborates on business logic | ❌ |
-| **Gold Layer** | 🤝 Builds infrastructure | ✅ Primary Owner (defines features) | ❌ |
-| **Model Training** | ❌ | ✅ Primary Owner | 🤝 Provides tooling |
-| **Model Registry** | ❌ | 🤝 Registers models | ✅ Primary Owner |
-| **Production Serving** | ❌ | ❌ | ✅ Primary Owner |
-| **Monitoring** | 🤝 Data pipeline health | 🤝 Model metrics | ✅ Primary Owner |
+| Stage                  | Data Engineer            | Data Scientist                      | ML Engineer         |
+| ---------------------- | ------------------------ | ----------------------------------- | ------------------- |
+| **Data Ingestion**     | ✅ Primary Owner         | ❌                                  | ❌                  |
+| **Bronze Layer**       | ✅ Primary Owner         | ❌                                  | ❌                  |
+| **Silver Layer**       | ✅ Primary Owner         | 🤝 Collaborates on business logic   | ❌                  |
+| **Gold Layer**         | 🤝 Builds infrastructure | ✅ Primary Owner (defines features) | ❌                  |
+| **Model Training**     | ❌                       | ✅ Primary Owner                    | 🤝 Provides tooling |
+| **Model Registry**     | ❌                       | 🤝 Registers models                 | ✅ Primary Owner    |
+| **Production Serving** | ❌                       | ❌                                  | ✅ Primary Owner    |
+| **Monitoring**         | 🤝 Data pipeline health  | 🤝 Model metrics                    | ✅ Primary Owner    |
 
 ---
 
@@ -1174,4 +1184,4 @@ job_config = {
 
 ---
 
-*Continue reading in [Part 2: Anomaly Detection Use Case](./TEAM_STRUCTURE_PART2.md)*
+_Continue reading in [Part 2: Anomaly Detection Use Case](./TEAM_STRUCTURE_PART2.md)_

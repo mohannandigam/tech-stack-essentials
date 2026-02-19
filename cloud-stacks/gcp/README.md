@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of GCP as using Google's own infrastructure:
+
 - Same power that runs YouTube and Gmail
 - Google's expertise in distributed systems
 - Strong focus on data analytics and AI/ML
@@ -15,6 +17,7 @@ Think of GCP as using Google's own infrastructure:
 - Global network of data centers
 
 ### Core Strengths
+
 - **Data & Analytics** - Industry-leading big data tools
 - **Machine Learning** - Advanced AI capabilities
 - **Kubernetes** - Created Kubernetes (GKE is best-in-class)
@@ -26,10 +29,13 @@ Think of GCP as using Google's own infrastructure:
 ### 1. Compute Services
 
 #### **Compute Engine**
+
 Virtual machines (VMs) in the cloud
+
 - **Similar to**: AWS EC2, Azure VMs
 - **Use Case**: Web servers, batch processing, custom applications
 - **Features**: Custom machine types, preemptible VMs (up to 80% cheaper)
+
 ```
 Example: Run a web application
 - Choose machine type (n1-standard-1)
@@ -38,10 +44,13 @@ Example: Run a web application
 ```
 
 #### **Cloud Functions**
+
 Serverless compute (FaaS)
+
 - **Similar to**: AWS Lambda, Azure Functions
 - **Use Case**: Event-driven processing, APIs, webhooks
 - **Triggers**: HTTP, Pub/Sub, Cloud Storage, Firestore
+
 ```
 Example: Process uploaded images
 - User uploads to Cloud Storage
@@ -50,20 +59,26 @@ Example: Process uploaded images
 ```
 
 #### **Cloud Run**
+
 Serverless containers
+
 - **Similar to**: AWS Fargate with API Gateway
 - **Use Case**: Containerized microservices without K8s complexity
 - **Features**: Auto-scaling to zero, pay per request
 
 #### **Google Kubernetes Engine (GKE)**
+
 Managed Kubernetes service
+
 - **Similar to**: AWS EKS, Azure AKS
 - **Use Case**: Container orchestration at scale
 - **Features**: Auto-scaling, auto-repair, auto-upgrade
 - **Note**: Google created Kubernetes!
 
 #### **App Engine**
+
 Platform as a Service (PaaS)
+
 - **Similar to**: AWS Elastic Beanstalk, Azure App Service
 - **Use Case**: Build apps without managing infrastructure
 - **Environments**: Standard (autoscaling) or Flexible (Docker)
@@ -71,7 +86,9 @@ Platform as a Service (PaaS)
 ### 2. Storage Services
 
 #### **Cloud Storage**
+
 Object storage for any data
+
 - **Similar to**: AWS S3, Azure Blob Storage
 - **Use Case**: Backups, media files, data lakes
 - **Storage Classes**:
@@ -81,13 +98,17 @@ Object storage for any data
   - Archive - Yearly access
 
 #### **Persistent Disk**
+
 Block storage for VMs
+
 - **Similar to**: AWS EBS, Azure Managed Disks
 - **Types**: SSD or HDD
 - **Features**: Snapshots, encryption, resizing
 
 #### **Filestore**
+
 Managed file storage (NFS)
+
 - **Similar to**: AWS EFS, Azure Files
 - **Use Case**: Shared storage across VMs
 - **Features**: High performance, automatic backups
@@ -95,174 +116,233 @@ Managed file storage (NFS)
 ### 3. Database Services
 
 #### **Cloud SQL**
+
 Managed relational databases
+
 - **Similar to**: AWS RDS, Azure Database
 - **Engines**: MySQL, PostgreSQL, SQL Server
 - **Features**: Automated backups, replication, patching
 
 #### **Cloud Spanner**
+
 Globally distributed relational database
+
 - **Unique**: Only GCP offers this
 - **Features**: ACID transactions, horizontal scaling
 - **Use Case**: Global applications needing strong consistency
 - **Note**: Powers Google Ads, Play Store
 
 #### **Firestore**
+
 NoSQL document database (serverless)
+
 - **Similar to**: AWS DynamoDB, Azure Cosmos DB
 - **Features**: Real-time sync, offline support
 - **Use Case**: Mobile/web apps, real-time apps
 
 #### **Cloud Bigtable**
+
 NoSQL wide-column database
+
 - **Similar to**: AWS DynamoDB, Apache HBase
 - **Use Case**: IoT, time-series, analytics
 - **Note**: Powers Google Search, Gmail, Maps
 
 #### **Memorystore**
+
 In-memory caching (Redis/Memcached)
+
 - **Similar to**: AWS ElastiCache
 - **Use Case**: Session storage, caching
 
 ### 4. Networking & Content Delivery
 
 #### **Virtual Private Cloud (VPC)**
+
 Isolated network environment
+
 - **Similar to**: AWS VPC, Azure VNet
 - **Features**: Subnets, firewall rules, VPN
 - **Global by default** (unlike AWS)
 
 #### **Cloud CDN**
+
 Content Delivery Network
+
 - **Similar to**: AWS CloudFront, Azure CDN
 - **Use Case**: Fast global content delivery
 - **Features**: Integrated with Cloud Storage/Load Balancers
 
 #### **Cloud DNS**
+
 Domain Name System service
+
 - **Similar to**: AWS Route 53, Azure DNS
 - **Features**: Low latency, high availability
 
 #### **Cloud Load Balancing**
+
 Distribute traffic globally
+
 - **Types**: HTTP(S), TCP/UDP, Internal
 - **Features**: Global load balancing, auto-scaling
 
 #### **Cloud Armor**
+
 DDoS protection and WAF
+
 - **Similar to**: AWS WAF + Shield
 - **Features**: IP filtering, rate limiting
 
 ### 5. Security & Identity
 
 #### **Cloud IAM (Identity and Access Management)**
+
 Control access to resources
+
 - **Similar to**: AWS IAM, Azure RBAC
 - **Features**: Users, service accounts, roles, policies
 - **Concept**: Hierarchical (Org → Folder → Project)
 
 #### **Cloud Identity**
+
 Identity as a Service (IDaaS)
+
 - **Similar to**: AWS Cognito, Azure AD
 - **Use Case**: Employee/user management
 
 #### **Secret Manager**
+
 Store API keys, passwords, certificates
+
 - **Similar to**: AWS Secrets Manager, Azure Key Vault
 
 #### **Cloud KMS (Key Management Service)**
+
 Encryption key management
+
 - **Similar to**: AWS KMS
 - **Features**: Create, rotate, manage keys
 
 ### 6. Monitoring & Management
 
 #### **Cloud Monitoring (formerly Stackdriver)**
+
 Monitor infrastructure and applications
+
 - **Similar to**: AWS CloudWatch, Azure Monitor
 - **Features**: Metrics, alerts, dashboards
 - **Integrated**: Works with AWS and on-premises too!
 
 #### **Cloud Logging**
+
 Centralized logging
+
 - **Similar to**: AWS CloudWatch Logs
 - **Features**: Log analysis, export to BigQuery
 
 #### **Cloud Trace**
+
 Distributed tracing
+
 - **Similar to**: AWS X-Ray
 - **Use Case**: Debug latency in microservices
 
 #### **Cloud Profiler**
+
 Continuous profiling
+
 - **Use Case**: Identify performance bottlenecks
 
 ### 7. Developer Tools
 
 #### **Cloud Source Repositories**
+
 Git repository hosting
+
 - **Similar to**: AWS CodeCommit, GitHub
 
 #### **Cloud Build**
+
 CI/CD platform
+
 - **Similar to**: AWS CodeBuild
 - **Features**: Build, test, deploy
 
 #### **Artifact Registry**
+
 Store and manage container images
+
 - **Similar to**: AWS ECR, Docker Hub
 
 ### 8. Big Data & Analytics
 
 #### **BigQuery**
+
 Serverless data warehouse
+
 - **Unique**: GCP's flagship analytics service
 - **Features**: Petabyte-scale, SQL queries, ML integration
 - **Pricing**: Pay per query (data processed)
 - **Use Case**: Data analytics, business intelligence
 
 #### **Cloud Dataflow**
+
 Stream and batch data processing
+
 - **Similar to**: AWS Kinesis + EMR
 - **Based on**: Apache Beam
 - **Use Case**: ETL, real-time analytics
 
 #### **Cloud Dataproc**
+
 Managed Hadoop/Spark
+
 - **Similar to**: AWS EMR
 - **Use Case**: Big data processing
 - **Features**: Fast cluster creation
 
 #### **Cloud Pub/Sub**
+
 Real-time messaging service
+
 - **Similar to**: AWS SNS/SQS, Azure Service Bus
 - **Use Case**: Event-driven architectures
 - **Features**: At-least-once delivery, ordering
 
 #### **Cloud Composer**
+
 Managed Apache Airflow
+
 - **Use Case**: Workflow orchestration
 - **Features**: Schedule and monitor pipelines
 
 #### **Looker**
+
 Business intelligence platform
+
 - **Acquired by Google**
 - **Use Case**: Data visualization, analytics
 
 ### 9. Machine Learning & AI
 
 #### **Vertex AI**
+
 Unified ML platform
+
 - **Similar to**: AWS SageMaker
 - **Features**: Build, deploy, scale ML models
 - **Use Case**: Custom ML development
 
 #### **AutoML**
+
 Train custom models without ML expertise
+
 - **Types**: Vision, Natural Language, Tables, Video
 - **Use Case**: Custom ML with minimal code
 
 #### **AI Platform (Pre-trained APIs)**
+
 - **Vision AI** - Image analysis
 - **Natural Language AI** - Text analysis
 - **Translation AI** - Language translation
@@ -270,7 +350,9 @@ Train custom models without ML expertise
 - **Video AI** - Video analysis
 
 #### **TensorFlow**
+
 Open-source ML framework (by Google)
+
 - **Best on**: GCP with TPUs (Tensor Processing Units)
 
 ## 🧪 Testing Considerations for QA
@@ -295,23 +377,27 @@ Open-source ML framework (by Google)
 ### Testing Strategies
 
 **1. Local Testing**
+
 - **Cloud Functions**: Functions Framework
 - **Cloud Run**: Docker locally
 - **Firestore**: Emulator suite
 - **Pub/Sub**: Emulator
 
 **2. Integration Testing**
+
 - Use separate GCP projects for test environments
 - Automate with Cloud Build
 - Test service interactions
 
 **3. Performance Testing**
+
 - BigQuery query performance
 - Cloud Functions cold starts
 - Load testing with Locust/JMeter
 - Network latency tests
 
 **4. Security Testing**
+
 - IAM policy validation
 - VPC firewall rules testing
 - Encryption verification
@@ -347,16 +433,19 @@ Open-source ML framework (by Google)
 ## 💰 GCP Pricing
 
 ### Key Advantages
+
 - **Per-Second Billing** - More granular than AWS
 - **Sustained Use Discounts** - Automatic (up to 30%)
 - **Committed Use Discounts** - 1 or 3-year (up to 57%)
 - **Preemptible VMs** - Up to 80% cheaper
 
 ### Pricing Calculator
+
 Use Google Cloud Pricing Calculator to estimate costs
 
 ### Free Tier
-- **Always Free**: 
+
+- **Always Free**:
   - Cloud Functions: 2M invocations/month
   - Cloud Run: 2M requests/month
   - Firestore: 1GB storage, 50K reads/day
@@ -366,7 +455,9 @@ Use Google Cloud Pricing Calculator to estimate costs
 ## 🛠️ Essential Tools
 
 ### gcloud CLI
+
 Command-line tool for GCP
+
 ```bash
 # Install
 curl https://sdk.cloud.google.com | bash
@@ -385,16 +476,21 @@ gcloud compute instances create my-vm
 ```
 
 ### Cloud Console
+
 Web-based management interface
 
 ### Cloud Shell
+
 Browser-based terminal with tools pre-installed
+
 - Free to use
 - 5GB persistent storage
 - Pre-authenticated
 
 ### SDKs
+
 Available for many languages:
+
 - Python (google-cloud-python)
 - Java (google-cloud-java)
 - Node.js (google-cloud-node)
@@ -404,21 +500,25 @@ Available for many languages:
 ### Infrastructure as Code
 
 **Deployment Manager**
+
 - GCP native IaC
 - YAML/Python/Jinja2 templates
 
 **Terraform**
+
 - Multi-cloud support
 - Popular choice
 - HCL language
 
 **Pulumi**
+
 - Use programming languages
 - Modern approach
 
 ## 📐 GCP Best Practices
 
 ### 1. Organization Structure
+
 ```
 Organization
   └── Folders (by environment/team)
@@ -426,18 +526,21 @@ Organization
 ```
 
 ### 2. IAM Best Practices
+
 - Use service accounts for applications
 - Grant least privilege
 - Use predefined roles when possible
 - Review permissions regularly
 
 ### 3. Network Security
+
 - Use VPC Service Controls
 - Enable Cloud Armor
 - Implement firewall rules
 - Use Private Google Access
 
 ### 4. Cost Optimization
+
 - Use committed use discounts
 - Leverage preemptible VMs
 - Set up budget alerts
@@ -445,6 +548,7 @@ Organization
 - Right-size resources
 
 ### 5. High Availability
+
 - Use regional resources
 - Implement health checks
 - Configure auto-scaling
@@ -479,6 +583,7 @@ Organization
    - Certification prep
 
 ### Certifications
+
 - **Cloud Digital Leader** - Business/non-technical
 - **Associate Cloud Engineer** - Entry level
 - **Professional Cloud Architect** - Most popular
@@ -524,6 +629,7 @@ Organization
 ❌ Require specific regional presence
 
 ### Key Differentiators
+
 - **BigQuery**: Industry-leading data warehouse
 - **GKE**: Best Kubernetes experience
 - **Networking**: Superior global network
@@ -531,6 +637,7 @@ Organization
 - **Pricing**: Often more cost-effective
 
 ## 🔗 Related Topics
+
 - [Microservices Architecture](../../architectures/microservices/README.md)
 - [Serverless Architecture](../../architectures/serverless/README.md)
 - [Event-Driven Architecture](../../architectures/event-driven/README.md)

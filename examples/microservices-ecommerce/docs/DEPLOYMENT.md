@@ -124,7 +124,7 @@ docker-compose exec user-service sh
 Create `docker-compose.prod.yml`:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   user-service:
@@ -150,6 +150,7 @@ secrets:
 ```
 
 Deploy:
+
 ```bash
 docker stack deploy -c docker-compose.prod.yml ecommerce
 ```
@@ -211,45 +212,45 @@ spec:
         app: user-service
     spec:
       containers:
-      - name: user-service
-        image: your-registry/user-service:latest
-        ports:
-        - containerPort: 3001
-        env:
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: user-service-config
-              key: NODE_ENV
-        - name: LOG_LEVEL
-          valueFrom:
-            configMapKeyRef:
-              name: user-service-config
-              key: LOG_LEVEL
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: user-service-secrets
-              key: jwt-secret
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health/live
-            port: 3001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 3001
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: user-service
+          image: your-registry/user-service:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: NODE_ENV
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: LOG_LEVEL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 5
 
 ---
 apiVersion: v1
@@ -261,9 +262,9 @@ spec:
   selector:
     app: user-service
   ports:
-  - protocol: TCP
-    port: 3001
-    targetPort: 3001
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
   type: ClusterIP
 
 ---
@@ -280,12 +281,12 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
 ### Deploy to Kubernetes
@@ -385,7 +386,10 @@ docker push \
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"],
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3001/health || exit 1"
+        ],
         "interval": 30,
         "timeout": 5,
         "retries": 3,
@@ -436,21 +440,21 @@ provider "aws" {
 # VPC and Networking
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  
+
   name = "ecommerce-vpc"
   cidr = "10.0.0.0/16"
-  
+
   azs             = ["us-east-1a", "us-east-1b"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
-  
+
   enable_nat_gateway = true
 }
 
 # ECS Cluster
 resource "aws_ecs_cluster" "main" {
   name = "ecommerce-cluster"
-  
+
   setting {
     name  = "containerInsights"
     value = "enabled"
@@ -473,7 +477,7 @@ resource "aws_lb_target_group" "user_service" {
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id
   target_type = "ip"
-  
+
   health_check {
     path                = "/health"
     healthy_threshold   = 2
@@ -491,14 +495,14 @@ resource "aws_db_instance" "main" {
   instance_class       = "db.t3.micro"
   allocated_storage    = 20
   storage_encrypted    = true
-  
+
   db_name  = "ecommerce"
   username = "admin"
   password = var.db_password
-  
+
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  
+
   backup_retention_period = 7
   skip_final_snapshot     = false
   final_snapshot_identifier = "ecommerce-db-final-snapshot"
@@ -506,6 +510,7 @@ resource "aws_db_instance" "main" {
 ```
 
 Deploy:
+
 ```bash
 terraform init
 terraform plan
@@ -561,7 +566,7 @@ groups:
         annotations:
           summary: "High error rate detected"
           description: "Service {{ $labels.service }} has error rate > 5%"
-      
+
       - alert: ServiceDown
         expr: up == 0
         for: 2m
@@ -619,6 +624,7 @@ docker-compose exec user-service sh
 ### Debugging Tips
 
 **View detailed logs:**
+
 ```bash
 # Set LOG_LEVEL to debug
 export LOG_LEVEL=debug
@@ -626,6 +632,7 @@ npm run dev
 ```
 
 **Check network connectivity:**
+
 ```bash
 # From inside container
 docker-compose exec user-service ping postgres
@@ -633,6 +640,7 @@ docker-compose exec user-service wget -O- http://user-service:3001/health
 ```
 
 **Database queries:**
+
 ```bash
 # Connect to database
 docker-compose exec postgres psql -U postgres -d ecommerce_user

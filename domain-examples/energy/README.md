@@ -7,12 +7,14 @@ This example demonstrates a smart grid monitoring system for renewable energy ma
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - Monitor solar panel performance across multiple installations
 - Predict maintenance needs before failures occur
 - Optimize energy distribution based on production and consumption
 - Provide real-time dashboards for operators
 
 ### Technical Challenges
+
 - Handle high-volume IoT sensor data (1000+ sensors, 1 reading/second each)
 - Store and query time-series data efficiently
 - Process real-time alerts for anomalies
@@ -111,6 +113,7 @@ energy/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - 4GB RAM minimum
 - Ports 1883 (MQTT), 9092 (Kafka), 5432 (PostgreSQL), 3000 (Grafana) available
@@ -176,7 +179,7 @@ class SensorReading:
     current_amperes: float
     power_output_watts: float
     location: Optional[tuple[float, float]] = None  # (latitude, longitude)
-    
+
     def validate(self) -> bool:
         """Validate sensor reading ranges"""
         return (
@@ -185,7 +188,7 @@ class SensorReading:
             0 <= self.current_amperes <= 15 and
             0 <= self.power_output_watts <= 1000
         )
-    
+
     def calculate_efficiency(self, panel_rating_watts: float = 400) -> float:
         """Calculate panel efficiency percentage"""
         return (self.power_output_watts / panel_rating_watts) * 100
@@ -218,12 +221,12 @@ func main() {
     mqttOpts := mqtt.NewClientOptions().
         AddBroker("tcp://mqtt-broker:1883").
         SetClientID("ingestion-service")
-    
+
     mqttClient := mqtt.NewClient(mqttOpts)
     if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
         log.Fatal(token.Error())
     }
-    
+
     // Connect to Kafka
     producer, err := kafka.NewProducer(&kafka.ConfigMap{
         "bootstrap.servers": "kafka:9092",
@@ -232,7 +235,7 @@ func main() {
         log.Fatal(err)
     }
     defer producer.Close()
-    
+
     // Subscribe to sensor topics
     mqttClient.Subscribe("sensors/+/readings", 0, func(client mqtt.Client, msg mqtt.Message) {
         var reading SensorReading
@@ -240,13 +243,13 @@ func main() {
             log.Printf("Invalid reading: %v", err)
             return
         }
-        
+
         // Validate reading
         if !validateReading(reading) {
             log.Printf("Reading out of range: %+v", reading)
             return
         }
-        
+
         // Publish to Kafka
         value, _ := json.Marshal(reading)
         producer.Produce(&kafka.Message{
@@ -257,7 +260,7 @@ func main() {
             Value: value,
         }, nil)
     })
-    
+
     log.Println("Ingestion service started")
     select {} // Keep running
 }
@@ -282,7 +285,7 @@ from typing import Dict
 
 class AnomalyDetector:
     """Detect anomalies in solar panel performance using ML"""
-    
+
     def __init__(self, model_path: str = 'models/isolation_forest.pkl'):
         self.model = joblib.load(model_path)
         self.consumer = KafkaConsumer(
@@ -294,7 +297,7 @@ class AnomalyDetector:
             bootstrap_servers=['kafka:9092'],
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
-    
+
     def extract_features(self, reading: Dict) -> np.ndarray:
         """Extract features for ML model"""
         return np.array([[
@@ -304,16 +307,16 @@ class AnomalyDetector:
             reading['power_output_watts'],
             reading['power_output_watts'] / (reading['voltage_volts'] * reading['current_amperes'])  # efficiency
         ]])
-    
+
     def run(self):
         """Process readings and detect anomalies"""
         for message in self.consumer:
             reading = message.value
             features = self.extract_features(reading)
-            
+
             # Predict: -1 = anomaly, 1 = normal
             prediction = self.model.predict(features)[0]
-            
+
             if prediction == -1:
                 alert = {
                     'panel_id': reading['panel_id'],
@@ -323,11 +326,11 @@ class AnomalyDetector:
                     'details': reading,
                     'recommendation': self._get_recommendation(reading)
                 }
-                
+
                 # Publish alert
                 self.producer.send('alerts', value=alert)
                 print(f"⚠️  Anomaly detected: Panel {reading['panel_id']}")
-    
+
     def _get_recommendation(self, reading: Dict) -> str:
         """Generate recommendation based on reading"""
         if reading['temperature_celsius'] > 60:
@@ -370,7 +373,7 @@ async def get_panel_readings(
 ):
     """Get aggregated readings for a panel"""
     query = """
-        SELECT 
+        SELECT
             time_bucket($1, timestamp) AS bucket,
             AVG(power_output_watts) as avg_power,
             MAX(power_output_watts) as max_power,
@@ -383,10 +386,10 @@ async def get_panel_readings(
         GROUP BY bucket
         ORDER BY bucket DESC
     """
-    
+
     async with app.state.pool.acquire() as conn:
         rows = await conn.fetch(query, interval, panel_id, start_time, end_time)
-        
+
     return [{
         'timestamp': row['bucket'],
         'avg_power': float(row['avg_power']),
@@ -402,9 +405,9 @@ async def get_panel_efficiency(
 ):
     """Calculate panel efficiency over time"""
     start_time = datetime.utcnow() - timedelta(days=days)
-    
+
     query = """
-        SELECT 
+        SELECT
             time_bucket('1 day', timestamp) AS day,
             AVG(power_output_watts) / 400.0 * 100 as efficiency_pct
         FROM sensor_readings
@@ -413,10 +416,10 @@ async def get_panel_efficiency(
         GROUP BY day
         ORDER BY day DESC
     """
-    
+
     async with app.state.pool.acquire() as conn:
         rows = await conn.fetch(query, panel_id, start_time)
-    
+
     return [{
         'date': row['day'],
         'efficiency_percentage': float(row['efficiency_pct'])
@@ -493,16 +496,16 @@ async def test_reading_flow():
         'current_amperes': 8.5,
         'power_output_watts': 408.0
     }
-    
+
     publish_reading('sensors/TEST-001/readings', reading)
-    
+
     # Wait for processing
     await asyncio.sleep(5)
-    
+
     # Query API
     api = EnergyAPI(base_url='http://localhost:8000')
     results = await api.get_panel_readings('TEST-001', limit=1)
-    
+
     # Verify
     assert len(results) > 0
     assert results[0]['panel_id'] == 'TEST-001'
@@ -514,7 +517,7 @@ async def test_reading_flow():
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 
 services:
   mqtt-broker:

@@ -11,19 +11,24 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of CI/CD as an **automated assembly line**:
+
 - **CI**: Quality checks at each station - if a part is defective, the line stops immediately
 - **CD**: Automatically moving products through packaging and shipping stages
 - **Continuous Deployment**: Products automatically shipped to customers once they pass all checks
 
 ### Why CI/CD?
+
 Without CI/CD:
+
 - Manual testing before each release (hours/days)
 - Integration issues discovered late
 - Risky, infrequent deployments
 - Long feedback loops
 
 With CI/CD:
+
 - Automated testing (minutes)
 - Issues caught early
 - Frequent, low-risk deployments
@@ -45,15 +50,18 @@ With CI/CD:
 ```
 
 ### 1. Source Stage
+
 - Developer commits code to version control (Git)
 - Triggers CI/CD pipeline automatically
 
 ### 2. Build Stage
+
 - Compile code
 - Resolve dependencies
 - Create artifacts (Docker images, binaries, etc.)
 
 ### 3. Test Stage
+
 - **Unit Tests**: Test individual functions/methods
 - **Integration Tests**: Test component interactions
 - **End-to-End Tests**: Test complete user workflows
@@ -61,36 +69,42 @@ With CI/CD:
 - **Code Quality**: Linting, code coverage
 
 ### 4. Deploy Stage
+
 - **Staging**: Deploy to test environment
 - **Production**: Deploy to live environment (manual approval or automatic)
 
 ## 🛠️ Popular CI/CD Tools
 
 ### GitHub Actions
+
 - Integrated with GitHub repositories
 - YAML-based workflows
 - Large marketplace of actions
 - Free for public repos
 
 ### Jenkins
+
 - Open-source automation server
 - Highly extensible with plugins
 - Self-hosted
 - Pipeline as code (Jenkinsfile)
 
 ### GitLab CI/CD
+
 - Built into GitLab
 - YAML configuration (.gitlab-ci.yml)
 - Auto DevOps features
 - Integrated container registry
 
 ### CircleCI
+
 - Cloud-based CI/CD
 - Fast parallel testing
 - Docker-first approach
 - Good free tier
 
 ### Azure DevOps
+
 - Microsoft's CI/CD platform
 - Integrates with Azure services
 - Supports multiple languages
@@ -106,9 +120,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -119,45 +133,45 @@ jobs:
         node-version: [14.x, 16.x, 18.x]
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run linter
-      run: npm run lint
+      - name: Run linter
+        run: npm run lint
 
-    - name: Run tests
-      run: npm test
+      - name: Run tests
+        run: npm test
 
-    - name: Run coverage
-      run: npm run coverage
+      - name: Run coverage
+        run: npm run coverage
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/coverage-final.json
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/coverage-final.json
 
   build:
     needs: test
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Build application
-      run: npm run build
+      - name: Build application
+        run: npm run build
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build
-        path: dist/
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist/
 ```
 
 ### Docker Build & Push
@@ -168,8 +182,8 @@ name: Docker Build & Push
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
+    branches: [main]
+    tags: ["v*"]
 
 env:
   REGISTRY: ghcr.io
@@ -183,39 +197,39 @@ jobs:
       packages: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Log in to Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-        cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 ```
 
 ### Deploy to Kubernetes
@@ -226,35 +240,35 @@ name: Deploy to Kubernetes
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
 
-    - name: Configure kubectl
-      run: |
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
-        export KUBECONFIG=kubeconfig.yaml
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
 
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl set image deployment/myapp \
-          myapp=ghcr.io/${{ github.repository }}:${{ github.sha }} \
-          -n production
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/myapp \
+            myapp=ghcr.io/${{ github.repository }}:${{ github.sha }} \
+            -n production
 
-        kubectl rollout status deployment/myapp -n production
+          kubectl rollout status deployment/myapp -n production
 
-    - name: Verify deployment
-      run: |
-        kubectl get pods -n production
-        kubectl get services -n production
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n production
+          kubectl get services -n production
 ```
 
 ### Complete CI/CD Pipeline
@@ -265,9 +279,9 @@ name: Complete CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   NODE_VERSION: 18.x
@@ -279,44 +293,44 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ env.NODE_VERSION }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Lint code
-      run: npm run lint
+      - name: Lint code
+        run: npm run lint
 
-    - name: Type check
-      run: npm run type-check
+      - name: Type check
+        run: npm run type-check
 
-    - name: Run unit tests
-      run: npm run test:unit
+      - name: Run unit tests
+        run: npm run test:unit
 
-    - name: Run integration tests
-      run: npm run test:integration
+      - name: Run integration tests
+        run: npm run test:integration
 
   # Stage 2: Security Scanning
   security:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Run dependency check
-      run: npm audit
+      - name: Run dependency check
+        run: npm audit
 
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-    - name: Run CodeQL analysis
-      uses: github/codeql-action/analyze@v2
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v2
 
   # Stage 3: Build & Push
   build:
@@ -325,14 +339,14 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Build Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   # Stage 4: Deploy to Staging
   deploy-staging:
@@ -341,15 +355,15 @@ jobs:
     environment: staging
 
     steps:
-    - name: Deploy to staging
-      run: |
-        # Deploy commands here
-        echo "Deploying to staging..."
+      - name: Deploy to staging
+        run: |
+          # Deploy commands here
+          echo "Deploying to staging..."
 
-    - name: Run smoke tests
-      run: |
-        # Smoke test commands
-        echo "Running smoke tests..."
+      - name: Run smoke tests
+        run: |
+          # Smoke test commands
+          echo "Running smoke tests..."
 
   # Stage 5: Deploy to Production
   deploy-production:
@@ -358,22 +372,22 @@ jobs:
     environment: production
 
     steps:
-    - name: Deploy to production
-      run: |
-        # Deploy commands here
-        echo "Deploying to production..."
+      - name: Deploy to production
+        run: |
+          # Deploy commands here
+          echo "Deploying to production..."
 
-    - name: Verify deployment
-      run: |
-        # Health check commands
-        echo "Verifying deployment..."
+      - name: Verify deployment
+        run: |
+          # Health check commands
+          echo "Verifying deployment..."
 
-    - name: Notify team
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        text: 'Production deployment completed!'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Notify team
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: "Production deployment completed!"
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
 ## 📝 Jenkins Pipeline Examples
@@ -635,6 +649,7 @@ deploy-production:
 ### Common Problems
 
 #### 1. Build Failures
+
 ```bash
 # Check build logs carefully
 # Common issues:
@@ -649,6 +664,7 @@ npm run build
 ```
 
 #### 2. Test Failures in CI but Pass Locally
+
 ```bash
 # Common causes:
 # - Timing issues (tests too fast/slow in CI)
@@ -662,6 +678,7 @@ npm test
 ```
 
 #### 3. Deployment Timeouts
+
 ```bash
 # Check rollout status
 kubectl rollout status deployment/myapp
@@ -676,6 +693,7 @@ kubectl get events --sort-by='.lastTimestamp'
 ```
 
 #### 4. Authentication Issues
+
 ```bash
 # Docker registry
 docker login registry.example.com
@@ -706,44 +724,54 @@ aws sts get-caller-identity
 # - Check CI/CD > Pipelines > Job details
 ```
 
-## 🎓 Interview Questions
+## 🎓 Common Questions
 
 ### Basic
 
 **Q1: What's the difference between CI and CD?**
+
 - A: CI focuses on automating integration and testing of code changes. CD extends this by automating deployment to staging/production environments.
 
 **Q2: What are the benefits of CI/CD?**
+
 - A: Faster feedback, reduced integration issues, automated testing, frequent low-risk deployments, faster time to market.
 
 **Q3: What is a pipeline in CI/CD?**
+
 - A: A pipeline is an automated sequence of steps (build, test, deploy) that code goes through from commit to production.
 
 ### Intermediate
 
 **Q4: How do you handle secrets in CI/CD?**
+
 - A: Use encrypted environment variables, secret management tools (Vault, AWS Secrets Manager), or CI/CD platform's built-in secret storage. Never commit secrets to code.
 
 **Q5: What is a deployment strategy?**
+
 - A: Methods for releasing new versions: Blue-Green (two identical environments), Canary (gradual rollout), Rolling (incremental replacement), Recreate (stop old, start new).
 
 **Q6: How do you ensure zero-downtime deployments?**
+
 - A: Use rolling updates, health checks, readiness probes, gradual traffic shifting, and maintain backward compatibility.
 
 ### Advanced
 
 **Q7: How would you implement a multi-environment CI/CD pipeline?**
+
 - A: Use environment-specific configurations, separate deployment stages with approval gates, environment variables/secrets per environment, and progressive testing (dev → staging → production).
 
 **Q8: How do you handle database migrations in CI/CD?**
+
 - A: Run migrations before deploying new code, ensure backward compatibility, use tools like Flyway/Liquibase, test migrations in staging, have rollback plan.
 
 **Q9: What metrics would you track in a CI/CD pipeline?**
+
 - A: Build success rate, build duration, deployment frequency, lead time for changes, change failure rate, mean time to recovery (MTTR).
 
 ## 📚 Best Practices
 
 ### 1. Keep Pipelines Fast
+
 ```yaml
 # Use caching
 - uses: actions/cache@v3
@@ -758,27 +786,31 @@ strategy:
 ```
 
 ### 2. Fail Fast
+
 ```yaml
 # Run quick checks first
 stages:
-  - lint      # Fast
-  - test      # Medium
-  - build     # Slower
-  - deploy    # Slowest
+  - lint # Fast
+  - test # Medium
+  - build # Slower
+  - deploy # Slowest
 ```
 
 ### 3. Use Pipeline as Code
+
 - Store CI/CD configuration in version control
 - Review pipeline changes in pull requests
 - Test pipeline changes in branches
 
 ### 4. Secure Your Pipeline
+
 - Use least privilege for credentials
 - Scan for vulnerabilities
 - Sign and verify artifacts
 - Audit pipeline changes
 
 ### 5. Monitor and Alert
+
 - Track pipeline metrics
 - Alert on failures
 - Set up notifications (Slack, email)

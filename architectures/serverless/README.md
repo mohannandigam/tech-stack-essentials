@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of serverless like using electricity:
+
 - You don't own or maintain the power plant
 - You just plug in and use what you need
 - You pay only for the electricity you consume
@@ -16,6 +18,7 @@ Think of serverless like using electricity:
 Similarly, with serverless, you don't manage servers - you just write code and run it.
 
 ### Core Characteristics
+
 - **No Server Management** - Provider handles all infrastructure
 - **Auto-Scaling** - Automatically scales from 0 to thousands of requests
 - **Pay-per-Use** - Only pay when code is actually running
@@ -84,18 +87,21 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ## 🏗️ Key Components
 
 ### 1. Function as a Service (FaaS)
+
 - **AWS Lambda** - Amazon's FaaS offering
 - **Azure Functions** - Microsoft's FaaS
 - **Google Cloud Functions** - Google's FaaS
 - **Cloudflare Workers** - Edge computing functions
 
 ### 2. Backend as a Service (BaaS)
+
 - **Authentication** - Auth0, AWS Cognito, Firebase Auth
 - **Database** - DynamoDB, Firestore, Firebase Realtime DB
 - **Storage** - S3, Cloud Storage, Blob Storage
 - **APIs** - API Gateway, GraphQL APIs
 
 ### 3. Event Sources
+
 - **HTTP Requests** - API Gateway triggers
 - **Database Changes** - DynamoDB Streams, Firestore triggers
 - **File Uploads** - S3 events, Blob storage events
@@ -103,6 +109,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 - **Message Queues** - SQS, Service Bus, Pub/Sub
 
 ### 4. Supporting Services
+
 - **Monitoring** - CloudWatch, Application Insights, Cloud Monitoring
 - **Logging** - CloudWatch Logs, Azure Monitor, Cloud Logging
 - **Secrets Management** - Secrets Manager, Key Vault, Secret Manager
@@ -110,6 +117,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ## 🔄 Common Use Cases
 
 ### Ideal For
+
 ✅ **Web APIs** - RESTful APIs and GraphQL
 ✅ **Data Processing** - ETL, image/video processing
 ✅ **Scheduled Tasks** - Cron jobs, batch processing
@@ -119,6 +127,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ✅ **Mobile Backends** - Backend for mobile apps
 
 ### Not Ideal For
+
 ❌ **Long-Running Tasks** - Jobs > 15 minutes
 ❌ **Stateful Applications** - Need persistent connections
 ❌ **High-Performance Computing** - Need consistent low latency
@@ -147,6 +156,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ### Testing Strategies
 
 **1. Unit Testing**
+
 ```
 - Test function logic in isolation
 - Mock external dependencies (databases, APIs)
@@ -155,6 +165,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ```
 
 **2. Integration Testing**
+
 ```
 - Test with real cloud services
 - Use separate test environments
@@ -163,6 +174,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ```
 
 **3. Local Testing**
+
 ```
 - Use local emulators
 - Tools: SAM CLI, Azure Functions Core Tools, LocalStack
@@ -171,6 +183,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ```
 
 **4. End-to-End Testing**
+
 ```
 - Test complete workflows in cloud
 - Use test/staging environments
@@ -179,6 +192,7 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ```
 
 **5. Load Testing**
+
 ```
 - Test cold start performance
 - Verify auto-scaling works
@@ -221,12 +235,14 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ## 💰 Cost Considerations
 
 ### Pricing Model
+
 - **Requests** - Charged per million requests
 - **Duration** - Charged per GB-second of compute
 - **Data Transfer** - Network egress costs
 - **Storage** - For associated services (S3, databases)
 
 ### Cost Optimization Tips
+
 1. Optimize function memory allocation
 2. Reduce cold starts with warming
 3. Use appropriate timeout settings
@@ -245,26 +261,31 @@ Similarly, with serverless, you don't manage servers - you just write code and r
 ## 📐 Architecture Patterns
 
 ### 1. API Backend Pattern
+
 ```
 API Gateway → Lambda Functions → Database
 ```
 
 ### 2. Stream Processing Pattern
+
 ```
 Kinesis/Kafka → Lambda → Analytics/Storage
 ```
 
 ### 3. Scheduled Task Pattern
+
 ```
 CloudWatch Events → Lambda → Process Data
 ```
 
 ### 4. Fan-Out Pattern
+
 ```
 One Event → Multiple Lambda Functions
 ```
 
 ### 5. Pipeline Pattern
+
 ```
 S3 Upload → Lambda → Process → Lambda → Store
 ```
@@ -272,16 +293,19 @@ S3 Upload → Lambda → Process → Lambda → Store
 ## 🛠️ Popular Frameworks
 
 ### AWS
+
 - **Serverless Framework** - Multi-cloud framework
 - **AWS SAM** - AWS-specific framework
 - **Chalice** - Python serverless framework
 
 ### General Purpose
+
 - **Serverless Framework** - Most popular, multi-cloud
 - **Terraform** - Infrastructure as code
 - **Pulumi** - Infrastructure as code with real programming languages
 
 ### Language-Specific
+
 - **Zappa** - Python on AWS Lambda
 - **Up** - Deploy Node.js apps as Lambda
 - **Claudia.js** - Node.js deployment tool
@@ -289,6 +313,7 @@ S3 Upload → Lambda → Process → Lambda → Store
 ## 🎓 Learning Resources
 
 ### Concepts to Study Next
+
 1. Function composition and chaining
 2. Event-driven patterns
 3. Distributed tracing
@@ -297,6 +322,7 @@ S3 Upload → Lambda → Process → Lambda → Store
 6. Cold start mitigation techniques
 
 ### Practice Ideas
+
 1. Build a simple REST API with Lambda
 2. Create an image processing pipeline
 3. Implement a scheduled data backup
@@ -304,6 +330,7 @@ S3 Upload → Lambda → Process → Lambda → Store
 5. Create a real-time notification system
 
 ### Best Practices
+
 - Keep functions small and focused
 - Use environment variables for configuration
 - Implement proper error handling
@@ -313,6 +340,7 @@ S3 Upload → Lambda → Process → Lambda → Store
 - Use layers for shared dependencies
 
 ## 🔗 Related Topics
+
 - [Event-Driven Architecture](../event-driven/README.md) - Serverless is event-driven
 - [Microservices](../microservices/README.md) - Can use serverless for services
 - [AWS Lambda](../../cloud-stacks/aws/README.md)

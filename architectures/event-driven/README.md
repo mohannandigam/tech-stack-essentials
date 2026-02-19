@@ -7,7 +7,9 @@
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of a news organization:
+
 - **Reporters** (producers) discover news and write stories
 - **The newsroom** (event bus) collects all stories
 - **Newspapers, TV, websites** (consumers) each pick the stories they want to publish
@@ -15,6 +17,7 @@ Think of a news organization:
 - Readers don't need to know who wrote them
 
 ### Core Characteristics
+
 - **Asynchronous** - Events happen and are processed independently
 - **Loose Coupling** - Producers and consumers don't know about each other
 - **Event-First** - Events are the primary means of communication
@@ -78,9 +81,11 @@ Think of a news organization:
 ## 🏗️ Key Components
 
 ### 1. Events
+
 An event is a significant change in state or an occurrence worth noting.
 
 **Event Structure:**
+
 ```json
 {
   "eventId": "12345",
@@ -96,26 +101,31 @@ An event is a significant change in state or an occurrence worth noting.
 ```
 
 **Event Types:**
+
 - **Domain Events** - Business events (OrderPlaced, UserRegistered)
 - **Integration Events** - Cross-system events
 - **System Events** - Infrastructure events (ServerStarted)
 
 ### 2. Event Producers (Publishers)
+
 - Components that generate events
 - Publish to event bus/broker
 - Don't know who will consume events
 
 ### 3. Event Consumers (Subscribers)
+
 - Components that react to events
 - Subscribe to events they care about
 - Process events asynchronously
 
 ### 4. Event Channel/Bus/Broker
+
 - Middleware that routes events
 - Stores events temporarily
 - Ensures delivery to consumers
 
 **Popular Event Brokers:**
+
 - **Apache Kafka** - High-throughput distributed streaming
 - **RabbitMQ** - Traditional message broker
 - **AWS SNS/SQS** - Cloud-based messaging
@@ -124,6 +134,7 @@ An event is a significant change in state or an occurrence worth noting.
 - **Redis Streams** - Lightweight event streaming
 
 ### 5. Event Store
+
 - Persistent storage for events
 - Enables event replay
 - Audit trail of all changes
@@ -131,15 +142,17 @@ An event is a significant change in state or an occurrence worth noting.
 ## 🔄 Communication Patterns
 
 ### 1. Publish/Subscribe (Pub/Sub)
+
 ```
 One Publisher → Many Subscribers
-Order Service publishes "OrderPlaced" 
+Order Service publishes "OrderPlaced"
   → Inventory Service subscribes
   → Shipping Service subscribes
   → Email Service subscribes
 ```
 
 ### 2. Event Streaming
+
 ```
 Continuous flow of events
 Producer → Kafka Topic → Multiple Consumers
@@ -147,6 +160,7 @@ Producer → Kafka Topic → Multiple Consumers
 ```
 
 ### 3. Event Sourcing
+
 ```
 Store all changes as events
 Current State = Replay all Events
@@ -154,6 +168,7 @@ Enables time travel and audit
 ```
 
 ### 4. CQRS (Command Query Responsibility Segregation)
+
 ```
 Separate models for:
 - Commands (write/update) → Generate Events
@@ -163,6 +178,7 @@ Separate models for:
 ## 🎯 Common Use Cases
 
 ### Ideal For
+
 ✅ **Real-Time Updates** - Notifications, dashboards
 ✅ **Data Replication** - Sync across systems
 ✅ **Audit Logging** - Track all changes
@@ -172,6 +188,7 @@ Separate models for:
 ✅ **Analytics** - Real-time data analysis
 
 ### Examples
+
 - **E-commerce**: Order placed → Update inventory → Send confirmation → Notify shipping
 - **Social Media**: User posts → Update feed → Send notifications → Update analytics
 - **Banking**: Transaction → Check fraud → Update balance → Send alert
@@ -199,6 +216,7 @@ Separate models for:
 ### Testing Strategies
 
 **1. Unit Testing**
+
 ```
 Test event producers:
 - Verify correct events published
@@ -212,6 +230,7 @@ Test event consumers:
 ```
 
 **2. Integration Testing**
+
 ```
 Test with real event broker:
 - Publish events and verify consumption
@@ -220,6 +239,7 @@ Test with real event broker:
 ```
 
 **3. End-to-End Testing**
+
 ```
 Test complete flows:
 - Trigger event
@@ -229,6 +249,7 @@ Test complete flows:
 ```
 
 **4. Event Replay Testing**
+
 ```
 Replay historical events:
 - Verify system reaches correct state
@@ -237,6 +258,7 @@ Replay historical events:
 ```
 
 **5. Chaos Testing**
+
 ```
 Test failure scenarios:
 - Consumer failures and recovery
@@ -284,6 +306,7 @@ Test failure scenarios:
 ## 📐 Design Patterns
 
 ### 1. Event Notification
+
 ```
 Simple notification that something happened
 Consumers fetch details if needed
@@ -291,6 +314,7 @@ Lightweight and fast
 ```
 
 ### 2. Event-Carried State Transfer
+
 ```
 Event contains all necessary data
 Consumers don't need to fetch more
@@ -298,6 +322,7 @@ Larger events but fewer calls
 ```
 
 ### 3. Event Sourcing
+
 ```
 Store events as source of truth
 Rebuild state by replaying events
@@ -305,6 +330,7 @@ Complete audit trail
 ```
 
 ### 4. CQRS
+
 ```
 Separate read and write models
 Optimized for different use cases
@@ -312,6 +338,7 @@ Complex but powerful
 ```
 
 ### 5. Saga Pattern
+
 ```
 Manage distributed transactions
 Compensating actions for failures
@@ -329,18 +356,21 @@ Ensures data consistency
 ## 🛠️ Technology Stack
 
 ### Event Brokers
+
 - **Apache Kafka** - Industry standard for event streaming
 - **RabbitMQ** - Flexible message broker
 - **Apache Pulsar** - Multi-tenant event streaming
 - **NATS** - Lightweight messaging system
 
 ### Stream Processing
+
 - **Apache Flink** - Stateful stream processing
 - **Apache Spark Streaming** - Batch + streaming
 - **Kafka Streams** - Stream processing library
 - **AWS Kinesis** - Managed streaming service
 
 ### Event Sourcing Frameworks
+
 - **Axon Framework** - Java event sourcing/CQRS
 - **EventStore** - Purpose-built event store
 - **Marten** - .NET document DB + event store
@@ -348,6 +378,7 @@ Ensures data consistency
 ## 🎓 Learning Resources
 
 ### Concepts to Study Next
+
 1. Event Sourcing in depth
 2. CQRS pattern
 3. Saga pattern for distributed transactions
@@ -356,6 +387,7 @@ Ensures data consistency
 6. Idempotency patterns
 
 ### Practice Ideas
+
 1. Build a simple pub/sub system
 2. Implement event sourcing for a domain
 3. Create a real-time notification system
@@ -364,6 +396,7 @@ Ensures data consistency
 6. Create an event-driven microservices system
 
 ### Best Practices
+
 - Design events as immutable
 - Include complete context in events
 - Use versioning for event schemas
@@ -374,6 +407,7 @@ Ensures data consistency
 - Keep events small and focused
 
 ## 🔗 Related Topics
+
 - [Microservices Architecture](../microservices/README.md) - Often uses events
 - [Serverless Architecture](../serverless/README.md) - Event-triggered functions
 - [Message Queues and Streaming](../../cloud-stacks/aws/README.md)

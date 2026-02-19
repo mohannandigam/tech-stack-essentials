@@ -7,35 +7,45 @@ This directory contains practical infrastructure examples demonstrating modern D
 ## 📁 Structure
 
 ### [Docker](./docker/README.md)
+
 Learn containerization with real-world examples:
+
 - Container basics and best practices
 - Multi-stage builds
 - Docker Compose for multi-service applications
 - Examples across all domains (energy, finance, retail, etc.)
 
 ### [Kubernetes](./kubernetes/README.md)
+
 Container orchestration at scale:
+
 - Pods, Services, Deployments
 - ConfigMaps and Secrets
 - Horizontal Pod Autoscaling
 - Domain-specific deployment patterns
 
 ### [CI/CD](./cicd/README.md)
+
 Continuous Integration and Delivery pipelines:
+
 - GitHub Actions workflows
 - Jenkins pipelines
 - GitLab CI configurations
 - Testing and deployment automation
 
 ### [Terraform](./terraform/README.md)
+
 Infrastructure as Code:
+
 - Multi-cloud provisioning (AWS, GCP, Azure)
 - State management
 - Modules and reusability
 - Domain-specific infrastructure patterns
 
 ### [Monitoring](./monitoring/README.md)
+
 Observability and monitoring:
+
 - Prometheus for metrics
 - Grafana for visualization
 - ELK Stack for logging
@@ -44,6 +54,7 @@ Observability and monitoring:
 ## 🎯 Learning Approach
 
 Each infrastructure topic includes:
+
 1. **Concept Explanation** - What it is and why it matters
 2. **Quick Start** - Get running in 5 minutes
 3. **Domain Examples** - See how it applies across industries
@@ -54,30 +65,35 @@ Each infrastructure topic includes:
 ## 🚀 Quick Start by Domain
 
 ### Energy Sector
+
 - Containerized IoT data collectors
 - Kubernetes for real-time grid monitoring
 - CI/CD for sensor firmware updates
 - Terraform for multi-region deployments
 
 ### Finance/Banking
+
 - Secure containerized services
 - High-availability Kubernetes clusters
 - Automated compliance testing in CI/CD
 - Disaster recovery infrastructure
 
 ### Retail/E-Commerce
+
 - Scalable microservices deployment
 - Auto-scaling for traffic spikes
 - Blue-green deployments
 - Multi-region infrastructure
 
 ### Healthcare
+
 - HIPAA-compliant containers
 - Secure Kubernetes configurations
 - Compliance-focused CI/CD
 - Encrypted infrastructure provisioning
 
 ### Social Media/Dating
+
 - High-throughput data pipelines
 - Real-time processing infrastructure
 - Content delivery networks

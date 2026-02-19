@@ -1,6 +1,6 @@
 # Anomaly Detection - Part 2: Advanced Methods
 
-*Continued from [Part 1: Basics and Statistical Methods](./ANOMALY_DETECTION.md)*
+_Continued from [Part 1: Basics and Statistical Methods](./ANOMALY_DETECTION.md)_
 
 ## Machine Learning Methods
 
@@ -9,6 +9,7 @@
 **Concept**: Isolates anomalies by randomly selecting features and split values. Anomalies are easier to isolate (require fewer splits).
 
 **How it Works**:
+
 1. Randomly select a feature
 2. Randomly select a split value between min and max
 3. Repeat until point is isolated
@@ -71,17 +72,20 @@ print(f"AUC-ROC: {roc_auc_score(y_true, anomaly_scores):.4f}")
 ```
 
 **Parameters Explained**:
+
 - `contamination`: Expected % of anomalies (helps set threshold)
 - `n_estimators`: Number of trees (more = more stable but slower)
 - `max_samples`: Samples per tree ('auto' = min(256, n_samples))
 
 **Pros**:
+
 - ✅ Works well with high-dimensional data
 - ✅ Fast training and prediction
 - ✅ No assumption about data distribution
 - ✅ Handles contaminated training data
 
 **Cons**:
+
 - ❌ May struggle with local outliers in dense clusters
 - ❌ Requires setting contamination parameter
 
@@ -127,16 +131,19 @@ print(f"AUC-ROC: {roc_auc_score(y_true, decision_scores):.4f}")
 ```
 
 **Parameters**:
+
 - `kernel`: Type of kernel ('rbf', 'linear', 'poly', 'sigmoid')
 - `gamma`: Kernel coefficient (higher = tighter boundary)
 - `nu`: Upper bound on % of outliers and lower bound on % of support vectors
 
 **Pros**:
+
 - ✅ Good for high-dimensional data
 - ✅ Flexible with different kernels
 - ✅ Provides decision boundary
 
 **Cons**:
+
 - ❌ Computationally expensive for large datasets
 - ❌ Sensitive to kernel and parameter choices
 
@@ -178,15 +185,18 @@ print(classification_report(y_true, y_pred_dbscan, target_names=['Normal', 'Anom
 ```
 
 **Parameters**:
+
 - `eps`: Neighborhood radius
 - `min_samples`: Minimum points in neighborhood
 
 **Pros**:
+
 - ✅ No need to specify number of clusters
 - ✅ Can find clusters of arbitrary shape
 - ✅ Robust to outliers
 
 **Cons**:
+
 - ❌ Sensitive to eps and min_samples
 - ❌ Struggles with varying densities
 
@@ -313,6 +323,7 @@ print(classification_report(y_test, predictions, target_names=['Normal', 'Anomal
 ```
 
 **Advantages of VAE over Standard Autoencoder**:
+
 - ✅ Learns probabilistic representation
 - ✅ Better generalization
 - ✅ More robust to noise
@@ -888,23 +899,24 @@ print(f"Best F1 score: {f1_scores[optimal_idx]:.4f}")
 
 ## Summary
 
-| Method | Type | Pros | Cons | Best For |
-|--------|------|------|------|----------|
-| **Z-Score** | Statistical | Fast, simple | Assumes Gaussian | Single-peaked distributions |
-| **IQR** | Statistical | Robust | Less sensitive | Skewed distributions |
-| **Isolation Forest** | ML | Fast, scalable | Need to set contamination | General purpose, high-dim |
-| **One-Class SVM** | ML | Flexible | Slow for large data | Complex boundaries |
-| **LOF** | ML | Finds local outliers | O(n²) complexity | Varying density |
-| **DBSCAN** | Clustering | No params for # clusters | Sensitive to params | Density-based clusters |
-| **Autoencoder** | Deep Learning | Handles complex patterns | Needs tuning | High-dimensional, complex |
-| **VAE** | Deep Learning | Probabilistic | More complex | When uncertainty matters |
-| **LSTM** | Deep Learning | Time dependencies | Needs много data | Time series |
+| Method               | Type          | Pros                     | Cons                      | Best For                    |
+| -------------------- | ------------- | ------------------------ | ------------------------- | --------------------------- |
+| **Z-Score**          | Statistical   | Fast, simple             | Assumes Gaussian          | Single-peaked distributions |
+| **IQR**              | Statistical   | Robust                   | Less sensitive            | Skewed distributions        |
+| **Isolation Forest** | ML            | Fast, scalable           | Need to set contamination | General purpose, high-dim   |
+| **One-Class SVM**    | ML            | Flexible                 | Slow for large data       | Complex boundaries          |
+| **LOF**              | ML            | Finds local outliers     | O(n²) complexity          | Varying density             |
+| **DBSCAN**           | Clustering    | No params for # clusters | Sensitive to params       | Density-based clusters      |
+| **Autoencoder**      | Deep Learning | Handles complex patterns | Needs tuning              | High-dimensional, complex   |
+| **VAE**              | Deep Learning | Probabilistic            | More complex              | When uncertainty matters    |
+| **LSTM**             | Deep Learning | Time dependencies        | Needs много data          | Time series                 |
 
 ---
 
 **Related Resources**:
+
 - [Part 1: Basics and Statistical Methods](./ANOMALY_DETECTION.md)
 - [MLOps Guide](./MLOPS_GUIDE.md)
 - [Data Science Fundamentals](./DATA_SCIENCE_FUNDAMENTALS.md)
 
-*Last Updated: 2026-02-19*
+_Last Updated: 2026-02-19_

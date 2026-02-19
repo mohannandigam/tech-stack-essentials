@@ -7,6 +7,7 @@ This example demonstrates a high-frequency trading platform with real-time marke
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - Execute trades with minimal latency (< 100ms)
 - Maintain accurate portfolio positions
 - Provide real-time market data feeds
@@ -14,6 +15,7 @@ This example demonstrates a high-frequency trading platform with real-time marke
 - Support multiple asset classes (stocks, options, futures)
 
 ### Technical Challenges
+
 - **High throughput**: Process 10,000+ orders per second
 - **Low latency**: Sub-100ms order execution
 - **Consistency**: ACID transactions for order execution
@@ -79,27 +81,27 @@ This example demonstrates a high-frequency trading platform with real-time marke
 
 ```typescript
 // models/order.ts
-import { Decimal } from 'decimal.js';
+import { Decimal } from "decimal.js";
 
 export enum OrderSide {
-  BUY = 'BUY',
-  SELL = 'SELL',
+  BUY = "BUY",
+  SELL = "SELL",
 }
 
 export enum OrderType {
-  MARKET = 'MARKET',
-  LIMIT = 'LIMIT',
-  STOP = 'STOP',
-  STOP_LIMIT = 'STOP_LIMIT',
+  MARKET = "MARKET",
+  LIMIT = "LIMIT",
+  STOP = "STOP",
+  STOP_LIMIT = "STOP_LIMIT",
 }
 
 export enum OrderStatus {
-  PENDING = 'PENDING',
-  SUBMITTED = 'SUBMITTED',
-  PARTIALLY_FILLED = 'PARTIALLY_FILLED',
-  FILLED = 'FILLED',
-  CANCELLED = 'CANCELLED',
-  REJECTED = 'REJECTED',
+  PENDING = "PENDING",
+  SUBMITTED = "SUBMITTED",
+  PARTIALLY_FILLED = "PARTIALLY_FILLED",
+  FILLED = "FILLED",
+  CANCELLED = "CANCELLED",
+  REJECTED = "REJECTED",
 }
 
 export interface Order {
@@ -109,8 +111,8 @@ export interface Order {
   side: OrderSide;
   type: OrderType;
   quantity: Decimal;
-  price?: Decimal;  // Optional for MARKET orders
-  stopPrice?: Decimal;  // For STOP orders
+  price?: Decimal; // Optional for MARKET orders
+  stopPrice?: Decimal; // For STOP orders
   status: OrderStatus;
   filledQuantity: Decimal;
   remainingQuantity: Decimal;
@@ -147,7 +149,7 @@ export interface Position {
 // events/order-events.ts
 export interface DomainEvent {
   eventId: string;
-  aggregateId: string;  // orderId
+  aggregateId: string; // orderId
   eventType: string;
   timestamp: Date;
   version: number;
@@ -155,8 +157,8 @@ export interface DomainEvent {
 }
 
 export class OrderPlacedEvent implements DomainEvent {
-  eventType = 'OrderPlaced';
-  
+  eventType = "OrderPlaced";
+
   constructor(
     public eventId: string,
     public aggregateId: string,
@@ -167,15 +169,15 @@ export class OrderPlacedEvent implements DomainEvent {
       symbol: string;
       side: OrderSide;
       type: OrderType;
-      quantity: string;  // Decimal as string
+      quantity: string; // Decimal as string
       price?: string;
-    }
+    },
   ) {}
 }
 
 export class OrderExecutedEvent implements DomainEvent {
-  eventType = 'OrderExecuted';
-  
+  eventType = "OrderExecuted";
+
   constructor(
     public eventId: string,
     public aggregateId: string,
@@ -186,7 +188,7 @@ export class OrderExecutedEvent implements DomainEvent {
       fillQuantity: string;
       fillPrice: string;
       commission: string;
-    }
+    },
   ) {}
 }
 ```
@@ -195,34 +197,34 @@ export class OrderExecutedEvent implements DomainEvent {
 
 ```typescript
 // services/order-service.ts
-import { v4 as uuidv4 } from 'uuid';
-import { Decimal } from 'decimal.js';
-import { EventStore } from '../infrastructure/event-store';
-import { Order, OrderSide, OrderType, OrderStatus } from '../models/order';
+import { v4 as uuidv4 } from "uuid";
+import { Decimal } from "decimal.js";
+import { EventStore } from "../infrastructure/event-store";
+import { Order, OrderSide, OrderType, OrderStatus } from "../models/order";
 
 export class OrderService {
   constructor(private eventStore: EventStore) {}
-  
+
   async placeOrder(
     accountId: string,
     symbol: string,
     side: OrderSide,
     type: OrderType,
     quantity: Decimal,
-    price?: Decimal
+    price?: Decimal,
   ): Promise<string> {
     // Validate order
     await this.validateOrder(accountId, symbol, side, quantity, price);
-    
+
     // Create order ID
     const orderId = uuidv4();
-    
+
     // Create OrderPlaced event
     const event = new OrderPlacedEvent(
       uuidv4(),
       orderId,
       new Date(),
-      1,  // version
+      1, // version
       {
         accountId,
         symbol,
@@ -230,81 +232,87 @@ export class OrderService {
         type,
         quantity: quantity.toString(),
         price: price?.toString(),
-      }
+      },
     );
-    
+
     // Store event
     await this.eventStore.append(orderId, [event]);
-    
+
     // Publish for processing
     await this.eventStore.publish(event);
-    
+
     return orderId;
   }
-  
+
   async cancelOrder(orderId: string, accountId: string): Promise<void> {
     // Load order events
     const events = await this.eventStore.getEvents(orderId);
-    
+
     // Rebuild order state
     const order = this.replayEvents(events);
-    
+
     // Validate cancellation
     if (order.accountId !== accountId) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
-    
-    if (![OrderStatus.PENDING, OrderStatus.SUBMITTED, OrderStatus.PARTIALLY_FILLED].includes(order.status)) {
-      throw new Error('Order cannot be cancelled');
+
+    if (
+      ![
+        OrderStatus.PENDING,
+        OrderStatus.SUBMITTED,
+        OrderStatus.PARTIALLY_FILLED,
+      ].includes(order.status)
+    ) {
+      throw new Error("Order cannot be cancelled");
     }
-    
+
     // Create OrderCancelled event
     const event = new OrderCancelledEvent(
       uuidv4(),
       orderId,
       new Date(),
       events.length + 1,
-      {}
+      {},
     );
-    
+
     await this.eventStore.append(orderId, [event]);
     await this.eventStore.publish(event);
   }
-  
+
   private async validateOrder(
     accountId: string,
     symbol: string,
     side: OrderSide,
     quantity: Decimal,
-    price?: Decimal
+    price?: Decimal,
   ): Promise<void> {
     // Check account exists and has sufficient funds/securities
     // Check symbol is valid
     // Check quantity is within limits
     // Check price is within market bounds
   }
-  
+
   private replayEvents(events: DomainEvent[]): Order {
     // Rebuild order state from events
     let order: Order = null;
-    
+
     for (const event of events) {
       switch (event.eventType) {
-        case 'OrderPlaced':
+        case "OrderPlaced":
           order = this.applyOrderPlaced(event as OrderPlacedEvent);
           break;
-        case 'OrderExecuted':
+        case "OrderExecuted":
           order = this.applyOrderExecuted(order, event as OrderExecutedEvent);
           break;
-        case 'OrderCancelled':
+        case "OrderCancelled":
           order = this.applyOrderCancelled(order);
           break;
       }
     }
-    
+
     return order;
   }
-  
+
   private applyOrderPlaced(event: OrderPlacedEvent): Order {
     return {
       orderId: event.aggregateId,
@@ -321,27 +329,29 @@ export class OrderService {
       updatedAt: event.timestamp,
     };
   }
-  
+
   private applyOrderExecuted(order: Order, event: OrderExecutedEvent): Order {
     const fillQty = new Decimal(event.data.fillQuantity);
     const newFilledQty = order.filledQuantity.plus(fillQty);
     const newRemainingQty = order.quantity.minus(newFilledQty);
-    
+
     // Calculate average fill price
     const prevTotal = order.filledQuantity.times(order.averageFillPrice || 0);
     const newTotal = prevTotal.plus(fillQty.times(event.data.fillPrice));
     const avgPrice = newTotal.dividedBy(newFilledQty);
-    
+
     return {
       ...order,
-      status: newRemainingQty.isZero() ? OrderStatus.FILLED : OrderStatus.PARTIALLY_FILLED,
+      status: newRemainingQty.isZero()
+        ? OrderStatus.FILLED
+        : OrderStatus.PARTIALLY_FILLED,
       filledQuantity: newFilledQty,
       remainingQuantity: newRemainingQty,
       averageFillPrice: avgPrice,
       updatedAt: event.timestamp,
     };
   }
-  
+
   private applyOrderCancelled(order: Order): Order {
     return {
       ...order,
@@ -356,38 +366,39 @@ export class OrderService {
 
 ```typescript
 // projections/position-tracker.ts
-import { Decimal } from 'decimal.js';
-import { KafkaConsumer } from '../infrastructure/kafka-consumer';
-import { Position } from '../models/order';
+import { Decimal } from "decimal.js";
+import { KafkaConsumer } from "../infrastructure/kafka-consumer";
+import { Position } from "../models/order";
 
 export class PositionTracker {
   private positions: Map<string, Position> = new Map();
-  
+
   constructor(private kafkaConsumer: KafkaConsumer) {}
-  
+
   async start(): Promise<void> {
     // Subscribe to trade events
-    await this.kafkaConsumer.subscribe('trade-events', async (event) => {
+    await this.kafkaConsumer.subscribe("trade-events", async (event) => {
       await this.handleTradeEvent(event);
     });
   }
-  
+
   private async handleTradeEvent(event: any): Promise<void> {
     const { accountId, symbol, side, quantity, price, commission } = event.data;
-    
+
     const key = `${accountId}:${symbol}`;
-    let position = this.positions.get(key) || this.createEmptyPosition(accountId, symbol);
-    
+    let position =
+      this.positions.get(key) || this.createEmptyPosition(accountId, symbol);
+
     const qty = new Decimal(quantity);
     const fillPrice = new Decimal(price);
     const comm = new Decimal(commission);
-    
-    if (side === 'BUY') {
+
+    if (side === "BUY") {
       // Buying increases position
       const currentValue = position.quantity.times(position.averagePrice);
       const newValue = currentValue.plus(qty.times(fillPrice));
       const newQuantity = position.quantity.plus(qty);
-      
+
       position.quantity = newQuantity;
       position.averagePrice = newValue.dividedBy(newQuantity);
     } else {
@@ -395,20 +406,20 @@ export class PositionTracker {
       const costBasis = qty.times(position.averagePrice);
       const saleProceeds = qty.times(fillPrice);
       const realizedPnl = saleProceeds.minus(costBasis).minus(comm);
-      
+
       position.quantity = position.quantity.minus(qty);
       position.realizedPnl = position.realizedPnl.plus(realizedPnl);
     }
-    
+
     // Update market value (would come from market data feed)
     await this.updateMarketValue(position);
-    
+
     // Save to database
     await this.savePosition(position);
-    
+
     this.positions.set(key, position);
   }
-  
+
   private createEmptyPosition(accountId: string, symbol: string): Position {
     return {
       accountId,
@@ -420,22 +431,22 @@ export class PositionTracker {
       realizedPnl: new Decimal(0),
     };
   }
-  
+
   private async updateMarketValue(position: Position): Promise<void> {
     // Get current market price
     const marketPrice = await this.getMarketPrice(position.symbol);
-    
+
     position.marketValue = position.quantity.times(marketPrice);
     position.unrealizedPnl = position.marketValue.minus(
-      position.quantity.times(position.averagePrice)
+      position.quantity.times(position.averagePrice),
     );
   }
-  
+
   private async getMarketPrice(symbol: string): Promise<Decimal> {
     // Fetch from market data service
-    return new Decimal(100);  // Placeholder
+    return new Decimal(100); // Placeholder
   }
-  
+
   private async savePosition(position: Position): Promise<void> {
     // Save to PostgreSQL read model
   }
@@ -446,7 +457,7 @@ export class PositionTracker {
 
 ```typescript
 // services/risk-engine.ts
-import { Decimal } from 'decimal.js';
+import { Decimal } from "decimal.js";
 
 export interface RiskLimits {
   maxOrderValue: Decimal;
@@ -461,11 +472,11 @@ export class RiskEngine {
     symbol: string,
     side: OrderSide,
     quantity: Decimal,
-    estimatedPrice: Decimal
+    estimatedPrice: Decimal,
   ): Promise<{ approved: boolean; reason?: string }> {
     // Get risk limits for account
     const limits = await this.getRiskLimits(accountId);
-    
+
     // Check order value
     const orderValue = quantity.times(estimatedPrice);
     if (orderValue.greaterThan(limits.maxOrderValue)) {
@@ -474,20 +485,21 @@ export class RiskEngine {
         reason: `Order value $${orderValue} exceeds limit $${limits.maxOrderValue}`,
       };
     }
-    
+
     // Check position size
     const currentPosition = await this.getPosition(accountId, symbol);
-    const newPosition = side === 'BUY' 
-      ? currentPosition.plus(quantity)
-      : currentPosition.minus(quantity);
-      
+    const newPosition =
+      side === "BUY"
+        ? currentPosition.plus(quantity)
+        : currentPosition.minus(quantity);
+
     if (newPosition.abs().greaterThan(limits.maxPositionSize)) {
       return {
         approved: false,
         reason: `Position size ${newPosition} exceeds limit ${limits.maxPositionSize}`,
       };
     }
-    
+
     // Check daily loss
     const dailyPnl = await this.getDailyPnL(accountId);
     if (dailyPnl.lessThan(limits.maxDailyLoss.negated())) {
@@ -496,23 +508,23 @@ export class RiskEngine {
         reason: `Daily loss limit reached: $${dailyPnl}`,
       };
     }
-    
+
     // Check leverage
     const accountValue = await this.getAccountValue(accountId);
     const totalExposure = await this.getTotalExposure(accountId);
     const newExposure = totalExposure.plus(orderValue);
     const leverage = newExposure.dividedBy(accountValue);
-    
+
     if (leverage.greaterThan(limits.maxLeverage)) {
       return {
         approved: false,
         reason: `Leverage ${leverage}x exceeds limit ${limits.maxLeverage}x`,
       };
     }
-    
+
     return { approved: true };
   }
-  
+
   private async getRiskLimits(accountId: string): Promise<RiskLimits> {
     // Fetch from database
     return {
@@ -528,6 +540,7 @@ export class RiskEngine {
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - 8GB RAM minimum
 - PostgreSQL, Kafka, Redis
@@ -575,29 +588,29 @@ curl -X POST http://localhost:3000/api/orders \
 ### Unit Tests
 
 ```typescript
-describe('OrderService', () => {
-  it('should place a valid market order', async () => {
+describe("OrderService", () => {
+  it("should place a valid market order", async () => {
     const orderId = await orderService.placeOrder(
-      'ACC-001',
-      'AAPL',
+      "ACC-001",
+      "AAPL",
       OrderSide.BUY,
       OrderType.MARKET,
-      new Decimal(100)
+      new Decimal(100),
     );
-    
+
     expect(orderId).toBeDefined();
   });
-  
-  it('should reject order exceeding risk limits', async () => {
+
+  it("should reject order exceeding risk limits", async () => {
     await expect(
       orderService.placeOrder(
-        'ACC-001',
-        'AAPL',
+        "ACC-001",
+        "AAPL",
         OrderSide.BUY,
         OrderType.MARKET,
-        new Decimal(1000000)  // Exceeds limit
-      )
-    ).rejects.toThrow('Order value exceeds limit');
+        new Decimal(1000000), // Exceeds limit
+      ),
+    ).rejects.toThrow("Order value exceeds limit");
   });
 });
 ```

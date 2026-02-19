@@ -2,12 +2,14 @@
 
 ## 📋 What is Monitoring?
 
-**Monitoring** is the practice of collecting, analyzing, and acting on data about your systems' health and performance. **Observability** goes beyond monitoring by helping you understand *why* something is happening, not just *what* is happening.
+**Monitoring** is the practice of collecting, analyzing, and acting on data about your systems' health and performance. **Observability** goes beyond monitoring by helping you understand _why_ something is happening, not just _what_ is happening.
 
 ## 🎯 Key Concepts
 
 ### Simple Analogy
+
 Think of monitoring like the dashboard in your car:
+
 - **Metrics (Speedometer)** - How fast are you going?
 - **Logs (Trip computer)** - Detailed record of your journey
 - **Traces (GPS history)** - Path you took from A to B
@@ -17,14 +19,18 @@ Think of monitoring like the dashboard in your car:
 ### The Three Pillars of Observability
 
 #### 1. Metrics
+
 Numerical measurements over time:
+
 - CPU usage: 45%
 - Response time: 234ms
 - Request rate: 1000 req/sec
 - Memory usage: 2.3 GB
 
 #### 2. Logs
+
 Text records of discrete events:
+
 ```
 2024-01-15 10:23:45 INFO User login successful: user_id=12345
 2024-01-15 10:23:46 ERROR Database connection failed: timeout after 30s
@@ -32,7 +38,9 @@ Text records of discrete events:
 ```
 
 #### 3. Traces
+
 Record of a request's journey through distributed systems:
+
 ```
 User Request → API Gateway → Auth Service → User Service → Database
      100ms         20ms          50ms           30ms        150ms
@@ -47,6 +55,7 @@ Total: 350ms
 Open-source monitoring system with time-series database.
 
 **Key Features:**
+
 - Pull-based metrics collection
 - Powerful query language (PromQL)
 - Built-in alerting
@@ -54,6 +63,7 @@ Open-source monitoring system with time-series database.
 - Multi-dimensional data model
 
 **Architecture:**
+
 ```
 Applications → Exporters → Prometheus → Grafana (Visualization)
                               ↓
@@ -64,7 +74,7 @@ Applications → Exporters → Prometheus → Grafana (Visualization)
 
 ```yaml
 # docker-compose.yml
-version: '3'
+version: "3"
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -74,8 +84,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -87,6 +97,7 @@ volumes:
 ```
 
 **prometheus.yml:**
+
 ```yaml
 global:
   scrape_interval: 15s
@@ -97,7 +108,7 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - 'alertmanager:9093'
+            - "alertmanager:9093"
 
 # Load rules
 rule_files:
@@ -106,23 +117,23 @@ rule_files:
 # Scrape configurations
 scrape_configs:
   # Prometheus itself
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ["localhost:9090"]
 
   # Node Exporter (system metrics)
-  - job_name: 'node'
+  - job_name: "node"
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ["node-exporter:9100"]
 
   # Application metrics
-  - job_name: 'app'
+  - job_name: "app"
     static_configs:
-      - targets: ['app:8080']
-    metrics_path: '/metrics'
+      - targets: ["app:8080"]
+    metrics_path: "/metrics"
 
   # Kubernetes service discovery
-  - job_name: 'kubernetes-pods'
+  - job_name: "kubernetes-pods"
     kubernetes_sd_configs:
       - role: pod
     relabel_configs:
@@ -134,6 +145,7 @@ scrape_configs:
 #### Instrumenting Applications
 
 **Python (Flask):**
+
 ```python
 from prometheus_client import Counter, Histogram, Gauge, generate_latest
 from flask import Flask, Response
@@ -182,9 +194,10 @@ if __name__ == '__main__':
 ```
 
 **Node.js (Express):**
+
 ```javascript
-const express = require('express');
-const promClient = require('prom-client');
+const express = require("express");
+const promClient = require("prom-client");
 
 const app = express();
 
@@ -196,24 +209,24 @@ promClient.collectDefaultMetrics({ register });
 
 // Custom metrics
 const httpRequestDuration = new promClient.Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  labelNames: ['method', 'route', 'status_code'],
-  registers: [register]
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  registers: [register],
 });
 
 const httpRequestTotal = new promClient.Counter({
-  name: 'http_requests_total',
-  help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status_code'],
-  registers: [register]
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
+  registers: [register],
 });
 
 // Middleware to track metrics
 app.use((req, res, next) => {
   const start = Date.now();
 
-  res.on('finish', () => {
+  res.on("finish", () => {
     const duration = (Date.now() - start) / 1000;
 
     httpRequestDuration
@@ -229,22 +242,23 @@ app.use((req, res, next) => {
 });
 
 // Your routes
-app.get('/api/data', (req, res) => {
-  res.json({ data: 'value' });
+app.get("/api/data", (req, res) => {
+  res.json({ data: "value" });
 });
 
 // Metrics endpoint
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', register.contentType);
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
 });
 
 app.listen(8080, () => {
-  console.log('Server running on port 8080');
+  console.log("Server running on port 8080");
 });
 ```
 
 **Go:**
+
 ```go
 package main
 
@@ -328,6 +342,7 @@ predict_linear(node_filesystem_free_bytes[1h], 4 * 3600)
 #### Alerting Rules
 
 **alerts.yml:**
+
 ```yaml
 groups:
   - name: example_alerts
@@ -400,6 +415,7 @@ groups:
 Open-source analytics and visualization platform.
 
 **Key Features:**
+
 - Beautiful dashboards
 - Multiple data source support (Prometheus, Elasticsearch, InfluxDB)
 - Alerting
@@ -429,6 +445,7 @@ volumes:
 #### Dashboard Configuration
 
 **datasource.yml** (Provisioning):
+
 ```yaml
 apiVersion: 1
 
@@ -442,6 +459,7 @@ datasources:
 ```
 
 **Dashboard JSON** (Example):
+
 ```json
 {
   "dashboard": {
@@ -487,6 +505,7 @@ datasources:
 **ELK = Elasticsearch + Logstash + Kibana**
 
 #### Architecture
+
 ```
 Applications → Filebeat/Fluentd → Logstash → Elasticsearch → Kibana
                                       ↓
@@ -499,7 +518,7 @@ Applications → Filebeat/Fluentd → Logstash → Elasticsearch → Kibana
 
 ```yaml
 # docker-compose.yml
-version: '3'
+version: "3"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
@@ -547,6 +566,7 @@ volumes:
 #### Logstash Configuration
 
 **logstash/pipeline/logstash.conf:**
+
 ```ruby
 input {
   beats {
@@ -600,11 +620,12 @@ output {
 #### Filebeat Configuration
 
 **filebeat/filebeat.yml:**
+
 ```yaml
 filebeat.inputs:
   - type: container
     paths:
-      - '/var/lib/docker/containers/*/*.log'
+      - "/var/lib/docker/containers/*/*.log"
     processors:
       - add_docker_metadata: ~
 
@@ -621,6 +642,7 @@ output.logstash:
 #### Application Logging Best Practices
 
 **Structured Logging (Python):**
+
 ```python
 import logging
 import json
@@ -660,34 +682,35 @@ logger.info("User logged in", extra={"user_id": 12345, "request_id": "abc-123"})
 ```
 
 **Structured Logging (Node.js with Winston):**
+
 ```javascript
-const winston = require('winston');
+const winston = require("winston");
 
 const logger = winston.createLogger({
-  level: 'info',
+  level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
-  defaultMeta: { service: 'user-service' },
+  defaultMeta: { service: "user-service" },
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
 });
 
 // Usage
-logger.info('User logged in', {
+logger.info("User logged in", {
   user_id: 12345,
-  request_id: 'abc-123',
-  ip_address: '192.168.1.1'
+  request_id: "abc-123",
+  ip_address: "192.168.1.1",
 });
 
-logger.error('Database connection failed', {
+logger.error("Database connection failed", {
   error: err.message,
   stack: err.stack,
-  database: 'users_db'
+  database: "users_db",
 });
 ```
 
@@ -708,7 +731,7 @@ services:
       - "6831:6831/udp"
       - "6832:6832/udp"
       - "5778:5778"
-      - "16686:16686"  # UI
+      - "16686:16686" # UI
       - "14268:14268"
       - "14250:14250"
       - "9411:9411"
@@ -719,6 +742,7 @@ services:
 #### Instrumenting with OpenTelemetry
 
 **Python:**
+
 ```python
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -760,25 +784,28 @@ def get_user(user_id):
 ```
 
 **Node.js:**
+
 ```javascript
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
-const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
-const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express');
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
+const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
+const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
+const { registerInstrumentations } = require("@opentelemetry/instrumentation");
+const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
+const {
+  ExpressInstrumentation,
+} = require("@opentelemetry/instrumentation-express");
 
 // Configure tracing
 const provider = new NodeTracerProvider({
   resource: {
     attributes: {
-      'service.name': 'user-service'
-    }
-  }
+      "service.name": "user-service",
+    },
+  },
 });
 
 const exporter = new JaegerExporter({
-  endpoint: 'http://localhost:14268/api/traces'
+  endpoint: "http://localhost:14268/api/traces",
 });
 
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
@@ -786,18 +813,15 @@ provider.register();
 
 // Auto-instrument HTTP and Express
 registerInstrumentations({
-  instrumentations: [
-    new HttpInstrumentation(),
-    new ExpressInstrumentation()
-  ]
+  instrumentations: [new HttpInstrumentation(), new ExpressInstrumentation()],
 });
 
 // Manual instrumentation
-const tracer = require('@opentelemetry/api').trace.getTracer('user-service');
+const tracer = require("@opentelemetry/api").trace.getTracer("user-service");
 
 async function getUser(userId) {
-  const span = tracer.startSpan('get_user');
-  span.setAttribute('user.id', userId);
+  const span = tracer.startSpan("get_user");
+  span.setAttribute("user.id", userId);
 
   try {
     const user = await db.query(userId);
@@ -816,10 +840,12 @@ async function getUser(userId) {
 #### 1. **Prometheus Not Scraping Targets**
 
 **Symptoms:**
+
 - Targets show as "DOWN" in Prometheus UI
 - No metrics appearing in Grafana
 
 **Debug:**
+
 ```bash
 # Check Prometheus targets
 curl http://localhost:9090/targets
@@ -835,6 +861,7 @@ promtool check config prometheus.yml
 ```
 
 **Solutions:**
+
 - Verify network connectivity
 - Check firewall rules
 - Ensure correct target addresses
@@ -844,11 +871,13 @@ promtool check config prometheus.yml
 #### 2. **High Cardinality Metrics**
 
 **Symptoms:**
+
 - Prometheus using excessive memory
 - Slow query performance
 - High disk usage
 
 **Problem Example:**
+
 ```python
 # BAD - user_id has millions of possible values
 request_counter = Counter('requests', 'Requests', ['user_id', 'endpoint'])
@@ -856,6 +885,7 @@ request_counter.labels(user_id=user_id, endpoint=endpoint).inc()
 ```
 
 **Solution:**
+
 ```python
 # GOOD - Limited label values
 request_counter = Counter('requests', 'Requests', ['endpoint', 'status'])
@@ -867,6 +897,7 @@ active_users_gauge.set(len(active_user_set))
 ```
 
 **Best Practices:**
+
 - Keep label cardinality low (<100 values per label)
 - Avoid user IDs, email addresses, timestamps in labels
 - Use aggregations instead
@@ -874,10 +905,12 @@ active_users_gauge.set(len(active_user_set))
 #### 3. **Grafana Dashboard Not Loading**
 
 **Symptoms:**
+
 - Dashboard shows "No data"
 - Query errors
 
 **Debug:**
+
 ```bash
 # Test query in Prometheus directly
 curl -G 'http://localhost:9090/api/v1/query' \
@@ -891,6 +924,7 @@ curl http://localhost:3000/api/datasources
 ```
 
 **Solutions:**
+
 - Verify Prometheus URL in data source settings
 - Check time range (ensure data exists for selected range)
 - Validate PromQL syntax
@@ -899,10 +933,12 @@ curl http://localhost:3000/api/datasources
 #### 4. **Elasticsearch Running Out of Disk Space**
 
 **Symptoms:**
+
 - Elasticsearch cluster status RED
 - Cannot index new documents
 
 **Debug:**
+
 ```bash
 # Check cluster health
 curl http://localhost:9200/_cluster/health?pretty
@@ -915,6 +951,7 @@ curl http://localhost:9200/_cat/indices?v&s=store.size:desc
 ```
 
 **Solutions:**
+
 ```bash
 # Delete old indices
 curl -X DELETE http://localhost:9200/logs-2024.01.01
@@ -956,10 +993,12 @@ PUT logs-template
 #### 5. **Missing or Incomplete Traces**
 
 **Symptoms:**
+
 - Traces not appearing in Jaeger
 - Incomplete trace spans
 
 **Debug:**
+
 ```bash
 # Check Jaeger agent logs
 docker logs jaeger
@@ -971,6 +1010,7 @@ docker logs jaeger
 ```
 
 **Solutions:**
+
 ```python
 # Ensure proper context propagation
 from opentelemetry.propagate import inject, extract
@@ -991,11 +1031,13 @@ sampler = TraceIdRatioBased(1.0)  # 100% sampling
 #### 6. **Alert Fatigue**
 
 **Symptoms:**
+
 - Too many alerts
 - Team ignoring alerts
 - Alert noise
 
 **Solutions:**
+
 ```yaml
 # Add proper thresholds and "for" duration
 - alert: HighCPU
@@ -1020,6 +1062,7 @@ amtool silence add alertname=HighCPU --duration=2h
 ### Monitoring Debugging Commands
 
 **Prometheus:**
+
 ```bash
 # Query metrics
 curl -G 'http://localhost:9090/api/v1/query' \
@@ -1046,6 +1089,7 @@ promtool query instant http://localhost:9090 'up'
 ```
 
 **Elasticsearch:**
+
 ```bash
 # Cluster health
 curl http://localhost:9200/_cluster/health?pretty
@@ -1076,6 +1120,7 @@ curl -X DELETE http://localhost:9200/logs-2024.01.01
 ```
 
 **Grafana:**
+
 ```bash
 # API health
 curl http://localhost:3000/api/health
@@ -1099,6 +1144,7 @@ curl -u admin:admin -X POST \
 ### 1. Use the Four Golden Signals (SRE)
 
 Monitor these for every service:
+
 - **Latency** - Time to service requests
 - **Traffic** - Demand on your system (requests/sec)
 - **Errors** - Rate of failed requests
@@ -1197,18 +1243,20 @@ phases:
   delete: { min_age: 30d }
 ```
 
-## 💡 Interview Questions
+## 💡 Common Questions
 
 ### Basic Level
 
 **Q1: What are the three pillars of observability?**
 **A:** Metrics, Logs, and Traces.
+
 - **Metrics**: Numerical measurements (CPU, memory, request rate)
 - **Logs**: Text records of events
 - **Traces**: Request journey through distributed systems
 
 **Q2: What is the difference between monitoring and observability?**
 **A:**
+
 - **Monitoring**: Tracking known issues (predefined dashboards, alerts)
 - **Observability**: Understanding unknown issues (exploratory analysis)
 - Monitoring answers "Is something wrong?"
@@ -1216,6 +1264,7 @@ phases:
 
 **Q3: What is Prometheus and how does it work?**
 **A:** Prometheus is a time-series database and monitoring system.
+
 - **Pull-based**: Scrapes metrics from targets
 - **Time-series**: Stores data with timestamps
 - **PromQL**: Query language for analysis
@@ -1223,6 +1272,7 @@ phases:
 
 **Q4: What is the difference between logs and metrics?**
 **A:**
+
 - **Logs**: Discrete events with details (text-heavy, good for debugging)
 - **Metrics**: Aggregated measurements (numeric, good for trends)
 - Logs: "User 123 failed login at 10:23:45"
@@ -1230,6 +1280,7 @@ phases:
 
 **Q5: What is a health check endpoint?**
 **A:** An endpoint that returns the application's health status.
+
 - `/health` - Basic alive check
 - `/ready` - Ready to serve traffic (dependencies healthy)
 - Used by load balancers and orchestrators (Kubernetes)
@@ -1238,6 +1289,7 @@ phases:
 
 **Q6: Explain the four golden signals of monitoring.**
 **A:**
+
 1. **Latency** - Response time (p50, p95, p99)
 2. **Traffic** - Request volume (requests/second)
 3. **Errors** - Failure rate (errors/total requests)
@@ -1248,11 +1300,13 @@ From Google's SRE book, these cover most critical issues.
 **Q7: What is high cardinality and why is it a problem?**
 **A:** High cardinality means many unique values for a metric label.
 **Problem:**
+
 - Exponential memory growth
 - Slow queries
 - Storage issues
 
 **Bad example:**
+
 ```python
 counter.labels(user_id=12345, timestamp=now)  # Millions of combinations
 ```
@@ -1261,6 +1315,7 @@ counter.labels(user_id=12345, timestamp=now)  # Millions of combinations
 
 **Q8: How do you implement distributed tracing?**
 **A:**
+
 1. Generate trace ID at entry point
 2. Propagate trace ID through all services (headers)
 3. Create spans for each operation
@@ -1271,6 +1326,7 @@ counter.labels(user_id=12345, timestamp=now)  # Millions of combinations
 
 **Q9: What is the difference between push and pull monitoring?**
 **A:**
+
 - **Pull (Prometheus)**: Monitoring system scrapes targets
   - Pros: Service discovery, central control
   - Cons: Need network access to targets
@@ -1280,6 +1336,7 @@ counter.labels(user_id=12345, timestamp=now)  # Millions of combinations
 
 **Q10: How do you handle alert fatigue?**
 **A:**
+
 - Set appropriate thresholds (not too sensitive)
 - Use `for` duration to avoid flapping alerts
 - Implement severity levels (critical, warning, info)
@@ -1292,6 +1349,7 @@ counter.labels(user_id=12345, timestamp=now)  # Millions of combinations
 **Q11: Design a complete observability stack for a microservices architecture.**
 **A:**
 **Components:**
+
 ```
 Metrics: Prometheus + Grafana
 Logs: ELK Stack (Filebeat → Logstash → Elasticsearch → Kibana)
@@ -1304,6 +1362,7 @@ Dashboards: Grafana with service-level dashboards
 ```
 
 **Implementation:**
+
 - Instrument all services with OpenTelemetry
 - Use correlation IDs across all logs
 - Implement service level indicators (SLIs)
@@ -1313,12 +1372,14 @@ Dashboards: Grafana with service-level dashboards
 **Q12: How do you monitor Kubernetes clusters?**
 **A:**
 **Layers to monitor:**
+
 1. **Infrastructure**: Node CPU, memory, disk
 2. **Kubernetes objects**: Pod restarts, deployment status
 3. **Applications**: Service metrics, logs
 4. **Network**: Service mesh metrics
 
 **Tools:**
+
 ```yaml
 # Prometheus Operator for K8s
 - kube-state-metrics (K8s object metrics)
@@ -1345,12 +1406,14 @@ spec:
 **A:** Recording rules pre-compute expensive queries and store results as new metrics.
 
 **Use cases:**
+
 - Frequently used queries in dashboards
 - Complex aggregations
 - Rolling window calculations
 - Reduce dashboard load time
 
 **Example:**
+
 ```yaml
 groups:
   - name: aggregations
@@ -1370,6 +1433,7 @@ groups:
 
 **Q14: How do you implement zero-downtime deployments with monitoring?**
 **A:**
+
 1. **Blue-Green Deployment**:
    - Deploy new version (green)
    - Monitor green for health, errors, performance
@@ -1383,6 +1447,7 @@ groups:
    - Automated rollback on anomalies
 
 3. **Progressive Delivery**:
+
 ```yaml
 # Flagger canary config
 apiVersion: flagger.app/v1beta1
@@ -1401,19 +1466,20 @@ spec:
     maxWeight: 50
     stepWeight: 5
     metrics:
-    - name: request-success-rate
-      thresholdRange:
-        min: 99
-      interval: 1m
-    - name: request-duration
-      thresholdRange:
-        max: 500
-      interval: 1m
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+      - name: request-duration
+        thresholdRange:
+          max: 500
+        interval: 1m
 ```
 
 **Q15: Explain the USE and RED methods for monitoring.**
 **A:**
 **USE Method** (Resources):
+
 - **Utilization**: % time resource is busy
 - **Saturation**: Amount of queued work
 - **Errors**: Error count
@@ -1421,6 +1487,7 @@ spec:
 Best for: Hardware resources (CPU, disk, network)
 
 **RED Method** (Services):
+
 - **Rate**: Requests per second
 - **Errors**: Failed requests per second
 - **Duration**: Response time distribution
@@ -1428,6 +1495,7 @@ Best for: Hardware resources (CPU, disk, network)
 Best for: Request-driven services
 
 **Example queries:**
+
 ```promql
 # USE - CPU
 rate(node_cpu_seconds_total{mode="user"}[5m])  # Utilization
@@ -1442,11 +1510,13 @@ histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))  # Dura
 **Q16: How do you detect and prevent alert storms?**
 **A:**
 **Detection:**
+
 - Monitor alert volume
 - Track alert duration and frequency
 - Correlation analysis
 
 **Prevention:**
+
 ```yaml
 # Alertmanager grouping
 route:

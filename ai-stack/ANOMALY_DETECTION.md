@@ -98,6 +98,7 @@ print("✅ Basic anomaly detection complete!")
 ```
 
 **Output Explanation**:
+
 - **Z-score > 3**: Points more than 3 standard deviations from mean
 - **Red points**: Detected anomalies
 - **Why it works**: Normal distribution → 99.7% of data within 3σ
@@ -273,14 +274,14 @@ print("- Local detector finds points that are isolated from neighbors")
 
 **When to Use**:
 
-| Scenario | Global Detector | Local Detector |
-|----------|----------------|----------------|
-| Single cluster/distribution | ✅ Preferred | ❌ Overkill |
-| Multiple clusters | ❌ Misses local outliers | ✅ Preferred |
-| Uniform density | ✅ Sufficient | ❌ Unnecessary |
-| Varying density | ❌ Struggles | ✅ Handles well |
-| Computational cost | ✅ Fast (O(n)) | ❌ Slower (O(n²)) |
-| Interpretability | ✅ Easy | ❌ Complex |
+| Scenario                    | Global Detector          | Local Detector    |
+| --------------------------- | ------------------------ | ----------------- |
+| Single cluster/distribution | ✅ Preferred             | ❌ Overkill       |
+| Multiple clusters           | ❌ Misses local outliers | ✅ Preferred      |
+| Uniform density             | ✅ Sufficient            | ❌ Unnecessary    |
+| Varying density             | ❌ Struggles             | ✅ Handles well   |
+| Computational cost          | ✅ Fast (O(n))           | ❌ Slower (O(n²)) |
+| Interpretability            | ✅ Easy                  | ❌ Complex        |
 
 ---
 
@@ -678,7 +679,7 @@ print("\n✅ LSTM time-series anomaly detection complete!")
 
 ---
 
-*Continue to [Statistical Methods](#statistical-methods)*
+_Continue to [Statistical Methods](#statistical-methods)_
 
 ## Statistical Methods
 
@@ -687,6 +688,7 @@ print("\n✅ LSTM time-series anomaly detection complete!")
 **Concept**: Measures how many standard deviations a point is from the mean.
 
 **Formula**:
+
 ```
 z = (x - μ) / σ
 
@@ -697,6 +699,7 @@ where:
 ```
 
 **Example**:
+
 ```python
 from scipy import stats
 import numpy as np
@@ -732,11 +735,13 @@ print(f"Anomalous values: {data[is_anomaly]}")
 ```
 
 **Pros**:
+
 - ✅ Simple and fast
 - ✅ Works well for Gaussian distributions
 - ✅ Easy to interpret
 
 **Cons**:
+
 - ❌ Sensitive to outliers (they affect mean and std)
 - ❌ Assumes normal distribution
 - ❌ Not suitable for multimodal distributions
@@ -851,4 +856,4 @@ else:
 
 ---
 
-*Continue in next section...*
+_Continue in next section..._

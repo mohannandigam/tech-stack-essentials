@@ -7,6 +7,7 @@ Comprehensive aerospace systems demonstrating flight operations, satellite track
 ## 🎯 Domain Requirements
 
 ### Business Goals
+
 - **Flight Operations**: Real-time flight tracking, route optimization, fuel management
 - **Maintenance**: Predictive maintenance, aircraft health monitoring (ACARS/ARINC 429)
 - **Safety Systems**: Collision avoidance, weather integration, emergency protocols
@@ -14,6 +15,7 @@ Comprehensive aerospace systems demonstrating flight operations, satellite track
 - **Regulatory Compliance**: FAA, EASA, ICAO standards
 
 ### Technical Challenges
+
 - **Real-time Processing**: Sub-second latency for flight-critical data
 - **High Availability**: 99.999% uptime for safety-critical systems
 - **Data Volume**: Terabytes of telemetry, radar, and sensor data daily
@@ -461,11 +463,11 @@ class AircraftMaintenancePredictor:
 
 ```typescript
 // services/satellite-tracking.ts
-import { Decimal } from 'decimal.js';
-import * as satellite from 'satellite.js';
+import { Decimal } from "decimal.js";
+import * as satellite from "satellite.js";
 
 interface TLE {
-  line1: string;  // Two-Line Element Set
+  line1: string; // Two-Line Element Set
   line2: string;
   epoch: Date;
 }
@@ -477,7 +479,7 @@ interface SatellitePosition {
   longitude: Decimal;
   altitude_km: Decimal;
   velocity_kmps: Decimal;
-  elevation_deg: number;  // Relative to ground station
+  elevation_deg: number; // Relative to ground station
   azimuth_deg: number;
   inView: boolean;
 }
@@ -486,7 +488,10 @@ class SatelliteTrackingService {
   private tleCache: Map<string, TLE> = new Map();
 
   constructor(
-    private groundStations: Map<string, { lat: number; lon: number; alt_m: number }>
+    private groundStations: Map<
+      string,
+      { lat: number; lon: number; alt_m: number }
+    >,
   ) {}
 
   /**
@@ -495,7 +500,7 @@ class SatelliteTrackingService {
   calculatePosition(
     satelliteId: string,
     timestamp: Date,
-    groundStationId?: string
+    groundStationId?: string,
   ): SatellitePosition | null {
     const tle = this.tleCache.get(satelliteId);
     if (!tle) return null;
@@ -510,7 +515,8 @@ class SatelliteTrackingService {
       return null;
     }
 
-    const positionEci = positionAndVelocity.position as satellite.EciVec3<number>;
+    const positionEci =
+      positionAndVelocity.position as satellite.EciVec3<number>;
 
     // Convert ECI to geodetic coordinates
     const gmst = satellite.gstime(timestamp);
@@ -527,7 +533,7 @@ class SatelliteTrackingService {
         const observerGd = {
           latitude: gs.lat * (Math.PI / 180),
           longitude: gs.lon * (Math.PI / 180),
-          height: gs.alt_m / 1000  // Convert to km
+          height: gs.alt_m / 1000, // Convert to km
         };
 
         const positionEcf = satellite.eciToEcf(positionEci, gmst);
@@ -535,14 +541,14 @@ class SatelliteTrackingService {
 
         elevation = lookAngles.elevation * (180 / Math.PI);
         azimuth = lookAngles.azimuth * (180 / Math.PI);
-        inView = elevation > 10;  // Above horizon with margin
+        inView = elevation > 10; // Above horizon with margin
       }
     }
 
     // Calculate velocity magnitude
     const velocity = positionAndVelocity.velocity as satellite.EciVec3<number>;
     const velocityMag = Math.sqrt(
-      velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2
+      velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2,
     );
 
     return {
@@ -554,7 +560,7 @@ class SatelliteTrackingService {
       velocity_kmps: new Decimal(velocityMag),
       elevation_deg: elevation,
       azimuth_deg: azimuth,
-      inView
+      inView,
     };
   }
 
@@ -564,15 +570,15 @@ class SatelliteTrackingService {
   async predictNextPass(
     satelliteId: string,
     groundStationId: string,
-    startTime: Date
+    startTime: Date,
   ): Promise<{
-    aos: Date;  // Acquisition of Signal
-    los: Date;  // Loss of Signal
+    aos: Date; // Acquisition of Signal
+    los: Date; // Loss of Signal
     maxElevation: number;
     maxElevationTime: Date;
   } | null> {
-    const timeStep = 60;  // Check every 60 seconds
-    const maxDuration = 24 * 60 * 60;  // Search 24 hours ahead
+    const timeStep = 60; // Check every 60 seconds
+    const maxDuration = 24 * 60 * 60; // Search 24 hours ahead
 
     let currentTime = new Date(startTime);
     let inPass = false;
@@ -582,7 +588,11 @@ class SatelliteTrackingService {
     let maxElevationTime = currentTime;
 
     for (let elapsed = 0; elapsed < maxDuration; elapsed += timeStep) {
-      const pos = this.calculatePosition(satelliteId, currentTime, groundStationId);
+      const pos = this.calculatePosition(
+        satelliteId,
+        currentTime,
+        groundStationId,
+      );
 
       if (!pos) break;
 
@@ -617,7 +627,11 @@ class SatelliteTrackingService {
   /**
    * Update TLE data from space-track.org or similar
    */
-  async updateTLE(satelliteId: string, line1: string, line2: string): Promise<void> {
+  async updateTLE(
+    satelliteId: string,
+    line1: string,
+    line2: string,
+  ): Promise<void> {
     // Extract epoch from TLE
     const epochYear = parseInt(line1.substring(18, 20));
     const epochDay = parseFloat(line1.substring(20, 32));
@@ -633,6 +647,7 @@ class SatelliteTrackingService {
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - Python 3.9+ (for ML/analytics)
 - Node.js 18+ (for real-time services)
@@ -748,17 +763,20 @@ def test_collision_detection():
 ## 🤖 AI/ML Applications
 
 ### Predictive Maintenance
+
 - **Algorithm**: Isolation Forest for anomaly detection
 - **Features**: Engine temperatures, pressures, vibration, oil metrics
 - **Training Data**: Historical ACARS messages, maintenance logs
 - **Validation**: Precision/recall on known failures, false positive rate < 5%
 
 ### Route Optimization
+
 - **Algorithm**: Genetic algorithms, reinforcement learning
 - **Optimization**: Fuel efficiency, time, weather avoidance
 - **Constraints**: Airspace restrictions, aircraft performance, weather
 
 ### Demand Forecasting
+
 - **Algorithm**: LSTM time-series forecasting
 - **Input**: Historical bookings, seasonality, events, economic indicators
 - **Output**: Passenger demand by route, dynamic pricing recommendations
