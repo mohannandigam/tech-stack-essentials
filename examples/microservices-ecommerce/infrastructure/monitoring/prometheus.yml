@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'ecommerce-monitor'
+
+# Scrape configurations
+scrape_configs:
+  # User Service metrics
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:3001']
+    metrics_path: '/metrics'
+    
+  # API Gateway metrics (when implemented)
+  # - job_name: 'api-gateway'
+  #   static_configs:
+  #     - targets: ['api-gateway:3000']
+  #   metrics_path: '/metrics'
+  
+  # Product Service metrics (when implemented)
+  # - job_name: 'product-service'
+  #   static_configs:
+  #     - targets: ['product-service:3002']
+  #   metrics_path: '/metrics'
+  
+  # Postgres exporter (optional)
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']
+  
+  # Redis exporter (optional)
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
