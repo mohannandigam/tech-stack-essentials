@@ -75,6 +75,42 @@ Package tracking, route optimization, warehouse management
 - **Patterns**: Event-driven, geospatial, graph algorithms
 - **Example**: Package tracking system
 
+### 11. [Aerospace](./aerospace/README.md)
+Flight management, satellite tracking, aircraft maintenance, aviation safety
+- **Key Challenges**: Real-time processing, safety-critical systems, regulatory compliance
+- **Patterns**: Event-driven, real-time processing, time-series databases
+- **Example**: Flight tracking and predictive maintenance system
+
+### 12. [Mortgage](./mortgage/README.md)
+Loan origination, underwriting, property valuation, loan servicing
+- **Key Challenges**: Regulatory compliance, document management, exact calculations
+- **Patterns**: Workflow engines, event-driven, document management
+- **Example**: Automated underwriting and loan servicing platform
+
+### 13. [Manufacturing](./manufacturing/README.md)
+Smart factory, IoT sensors, predictive maintenance, quality control
+- **Key Challenges**: IoT scale, real-time monitoring, edge computing, legacy integration
+- **Patterns**: Event-driven, IoT architecture, time-series, edge computing
+- **Example**: OEE monitoring and predictive maintenance system
+
+### 14. [Telecommunications](./telecommunications/README.md)
+Network operations, subscriber management, real-time billing, fraud detection
+- **Key Challenges**: High scale, real-time rating, legacy protocols, carrier-grade availability
+- **Patterns**: Event-driven, real-time processing, microservices
+- **Example**: Real-time rating engine and network operations center
+
+### 15. [Education](./education/README.md)
+Learning management, student information, online assessment, grade management
+- **Key Challenges**: Accessibility, privacy compliance, content delivery, scale during exams
+- **Patterns**: Microservices, content delivery, workflow management
+- **Example**: LMS with automated grading and analytics
+
+### 16. [Government](./government/README.md)
+Citizen services, permit processing, benefits administration, case management
+- **Key Challenges**: Accessibility, security compliance, legacy integration, transparency
+- **Patterns**: Workflow engines, document management, microservices
+- **Example**: Permit processing and benefits eligibility system
+
 ## 🚀 Quick Start
 
 Each domain includes:
@@ -113,6 +149,7 @@ domain-name/
 
 ## 📊 Pattern-to-Domain Matrix
 
+### Core Domains
 | Pattern | Energy | Social | Dating | Finance | Banking | Retail | Insurance | Healthcare | Logistics |
 |---------|--------|--------|--------|---------|---------|--------|-----------|------------|-----------|
 | **Microservices** | ✓ | ✓✓ | ✓ | ✓✓ | ✓✓ | ✓✓ | ✓ | ✓✓ | ✓ |
@@ -120,6 +157,17 @@ domain-name/
 | **Serverless** | ✓ | ✓ | ✓✓ | ✓ | ✓ | ✓ | ✓✓ | ✓ | ✓ |
 | **CQRS** | ✓✓ | ✓ | - | ✓✓ | ✓✓ | ✓✓ | ✓ | ✓ | ✓ |
 | **Event Sourcing** | ✓ | - | - | ✓✓ | ✓✓ | ✓ | ✓ | ✓ | ✓ |
+
+### New Domains
+| Pattern | Aerospace | Mortgage | Manufacturing | Telecom | Education | Government |
+|---------|-----------|----------|---------------|---------|-----------|------------|
+| **Microservices** | ✓✓ | ✓✓ | ✓ | ✓✓ | ✓✓ | ✓✓ |
+| **Event-Driven** | ✓✓ | ✓✓ | ✓✓ | ✓✓ | ✓ | ✓ |
+| **Serverless** | ✓ | ✓ | - | ✓ | ✓ | ✓ |
+| **CQRS** | ✓ | ✓ | ✓✓ | ✓ | ✓ | ✓ |
+| **Event Sourcing** | ✓ | ✓ | ✓ | ✓ | - | ✓ |
+| **IoT/Edge** | ✓✓ | - | ✓✓ | ✓ | - | - |
+| **Workflow** | ✓ | ✓✓ | ✓ | ✓ | ✓ | ✓✓ |
 
 ✓✓ = Highly applicable, ✓ = Applicable, - = Less common
 
