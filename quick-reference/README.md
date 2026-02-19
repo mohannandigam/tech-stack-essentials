@@ -444,11 +444,11 @@ Traffic pattern?
 
 ## 🔗 Quick Links
 
-- [Architecture Patterns](../architectures/)
-- [Infrastructure Setup](../infrastructure/)
-- [Domain Examples](../domain-examples/)
-- [Cloud Deployment](../cloud-stacks/)
-- [Methodologies](../methodologies/)
+- [Architecture Patterns](../02-architectures/)
+- [Infrastructure Setup](../06-infrastructure/)
+- [Domain Examples](../10-domain-examples/)
+- [Cloud Deployment](../07-cloud/)
+- [Methodologies](../03-methodologies/)
 
 ## 💡 Common Pitfalls to Avoid
 
