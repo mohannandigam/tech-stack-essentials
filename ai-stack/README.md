@@ -16,6 +16,32 @@ This comprehensive guide provides practical knowledge for building, deploying, a
 - **Software Engineers**: Integrating ML into applications, API design
 - **Architects**: Designing end-to-end ML platforms
 
+## 🚀 NEW: Complete AI/ML Team Structure Guide
+
+**Want to understand how AI/ML teams work together to build production systems?** Check out our comprehensive 3-part guide:
+
+### [Part 1: Team Structure and Roles](./TEAM_STRUCTURE.md)
+- Detailed breakdown of Data Engineers, Data Scientists, and ML Engineers
+- Real code examples from each role's daily work
+- Complete ETL pipeline from Snowflake to Databricks
+- Data flow from raw data to production models
+
+### [Part 2: Anomaly Detection Use Case](./TEAM_STRUCTURE_PART2.md)
+- End-to-end fraud detection implementation
+- Model training with MLflow and Unity Catalog
+- Production deployment with FastAPI and Kubernetes
+- Team collaboration patterns and workflows
+
+### [Part 3: Real-World Examples](./TEAM_STRUCTURE_PART3.md)
+- E-Commerce product recommendations (collaborative filtering + content-based)
+- Complete implementation from data pipeline to production API
+- A/B testing and performance monitoring
+- Business impact analysis and metrics
+
+**Use Case Covered**: Building anomaly detection models using Databricks Unity Catalog with data from Snowflake, including ETL pipelines, feature engineering, model training, deployment, and monitoring.
+
+---
+
 ## 🧠 Model Creation Foundations
 - **Data readiness**: labeled set with drift checks, PII scrubbed, stratified train/val/test, and clear acceptance metrics (precision/recall/F1/latency).
 - **Feature engineering**: start with baseline statistical features; add embeddings for text (e.g., `text-embedding-3-large`, `sentence-transformers`); keep feature store schemas versioned.
