@@ -78,6 +78,11 @@ Fast lookup guides for common patterns:
   - Security checklist
   - Performance benchmarks
 
+### 8. AI Stack
+Understand how to build and operate AI systems end-to-end:
+
+- **[AI Stack Guide](./ai-stack/README.md)** - Model creation, optimization, MLOps flows, data platforms, and QA playbooks
+
 ## 🎯 For Software Testers
 
 As a software tester, understanding these concepts will help you:

@@ -65,6 +65,30 @@ CDN: CloudFlare, CloudFront, Akamai
 Application: Varnish, NGINX
 ```
 
+## 🧩 Architecture Dependency Checklist
+
+| Architecture | Core runtime deps | Infra services | QA/Observability | Repo reference |
+|--------------|-------------------|----------------|------------------|----------------|
+| Monorepo | TypeScript toolchain, Nx/Turborepo or pnpm workspaces | Local PostgreSQL/Redis for shared dev data | Jest for units, Playwright/Cypress for app flows | Use across `architectures/monorepo` guidance |
+| Microservices | Node.js 18+, Express/Fastify, JWT, Joi/Zod | Docker + Compose, PostgreSQL, Redis, Kafka/RabbitMQ | Jest contract tests, k6/Locust for load, OpenTelemetry tracing | `examples/microservices-ecommerce` |
+| Event-Driven | Producer/consumer SDKs (Kafka/Redpanda), Avro/JSON schema libs | Kafka or cloud pub/sub, Schema Registry, object storage | Replay testing, dead-letter queues, consumer lag alerts | `architectures/event-driven` |
+| Serverless | Serverless/SAM CLI, esbuild/webpack bundler, AWS/GCP/Azure SDKs | Cloud emulators (LocalStack/Azure Storage Emulator), API Gateway | Canary + integration tests, cold-start profiling, structured logs | `architectures/serverless` |
+
+**Missing deps to install for shipped examples**
+- `examples/microservices-ecommerce/shared`: add `jest`, `@types/jest`, `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` to run provided `test`/`lint` scripts.
+- `examples/microservices-ecommerce/services/user-service`: add `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` alongside the existing Jest setup used by `lint`.
+
+**Install snippets**
+```bash
+# Shared package test/lint support
+cd examples/microservices-ecommerce/shared
+npm install -D jest @types/jest eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+# User service lint support
+cd ../services/user-service
+npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
 ## 📝 Code Snippet Library
 
 ### Authentication (JWT)
