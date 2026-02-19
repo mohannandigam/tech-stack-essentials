@@ -42,9 +42,12 @@ USER nodejs
 # Expose port
 EXPOSE 3001
 
-# Health check
+# Health check command explanation:
+# - Alpine image includes 'wget' by default but not 'curl'
+# - Using 'wget' with -q (quiet) -O- (output to stdout) for health checks
+# - Alternative: Add 'curl' by including 'RUN apk add --no-cache curl' in Dockerfile
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD wget -q -O- http://localhost:3001/health || exit 1
 
 # Start application
 CMD ["node", "dist/index.js"]

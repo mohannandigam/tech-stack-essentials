@@ -14,10 +14,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Joi from 'joi';
 import { createLogger } from '../../../../shared/src/logger';
-import { ApiError, validateEmail, validatePassword } from '../../../../shared/src/security';
+import { ApiError, validateEmail, validatePassword, rateLimiter } from '../../../../shared/src/security';
 
 const router = Router();
 const logger = createLogger('user-service:auth');
+
+// Apply stricter rate limiting to refresh endpoint to prevent token abuse
+router.use('/refresh', rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 10, // 10 refresh attempts per 15 minutes
+  message: 'Too many token refresh attempts, please try again later',
+}));
 
 // ============================================================
 // VALIDATION SCHEMAS

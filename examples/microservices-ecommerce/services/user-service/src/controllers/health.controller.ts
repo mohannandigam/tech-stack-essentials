@@ -35,18 +35,26 @@ router.get('/', (req: Request, res: Response) => {
 router.get('/ready', async (req: Request, res: Response) => {
   const checks = {
     service: true,
-    database: false,
-    cache: false,
+    database: true,  // TODO: Implement actual database health check
+    cache: true,     // TODO: Implement actual Redis health check
   };
 
   try {
-    // TODO: Check database connection
-    // Example: await db.query('SELECT 1');
-    checks.database = true;
+    // TODO: Uncomment and implement when database is configured
+    // try {
+    //   await db.query('SELECT 1');
+    //   checks.database = true;
+    // } catch (error) {
+    //   checks.database = false;
+    // }
 
-    // TODO: Check Redis connection
-    // Example: await redis.ping();
-    checks.cache = true;
+    // TODO: Uncomment and implement when Redis is configured
+    // try {
+    //   await redis.ping();
+    //   checks.cache = true;
+    // } catch (error) {
+    //   checks.cache = false;
+    // }
 
     const allHealthy = Object.values(checks).every(check => check === true);
 
