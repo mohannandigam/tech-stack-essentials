@@ -16,11 +16,11 @@ This comprehensive guide provides practical knowledge for building, deploying, a
 - **Software Engineers**: Integrating ML into applications, API design
 - **Architects**: Designing end-to-end ML platforms
 
-## 🚀 NEW: Complete AI/ML Team Structure Guide
+## 🚀 NEW: Comprehensive AI/ML Learning Guides
 
-**Want to understand how AI/ML teams work together to build production systems?** Check out our comprehensive guides:
+### 📖 Core Guides: Team Structure & Collaboration
 
-### 📖 Main Guides
+**Want to understand how AI/ML teams work together to build production systems?**
 
 #### [Part 1: Team Structure and Roles](./TEAM_STRUCTURE.md)
 - Detailed breakdown of Data Engineers, Data Scientists, and ML Engineers
@@ -40,12 +40,51 @@ This comprehensive guide provides practical knowledge for building, deploying, a
 - A/B testing and performance monitoring
 - Business impact analysis and metrics
 
-### 🧭 Additional Resources
+### 🎯 Technical Deep Dives
+
+#### [Comprehensive Anomaly Detection Guide](./ANOMALY_DETECTION.md) 🆕
+**From basics to advanced - Learn all anomaly detection techniques:**
+- **Global vs Local Detectors** - Detailed comparison with examples
+  - Global: Z-score, treats entire dataset as single distribution
+  - Local: LOF (Local Outlier Factor), considers local neighborhoods
+- **Forward Pass & Backward Pass** - Explained with autoencoder examples
+  - Training vs inference differences
+  - LSTM for time-series anomaly detection
+- **Statistical Methods** - Z-score, Modified Z-score, IQR, Grubbs' test
+- **[Part 2: Advanced Methods](./ANOMALY_DETECTION_PART2.md)**
+  - Machine Learning: Isolation Forest, One-Class SVM, DBSCAN
+  - Deep Learning: VAE, GAN-based detection
+  - Time-Series: ARIMA, Prophet, S-H-ESD
+  - Real-world network traffic example
+
+#### [MLOps Deep Dive](./MLOPS_GUIDE.md) 🆕
+**Production ML systems from development to deployment:**
+- **CI/CD for ML Pipelines** - Complete GitHub Actions workflow
+  - Data validation, model training, testing, deployment
+  - Automated metrics validation
+- **Model Versioning Strategies** - Semantic versioning, MLflow Registry
+- **Feature Store Patterns** - Feast implementation, training-serving consistency
+- **Model Monitoring** - Prometheus metrics, data drift detection, performance tracking
+- **A/B Testing** - Statistical significance testing for model comparison
+- **Deployment Strategies** - Blue-green, canary, shadow deployments
+
+#### [Data Science Fundamentals](./DATA_SCIENCE_FUNDAMENTALS.md) 🆕
+**Master the fundamentals from statistics to production:**
+- **Statistical Analysis** - Distributions, hypothesis testing, effect sizes
+- **Exploratory Data Analysis** - Comprehensive EDA framework
+- **Feature Engineering** - Polynomial, interaction, time-based, aggregation features
+- **Feature Selection** - Univariate, mutual information, RFE, model-based
+- **Model Selection** - Cross-validation strategies, model comparison
+- **Hyperparameter Tuning** - Grid search, random search, Bayesian optimization
+- **Ensemble Methods** - Bagging, boosting, stacking
+- **Model Interpretability** - SHAP, LIME, feature importance
+
+### 🧭 Learning Resources
 
 - **[Navigation Guide](./NAVIGATION_GUIDE.md)** - Quick start and reading paths for different roles
 - **[Learning Path](./LEARNING_PATH.md)** - Structured path from beginner to expert with exercises, projects, and certifications
 
-**Use Case Covered**: Building anomaly detection models using Databricks Unity Catalog with data from Snowflake, including ETL pipelines, feature engineering, model training, deployment, and monitoring.
+**Coverage**: Complete guides for anomaly detection (global/local detectors, forward/backward passes), MLOps practices, and data science fundamentals with 50+ production-ready code examples.
 
 ---
 
