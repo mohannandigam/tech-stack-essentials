@@ -576,10 +576,10 @@ ENABLE_TRACING=true
 
 ## 🔗 Related Topics
 
-- [Microservices Architecture](../../architectures/microservices/README.md)
-- [Event-Driven Architecture](../../architectures/event-driven/README.md)
-- [Test-Driven Development](../../methodologies/test-driven-development/README.md)
-- [AWS Deployment](../../cloud-stacks/aws/README.md)
+- [Microservices Architecture](../../02-architectures/microservices/README.md)
+- [Event-Driven Architecture](../../02-architectures/event-driven/README.md)
+- [Test-Driven Development](../../03-methodologies/test-driven-development/README.md)
+- [AWS Deployment](../../07-cloud/aws/README.md)
 
 ## 📄 License
 

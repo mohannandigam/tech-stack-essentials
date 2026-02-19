@@ -16,25 +16,25 @@ This repository provides high-level overviews and practical knowledge about:
 
 Learn about different architectural patterns used in modern software development:
 
-- **[Monorepo](./architectures/monorepo/README.md)** - Single repository for multiple projects
-- **[Microservices](./architectures/microservices/README.md)** - Distributed service-based architecture
-- **[Serverless](./architectures/serverless/README.md)** - Function-as-a-Service architecture
-- **[Event-Driven](./architectures/event-driven/README.md)** - Asynchronous event-based systems
+- **[Monorepo](./02-architectures/monorepo/README.md)** - Single repository for multiple projects
+- **[Microservices](./02-architectures/microservices/README.md)** - Distributed service-based architecture
+- **[Serverless](./02-architectures/serverless/README.md)** - Function-as-a-Service architecture
+- **[Event-Driven](./02-architectures/event-driven/README.md)** - Asynchronous event-based systems
 
 ### 2. Development Methodologies
 
 Understand the processes and practices that guide software development:
 
-- **[Behaviour-Driven Development (BDD)](./methodologies/behaviour-driven-development/README.md)** - Collaboration-focused development approach
-- **[Test-Driven Development (TDD)](./methodologies/test-driven-development/README.md)** - Test-first development methodology
+- **[Behaviour-Driven Development (BDD)](./03-methodologies/behaviour-driven-development/README.md)** - Collaboration-focused development approach
+- **[Test-Driven Development (TDD)](./03-methodologies/test-driven-development/README.md)** - Test-first development methodology
 
 ### 3. Cloud Stacks
 
 Explore the major cloud platforms and their services:
 
-- **[AWS (Amazon Web Services)](./cloud-stacks/aws/README.md)** - Amazon's cloud platform
-- **[GCP (Google Cloud Platform)](./cloud-stacks/gcp/README.md)** - Google's cloud platform
-- **[Azure](./cloud-stacks/azure/README.md)** - Microsoft's cloud platform
+- **[AWS (Amazon Web Services)](./07-cloud/aws/README.md)** - Amazon's cloud platform
+- **[GCP (Google Cloud Platform)](./07-cloud/gcp/README.md)** - Google's cloud platform
+- **[Azure](./07-cloud/azure/README.md)** - Microsoft's cloud platform
 
 ### 4. Practical Examples
 
@@ -53,39 +53,39 @@ Real-world implementation examples with best practices:
 
 Modern DevOps practices and tools:
 
-- **[Infrastructure Overview](./infrastructure/README.md)** - DevOps and infrastructure patterns
-- **[Docker](./infrastructure/docker/README.md)** - Containerization with domain-specific examples
-- **[Kubernetes](./infrastructure/kubernetes/README.md)** - Container orchestration at scale
-- **[CI/CD](./infrastructure/cicd/README.md)** - Continuous Integration and Delivery pipelines
-- **[Terraform](./infrastructure/terraform/README.md)** - Infrastructure as Code
-- **[Monitoring](./infrastructure/monitoring/README.md)** - Observability and performance monitoring
+- **[Infrastructure Overview](./06-infrastructure/README.md)** - DevOps and infrastructure patterns
+- **[Docker](./06-infrastructure/docker/README.md)** - Containerization with domain-specific examples
+- **[Kubernetes](./06-infrastructure/kubernetes/README.md)** - Container orchestration at scale
+- **[CI/CD](./06-infrastructure/cicd/README.md)** - Continuous Integration and Delivery pipelines
+- **[Terraform](./06-infrastructure/terraform/README.md)** - Infrastructure as Code
+- **[Monitoring](./06-infrastructure/monitoring/README.md)** - Observability and performance monitoring
 
 ### 6. Domain Examples
 
 Quick-start templates across industries:
 
-- **[Domain Examples Overview](./domain-examples/README.md)** - Learning templates for 16 industries
+- **[Domain Examples Overview](./10-domain-examples/README.md)** - Learning templates for 16 industries
 
 #### Core Business Domains
 
-- **[Energy](./domain-examples/energy/README.md)** - Smart grid monitoring, IoT sensor networks
-- **[Finance](./domain-examples/finance/README.md)** - Trading platforms, portfolio management
-- **[Banking](./domain-examples/banking/README.md)** - Account management, transaction processing
-- **[Social Media](./domain-examples/social-media/README.md)** - User feeds, content moderation
-- **[Dating](./domain-examples/dating/README.md)** - Matching algorithms, user profiles
-- **[Retail](./domain-examples/retail/README.md)** - Inventory management, point-of-sale
-- **[Insurance](./domain-examples/insurance/README.md)** - Claims processing, risk assessment
-- **[Healthcare](./domain-examples/healthcare/README.md)** - Patient records, appointment scheduling
-- **[Logistics](./domain-examples/logistics/README.md)** - Package tracking, route optimization
+- **[Energy](./10-domain-examples/energy/README.md)** - Smart grid monitoring, IoT sensor networks
+- **[Finance](./10-domain-examples/finance/README.md)** - Trading platforms, portfolio management
+- **[Banking](./10-domain-examples/banking/README.md)** - Account management, transaction processing
+- **[Social Media](./10-domain-examples/social-media/README.md)** - User feeds, content moderation
+- **[Dating](./10-domain-examples/dating/README.md)** - Matching algorithms, user profiles
+- **[Retail](./10-domain-examples/retail/README.md)** - Inventory management, point-of-sale
+- **[Insurance](./10-domain-examples/insurance/README.md)** - Claims processing, risk assessment
+- **[Healthcare](./10-domain-examples/healthcare/README.md)** - Patient records, appointment scheduling
+- **[Logistics](./10-domain-examples/logistics/README.md)** - Package tracking, route optimization
 
 #### Specialized Industry Domains
 
-- **[Aerospace](./domain-examples/aerospace/README.md)** - Flight tracking, satellite systems, aircraft maintenance
-- **[Mortgage](./domain-examples/mortgage/README.md)** - Loan origination, underwriting, servicing
-- **[Manufacturing](./domain-examples/manufacturing/README.md)** - Smart factory, IoT, predictive maintenance
-- **[Telecommunications](./domain-examples/telecommunications/README.md)** - Network ops, billing, subscriber management
-- **[Education](./domain-examples/education/README.md)** - Learning management, student information systems
-- **[Government](./domain-examples/government/README.md)** - Citizen services, permits, benefits administration
+- **[Aerospace](./10-domain-examples/aerospace/README.md)** - Flight tracking, satellite systems, aircraft maintenance
+- **[Mortgage](./10-domain-examples/mortgage/README.md)** - Loan origination, underwriting, servicing
+- **[Manufacturing](./10-domain-examples/manufacturing/README.md)** - Smart factory, IoT, predictive maintenance
+- **[Telecommunications](./10-domain-examples/telecommunications/README.md)** - Network ops, billing, subscriber management
+- **[Education](./10-domain-examples/education/README.md)** - Learning management, student information systems
+- **[Government](./10-domain-examples/government/README.md)** - Citizen services, permits, benefits administration
 
 ### 7. Quick Reference
 
@@ -102,10 +102,10 @@ Fast lookup guides for common patterns:
 
 Understand how to build and operate AI systems end-to-end:
 
-- **[AI Stack Guide](./ai-stack/README.md)** - Model creation, optimization, MLOps flows, data platforms, and QA playbooks
-  - **[Team Structure & Collaboration](./ai-stack/TEAM_STRUCTURE.md)** - Complete guide to AI/ML teams (Data Engineers, Data Scientists, ML Engineers)
-  - **[Snowflake to Databricks Pipeline](./ai-stack/TEAM_STRUCTURE_PART2.md)** - End-to-end anomaly detection with Unity Catalog
-  - **[Real-World Examples](./ai-stack/TEAM_STRUCTURE_PART3.md)** - E-commerce recommendations, healthcare, financial services
+- **[AI Stack Guide](./09-ai-ml/README.md)** - Model creation, optimization, MLOps flows, data platforms, and QA playbooks
+  - **[Team Structure & Collaboration](./09-ai-ml/TEAM_STRUCTURE.md)** - Complete guide to AI/ML teams (Data Engineers, Data Scientists, ML Engineers)
+  - **[Snowflake to Databricks Pipeline](./09-ai-ml/TEAM_STRUCTURE_PART2.md)** - End-to-end anomaly detection with Unity Catalog
+  - **[Real-World Examples](./09-ai-ml/TEAM_STRUCTURE_PART3.md)** - E-commerce recommendations, healthcare, financial services
 
 ## 🎯 For Software Testers
 
@@ -122,7 +122,7 @@ As a software tester, understanding these concepts will help you:
 ### For Fast-Paced Learning
 
 1. **Check Quick Reference** - Start with [Quick Reference](./quick-reference/README.md) for immediate answers
-2. **Pick a Domain** - Choose a [domain example](./domain-examples/) that interests you
+2. **Pick a Domain** - Choose a [domain example](./10-domain-examples/) that interests you
 3. **Run the Example** - Follow quick-start guides to see working code
 4. **Understand Patterns** - Read architecture guides to understand why
 5. **Adapt and Apply** - Use templates for your own projects
@@ -140,25 +140,25 @@ As a software tester, understanding these concepts will help you:
 
 - **Need a code snippet?** Check [Quick Reference](./quick-reference/README.md)
 - **Choosing a pattern?** See pattern selection guide
-- **Domain-specific?** Visit [Domain Examples](./domain-examples/)
-- **Infrastructure?** Check [Infrastructure](./infrastructure/)
+- **Domain-specific?** Visit [Domain Examples](./10-domain-examples/)
+- **Infrastructure?** Check [Infrastructure](./06-infrastructure/)
 
 ## 📖 Learning Path Recommendations
 
 ### For Complete Beginners:
 
 1. Start with [Quick Reference](./quick-reference/README.md) for overview
-2. Learn [TDD](./methodologies/test-driven-development/README.md) and [BDD](./methodologies/behaviour-driven-development/README.md) methodologies
-3. Try [Docker basics](./infrastructure/docker/README.md)
-4. Pick a simple domain ([Retail](./domain-examples/retail/README.md) or [Energy](./domain-examples/energy/README.md))
-5. Explore one cloud platform (start with [AWS](./cloud-stacks/aws/README.md))
+2. Learn [TDD](./03-methodologies/test-driven-development/README.md) and [BDD](./03-methodologies/behaviour-driven-development/README.md) methodologies
+3. Try [Docker basics](./06-infrastructure/docker/README.md)
+4. Pick a simple domain ([Retail](./10-domain-examples/retail/README.md) or [Energy](./10-domain-examples/energy/README.md))
+5. Explore one cloud platform (start with [AWS](./07-cloud/aws/README.md))
 
 ### For Those with Some Experience:
 
-1. Compare [Microservices](./architectures/microservices/README.md) vs [Serverless](./architectures/serverless/README.md) architectures
-2. Understand [Event-Driven](./architectures/event-driven/README.md) patterns
-3. Set up [Kubernetes](./infrastructure/kubernetes/README.md) and [CI/CD](./infrastructure/cicd/README.md)
-4. Try complex domains ([Finance](./domain-examples/finance/README.md), [Healthcare](./domain-examples/healthcare/README.md))
+1. Compare [Microservices](./02-architectures/microservices/README.md) vs [Serverless](./02-architectures/serverless/README.md) architectures
+2. Understand [Event-Driven](./02-architectures/event-driven/README.md) patterns
+3. Set up [Kubernetes](./06-infrastructure/kubernetes/README.md) and [CI/CD](./06-infrastructure/cicd/README.md)
+4. Try complex domains ([Finance](./10-domain-examples/finance/README.md), [Healthcare](./10-domain-examples/healthcare/README.md))
 5. Explore all three cloud platforms
 
 ### For Domain-Specific Learning:
