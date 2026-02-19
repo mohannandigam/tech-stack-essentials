@@ -197,11 +197,11 @@ Step-by-step explanation with diagrams. Use ASCII diagrams if helpful.
 
 ### Quick Reference
 
-| Aspect | Details |
-|--------|---------|
-| Best for | ... |
-| Avoid when | ... |
-| Key tool | ... |
+| Aspect     | Details |
+| ---------- | ------- |
+| Best for   | ...     |
+| Avoid when | ...     |
+| Key tool   | ...     |
 
 ### Example
 
@@ -286,6 +286,7 @@ XX-section-name/
 ### Writing for Every Level
 
 When writing content, mentally check:
+
 - Can a first-year student follow this? (Accessibility check)
 - Does an intermediate developer get enough depth? (Depth check)
 - Does an experienced engineer find it useful? (Value check)
