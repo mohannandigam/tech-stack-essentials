@@ -32,6 +32,18 @@ Explore the major cloud platforms and their services:
 - **[GCP (Google Cloud Platform)](./cloud-stacks/gcp/README.md)** - Google's cloud platform
 - **[Azure](./cloud-stacks/azure/README.md)** - Microsoft's cloud platform
 
+### 4. Practical Examples
+Real-world implementation examples with best practices:
+
+- **[Microservices E-Commerce Application](./examples/microservices-ecommerce/README.md)** - Full-stack microservices application demonstrating:
+  - Complete user authentication service with JWT
+  - Structured logging with correlation IDs
+  - Security best practices (OWASP Top 10 coverage)
+  - Docker containerization and orchestration
+  - Database design and schemas
+  - Comprehensive testing strategies
+  - Deployment guides for Docker, Kubernetes, and AWS
+
 ## 🎯 For Software Testers
 
 As a software tester, understanding these concepts will help you:
@@ -46,7 +58,7 @@ As a software tester, understanding these concepts will help you:
 1. **Start with the basics** - Begin with the architecture that interests you most
 2. **Understand the concepts** - Read through the high-level explanations
 3. **Think about testing** - Each topic includes testing considerations
-4. **Build gradually** - Sample code and examples will be added over time
+4. **Try the practical example** - Deploy the [microservices e-commerce app](./examples/microservices-ecommerce/README.md) to see concepts in action
 5. **Practice** - Try to identify how these patterns apply to your current projects
 
 ## 📖 Learning Path Recommendations
