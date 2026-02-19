@@ -92,6 +92,9 @@ Fast lookup guides for common patterns:
 Understand how to build and operate AI systems end-to-end:
 
 - **[AI Stack Guide](./ai-stack/README.md)** - Model creation, optimization, MLOps flows, data platforms, and QA playbooks
+  - **[Team Structure & Collaboration](./ai-stack/TEAM_STRUCTURE.md)** - Complete guide to AI/ML teams (Data Engineers, Data Scientists, ML Engineers)
+  - **[Snowflake to Databricks Pipeline](./ai-stack/TEAM_STRUCTURE_PART2.md)** - End-to-end anomaly detection with Unity Catalog
+  - **[Real-World Examples](./ai-stack/TEAM_STRUCTURE_PART3.md)** - E-commerce recommendations, healthcare, financial services
 
 ## 🎯 For Software Testers
 
