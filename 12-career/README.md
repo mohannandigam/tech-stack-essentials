@@ -164,6 +164,29 @@ Senior Engineer (5-8 years)
 - **Slack**: DevOps, SRE, and language-specific communities
 - **Twitter/X**: Follow engineers from top companies
 
+## Related Topics
+
+### Study These for Technical Interviews
+- [Foundations](../00-foundations/README.md) - Data structures, algorithms, and Big O notation
+- [Programming](../01-programming/README.md) - Coding fundamentals and language mastery
+- [System Architecture](../02-architectures/README.md) - System design interview preparation
+
+### Build Skills for Career Growth
+- [Development Methodologies](../03-methodologies/README.md) - Agile, Scrum, DevOps certifications
+- [Frontend Development](../04-frontend/README.md) - Frontend specialization path
+- [Backend Development](../05-backend/README.md) - Backend specialization path
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - DevOps and SRE career track
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud certifications (AWS, GCP, Azure)
+- [Security & Compliance](../08-security/README.md) - Security engineering career path
+- [AI/ML](../09-ai-ml/README.md) - ML engineer and data scientist career paths
+
+### Gain Domain Expertise
+- [Domain Examples](../10-domain-examples/README.md) - Specialize in an industry (fintech, healthcare, etc.)
+- [Case Studies](../11-case-studies/README.md) - Learn from real-world engineering decisions
+
+### Learning Resources
+- [YouTube, Books & Courses for Career Development](./RESOURCES.md)
+
 ---
 
 **Start Here**: Choose a [Learning Roadmap](./learning-roadmaps.md) that matches your goals.

@@ -848,14 +848,26 @@ Regardless of which patterns you choose, these principles apply:
 
 ## Related Topics
 
-After mastering architecture patterns, explore:
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - How the internet and computers work (networking, protocols, data structures)
+- [Programming](../01-programming/README.md) - Programming languages and paradigms used to implement architectures
 
-- **[00-foundations](../00-foundations/)**: How the internet and computers work (networking, protocols, data structures)
-- **[03-methodologies](../03-methodologies/)**: Development processes (Agile, DevOps, CI/CD)
-- **[06-infrastructure](../06-infrastructure/)**: Containers, orchestration, infrastructure as code
-- **[07-cloud](../07-cloud/)**: Cloud-specific architectures (AWS, GCP, Azure patterns)
-- **[08-security](../08-security/)**: Security architecture and compliance
-- **[11-case-studies](../11-case-studies/)**: Real-world architecture case studies
+### Next Steps
+- [Frontend Development](../04-frontend/README.md) - Client-side architecture and component design
+- [Backend Development](../05-backend/README.md) - Server-side implementation of architectural patterns
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Containers, orchestration, infrastructure as code
+
+### Complementary Topics
+- [Development Methodologies](../03-methodologies/README.md) - Agile, DevOps, and CI/CD processes
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud-specific architectures (AWS, GCP, Azure patterns)
+- [Security & Compliance](../08-security/README.md) - Security architecture and compliance
+- [AI/ML](../09-ai-ml/README.md) - ML system architecture and MLOps patterns
+- [Domain Examples](../10-domain-examples/README.md) - Architecture patterns applied in real industries
+- [Case Studies](../11-case-studies/README.md) - Real-world architecture decisions and trade-offs
+- [Career Development](../12-career/README.md) - System design interview preparation
+
+### Learning Resources
+- [YouTube, Books & Courses for Architecture](./RESOURCES.md)
 
 ## Guide Navigation
 

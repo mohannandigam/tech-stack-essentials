@@ -1184,15 +1184,635 @@ metrics.gauge('matches.pool_size', len(candidates))
 | **Scale Target** | 10M+ users, 1B+ matches |
 | **Team Size** | 15-30 engineers |
 
+## 🎓 Expert Knowledge
+
+### How Tinder's ELO / Gale-Shapley Algorithm Works
+
+**The ELO System (Tinder's original approach)**:
+
+Borrowed from chess, where every player has a numeric rating. In dating:
+
+1. Every user starts with a base score (say 1000)
+2. When a high-rated user swipes right on you, your score increases more than if a low-rated user does
+3. When a high-rated user swipes left on you, your score decreases more
+4. The system shows you profiles with similar ELO scores — the idea being that mutual interest is more likely between people of similar "desirability"
+
+**Why Tinder moved away from pure ELO**: It created a rigid hierarchy. Users who got cold-started with low scores were trapped. Tinder now uses a more complex ML-based system they do not fully disclose, but the principle remains — behavioral signals (who swipes on you, who you match with) feed the ranking.
+
+**The Gale-Shapley Algorithm (Stable Matching)**:
+
+Originally designed to match medical residents to hospitals. The algorithm guarantees a "stable" matching — no two people would prefer to switch to each other over their current matches.
+
+Think of it like a school dance:
+1. In round 1, every person "proposes" to their top choice
+2. Each person receiving proposals keeps their favorite and rejects the rest
+3. Rejected people propose to their next choice
+4. Repeat until everyone is matched
+
+Hinge uses a variant of this — their "Most Compatible" feature runs a modified Gale-Shapley to find pairs most likely to mutually match, then surfaces them once per day.
+
+### Two-Sided Marketplace Dynamics
+
+**Simple analogy**: A dating app is like a farmer's market. Farmers (supply) want customers (demand), and customers want farmers. The market operator (the app) must:
+
+- **Attract both sides**: If there are no farmers, customers leave. If there are no customers, farmers leave. This is the "chicken-and-egg" problem every marketplace faces.
+- **Balance the ratio**: Too many of one gender on a heterosexual app means the minority group gets overwhelmed with attention while the majority gets ignored. This drives churn on both sides for different reasons.
+- **Manage quality**: If the market fills with low-quality produce (fake profiles, inactive users), buyers stop coming. Trust is the marketplace's most valuable asset.
+
+**Key metrics for marketplace health**:
+- **Liquidity**: The probability that a user finds a match. If liquidity is low, users leave.
+- **Supply/demand ratio**: Ideally 1:1 for heterosexual apps. Deviations create experience problems.
+- **Time to first match**: How quickly a new user gets their first match. This is the most critical onboarding metric.
+- **Match-to-conversation rate**: Are matches leading to conversations? If not, the matching algorithm is not finding truly compatible pairs.
+
+### Psychology of Swiping
+
+**Paradox of Choice**: Research by psychologist Barry Schwartz shows that more options lead to less satisfaction. On a dating app with millions of users, this manifests as:
+- Users swipe through hundreds of profiles without committing to conversations
+- The "grass is always greener" effect — why settle when there might be someone better one swipe away?
+- Decision fatigue — after too many swipes, users default to snap judgments based on photos alone
+
+**Decision Fatigue**: Studies show swiping behavior changes throughout a session:
+- Early swipes: More selective, more time spent per profile
+- Late swipes: Less selective (swipe right on everyone) or completely disengaged (swipe left on everyone)
+- Design response: Apps limit daily swipes (both to combat fatigue and drive monetization)
+
+**The Dopamine Loop**: The variable reward of "will this be a match?" triggers the same dopamine response as slot machines. This is what makes the swiping gesture so addictive — and why app designers must balance engagement with user wellbeing.
+
+### How Hinge's "Most Compatible" Uses ML
+
+Hinge's system works in three stages:
+
+1. **Preference Learning**: The model learns your preferences not just from stated filters (age, distance) but from behavioral signals — who you like, who you skip, how long you spend on a profile, what prompt answers you engage with.
+
+2. **Collaborative Filtering**: "Users with similar taste to you also liked these profiles." This surfaces profiles you would not have found through basic filters alone.
+
+3. **Stable Matching (Gale-Shapley variant)**: Once the model knows who you would like, it also knows who would like you. The "Most Compatible" feature pairs two users where both sides have a high predicted likelihood of mutual interest. This is shown as a single daily recommendation — scarcity makes users take it seriously.
+
+### Photo Scoring and Attractiveness Prediction — Ethics
+
+Some platforms use ML to score profile photos for attractiveness or quality. This raises serious ethical questions:
+
+- **Bias**: Models trained on historical data inherit societal biases about attractiveness (racial bias, body type bias, age bias). A model that learns "users swipe right more on [group X]" will surface [group X] more, creating a feedback loop.
+- **Transparency**: Users are rarely told their photos are being scored. They experience the effects (more or fewer matches) without understanding why.
+- **Alternative approach**: Instead of scoring attractiveness, some platforms score photo quality (lighting, resolution, face visible) — which improves the experience without making subjective judgments about people.
+- **Best practice**: If using photo scoring, audit the model for demographic bias, disclose the practice in terms of service, and allow users to opt out.
+
+### Fake Profile Detection
+
+Fake profiles (bots, catfish, scammers) are the biggest threat to trust. Detection uses multiple signals:
+
+1. **Photo Analysis**: Reverse image search against known stock photos, GAN-generated face detection (AI-generated faces have subtle artifacts), metadata analysis (was the photo taken recently or is it years old?)
+
+2. **Behavioral Analysis**: Real users browse and swipe at human speeds. Bots exhibit patterns:
+   - Unnaturally fast swiping (100+ right-swipes per minute)
+   - Identical message templates sent to every match
+   - Immediate request to move conversation to external platform
+   - Login from data center IP addresses instead of residential/mobile
+
+3. **Network Analysis**: Fake accounts often share creation patterns — registered at similar times, from similar IP ranges, with similar profile structures. Graph analysis can identify clusters.
+
+4. **Verification**: Phone number verification (each number can only create one account), photo verification (take a selfie matching a pose), ID verification (for premium features)
+
+### Trust & Safety at Scale
+
+How major platforms handle reports and safety:
+
+- **Report Pipeline**: User reports flow through automated triage (ML classifies severity) → urgent cases (threats, minors) escalated to humans immediately → non-urgent cases queued for review → action taken (warning, suspension, ban)
+- **Volume**: Tinder processes ~100,000 reports per day. At that scale, ML-assisted moderation is not optional — it is essential.
+- **False Positive Problem**: Aggressive moderation catches bad actors but also bans legitimate users. Most platforms err slightly toward caution (let some bad actors through rather than ban good users).
+- **Appeals Process**: Every platform needs an appeals process. ML makes mistakes. Humans make mistakes. The system must be correctable.
+- **Proactive Detection**: The best safety systems do not wait for reports. They proactively scan for dangerous behavior patterns (underage users lying about age, known sex offender profiles, sextortion patterns).
+
+## 💰 Monetization Deep Dive
+
+### Freemium Conversion Funnel
+
+Dating apps follow a specific monetization pattern — give enough value for free to build the habit, then charge for features that accelerate the experience:
+
+```
+Free Users (100%)
+    │
+    ├── Engaged Free Users (40%)    ← Use daily, see value
+    │       │
+    │       ├── Hit a Friction Point (25%)   ← "I'm out of likes" / "Who liked me?"
+    │       │       │
+    │       │       └── Convert to Paid (5-10%)   ← Purchase subscription
+    │       │
+    │       └── Continue Free (15%)   ← Satisfied with free tier
+    │
+    └── Churned Free Users (60%)    ← Never engaged enough
+```
+
+**The key insight**: The free tier must be good enough to demonstrate value but limited enough to create desire for more. If the free tier is too good, nobody pays. If it is too restrictive, users leave.
+
+### Feature Gating Strategies
+
+| Feature | Free | Plus ($) | Gold ($$) | Platinum ($$$) |
+|---------|------|----------|-----------|----------------|
+| Daily Swipes | Limited (100) | Unlimited | Unlimited | Unlimited |
+| See Who Likes You | Hidden (blur) | Hidden | Full access | Full access |
+| Super Like | 1/week | 5/week | 5/week | 5/week + priority |
+| Boost (top of deck) | None | 1/month | 1/week | 1/week |
+| Passport (change location) | No | Yes | Yes | Yes |
+| Rewind (undo swipe) | No | Yes | Yes | Yes |
+| Message Before Match | No | No | No | Yes |
+| Priority Likes | No | No | No | Yes |
+
+### Subscription Tiers and Pricing Psychology
+
+- **Anchoring**: Show the most expensive tier first. When users see Platinum at $40/month, Gold at $25/month looks like a deal.
+- **Monthly vs. Annual**: Offer 6-month and 12-month plans at steep discounts (50-60% off monthly price). Users perceive savings even though they are committing to a longer period.
+- **Age-based pricing**: Tinder famously charges users over 30 more than users under 30. The reasoning: younger users have less disposable income, and price sensitivity varies by age.
+- **Regional pricing**: A subscription in India costs 1/5th what it costs in the US. Purchasing power parity.
+- **Free trials**: 7-day free trial of Gold converts at ~15%. Users experience premium features and develop attachment (loss aversion drives conversion).
+
+### Revenue Metrics
+
+| Metric | Definition | Healthy Target |
+|--------|-----------|----------------|
+| **ARPU** (Average Revenue Per User) | Total revenue / Total users | $0.50-2.00/month |
+| **ARPPU** (Average Revenue Per Paying User) | Revenue / Paying users | $15-25/month |
+| **LTV** (Lifetime Value) | Average revenue per user over their entire time on platform | $50-200 |
+| **CAC** (Customer Acquisition Cost) | Marketing spend / New users acquired | $2-10 |
+| **LTV:CAC Ratio** | LTV / CAC | > 3:1 for viability |
+| **Churn Rate** | % of paying users who cancel per month | 5-10% (monthly) |
+| **Conversion Rate** | % of free users who become paid | 5-15% |
+| **Paywall Interaction Rate** | % of users who see a paywall prompt | 30-50% |
+
+## 🏗️ Scale Challenges
+
+### Handling 2B+ Swipes Per Day (Tinder Scale)
+
+Tinder processes over 2 billion swipes per day. Here is how this works at scale:
+
+1. **Swipe Storage**: Each swipe is a small write (user_id, target_id, action, timestamp). At 2B/day, that is ~23,000 writes/second sustained, with peaks 3-5x higher during evening hours. Solution: Write-optimized stores (Cassandra, DynamoDB) with time-series partitioning.
+
+2. **Match Detection**: Every right-swipe triggers a check: "Did this person already swipe right on me?" This requires a fast lookup. Solution: Store recent right-swipes in Redis as a set per user. Check is O(1). Match detection runs in < 1ms.
+
+3. **Discovery Feed Generation**: Pre-compute discovery feeds in batches during off-peak hours. When a user opens the app, they get a pre-computed feed from cache. New swipes invalidate portions of the feed. This avoids running expensive geospatial + ML queries on every app open.
+
+4. **Event Pipeline**: Every swipe, match, message, and profile view flows through Kafka to analytics, ML training pipelines, and notification services. The event pipeline handles 50,000+ events/second.
+
+### The Hot-Spot Problem in Dense Cities
+
+In Manhattan, 500,000+ active users may be within a 5km radius. This creates:
+
+- **Query overload**: A single user's discovery query returns too many candidates. Fetching 100 candidates from 500K is fine — but the WHERE clause filters (age, gender, not-already-seen) must evaluate against all 500K rows.
+- **Solution 1: Shard by geohash**: Split the database into geographic partitions. Manhattan gets its own shard (or multiple shards). This localizes queries.
+- **Solution 2: Pre-filtered candidate pools**: Batch job creates pre-filtered pools (e.g., "women aged 25-30 in Manhattan") in Redis. Discovery queries read from pools instead of the main database.
+- **Solution 3: Progressive loading**: Show the nearest 20 profiles first, then progressively load more as the user swipes. Do not pre-compute the full candidate list.
+
+### Cross-Region Matching for Travel Mode
+
+"Passport" or "Travel Mode" lets users match in a different city before they arrive. Engineering challenges:
+
+- **Multi-region data**: User profiles live in the region where they signed up. Travel mode queries must reach across regions. Solution: Read replicas in each region, or a global profile index with minimal data (just enough for discovery).
+- **Latency**: A user in New York swiping in Tokyo adds 200ms of network latency per query. Solution: Replicate the Tokyo candidate pool to a CDN or cache layer accessible from New York.
+- **Consistency**: When a Tokyo user swipes right on a New York traveler, the match must be detected. Solution: A global match-detection service (or cross-region event propagation via Kafka MirrorMaker) that ensures swipe data is eventually consistent across regions.
+- **Fraud prevention**: Travel mode is sometimes abused for spam (bots "travel" to every city). Solution: Rate-limit location changes, require account age > 7 days for Travel Mode, flag accounts that change location more than 3x/day.
+
+## 🚀 Building a Dating App — What You Must Know
+
+This section is written for someone founding a dating app or joining one as an engineer. It covers the decisions, trade-offs, and operational knowledge that documentation and tutorials skip.
+
+### Tech Stack Decision Guide
+
+Choosing the right stack for a dating app is heavily influenced by two unique requirements: **geospatial queries** (every user has a location, every query is location-bounded) and **real-time communication** (chat, notifications, presence). Here's what works and why:
+
+| Layer | Recommended | Alternative | Why |
+|-------|------------|-------------|-----|
+| **Backend API** | FastAPI (Python) | Django REST Framework | FastAPI: async-native, handles WebSocket + HTTP in one process. Django: better if you need admin panel, ORM batteries |
+| **Real-time** | WebSocket via FastAPI or Node.js | Firebase Realtime DB | WebSocket gives full control over presence, typing indicators, read receipts. Firebase is faster to prototype but expensive at scale |
+| **Mobile** | React Native | Flutter | React Native: larger talent pool, share logic with web app. Flutter: better performance, single codebase compiles to truly native |
+| **Primary DB** | PostgreSQL + PostGIS | — | **Non-negotiable** for geospatial. PostGIS adds `ST_DWithin`, spatial indexes, and distance calculations. No other relational DB matches it |
+| **Chat DB** | MongoDB or ScyllaDB | Cassandra | Chat is append-heavy, schema-flexible. MongoDB is simpler. ScyllaDB for >10M MAU chat volume |
+| **Cache/Queue** | Redis | Memcached | Redis: sessions, match cache, rate limiting, pub/sub for presence, sorted sets for leaderboards. It does everything |
+| **Event Streaming** | Kafka | RabbitMQ | Kafka: durable log for event pipeline (swipes, matches, analytics). RabbitMQ: simpler, fine under 10K events/sec |
+| **ML Serving** | TensorFlow Serving or BentoML | Custom Flask API | Dedicated serving infra handles batching, versioning, A/B models. Custom API works for v1 |
+| **Feature Store** | Feast | Tecton | Feast: open-source, good enough for most. Tecton: managed, better for real-time features at scale |
+| **Monitoring** | Datadog or Prometheus+Grafana | New Relic | Datadog: all-in-one SaaS, fast setup. Prometheus+Grafana: free, self-hosted, more customizable |
+| **CDN (photos)** | CloudFront + S3 | Cloudflare R2 | Photos are 80%+ of bandwidth. CDN is non-negotiable. Cloudflare R2 has zero egress fees |
+
+### Authentication & Onboarding Flow
+
+Onboarding is where you win or lose 40-60% of signups. Every extra step costs you users. Every skipped safety step costs you trust.
+
+**Authentication options**:
+- **Apple Sign-In**: Required by Apple if you offer any social login on iOS. Fast, privacy-friendly (users can hide email).
+- **Google Sign-In**: Highest conversion on Android. Use Google Identity Services SDK.
+- **Phone number (SMS)**: Use Twilio Verify or Firebase Auth. Reduces fake accounts. Required as a second factor for safety.
+- **Facebook Login**: Declining in popularity with younger demographics but still valuable for importing photos and mutual friends.
+
+**Progressive profile completion**:
+
+Don't require a complete profile before showing the app. Let users in fast, then nudge them to complete their profile over the first few sessions.
+
+```
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│  Sign Up │───▶│  Phone   │───▶│  Name +  │───▶│ 1 Photo  │───▶│ Discovery│
+│  (OAuth) │    │  Verify  │    │  Birthday │    │ (min)    │    │   Feed   │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
+     │                                                               │
+     │              ◀──── Nudges over next 3 sessions ────▶          │
+     │                                                               │
+     │          "Profiles with 3+ photos get 70% more matches"       │
+     │          "Add your job title — it's the #2 thing people look at"│
+     │          "Write a bio — profiles with bios get 3x more likes"  │
+     │                                                               │
+     └───────── Completion reward: free "Boost" at 100% profile ─────┘
+```
+
+**Photo guidance prompts**: Don't just say "upload a photo." Guide users:
+- "Show your face clearly — no sunglasses, no group shots for photo 1"
+- "Add a full-body photo — it increases matches by 40%"
+- "Show a hobby or interest — give people something to talk about"
+- AI photo quality scoring: reject blurry, too-dark, or duplicate photos automatically
+
+### The Cold Start Problem
+
+A dating app with no users is useless. Unlike most apps, dating apps have a **chicken-and-egg problem**: people won't join unless there are already people to match with.
+
+**How Tinder actually launched** (2012):
+1. Co-founder Whitney Wolfe went to sorority chapters at USC and got sisters to install the app
+2. Then went to the brother fraternities: "All the girls at [sorority] are already on it"
+3. Threw parties that required showing the app at the door
+4. Result: dense, young, socially connected user base in a tight geography
+5. Repeated this campus by campus before going national
+
+**Seeding strategies that work**:
+- **Invite social graph**: Import contacts (with permission) and show "X friends are already here"
+- **Ambassador profiles**: Recruit popular, attractive early users. Offer free premium. Their presence draws others
+- **Geo-targeted paid ads**: Concentrate spend in one city/neighborhood until critical mass is achieved, then expand
+- **City-by-city launch**: Achieve minimum viable liquidity in one city before expanding. Minimum viable liquidity = enough users that a new signup gets at least one match within their first session
+- **Do not launch everywhere at once**: A thin spread of users across 50 cities is worse than a dense cluster in one city
+
+### User Acquisition & Growth
+
+| Channel | CAC Range | Pros | Cons |
+|---------|-----------|------|------|
+| **App Store Organic** | $0 | Free, high intent | Slow, depends on ASO and ratings |
+| **Google/Apple Search Ads** | $2–8 | High intent, measurable | Expensive at scale, competitive keywords |
+| **Social Media Ads (Instagram, TikTok)** | $3–15 | Great targeting, visual format | Creative fatigue, need constant new ads |
+| **Influencer Partnerships** | $5–25 | Authentic, builds brand | Hard to measure, variable quality |
+| **Campus Ambassadors** | $1–5 | Hyper-local density, word-of-mouth | Doesn't scale, seasonal |
+| **Referral Program** | $2–6 | Viral, pre-qualified users | Fraud risk (fake referrals) |
+| **PR / Press Coverage** | $0 | Massive reach, credibility | Unpredictable, one-time spike |
+
+**App Store Optimization (ASO)**:
+- Keywords: Target long-tail ("dating app for professionals" not just "dating")
+- Screenshots: Show the UI, highlight unique features, A/B test variants
+- Ratings: Prompt for ratings after positive moments (match, good conversation), never after negative ones
+- Target: 4.5+ stars. Below 4.0, downloads drop significantly
+
+**Healthy growth indicators**:
+- Organic acquisition > 60% of total (relying on paid = unsustainable)
+- K-factor > 0.5 (each user brings 0.5 new users through referrals/word-of-mouth)
+- Day-1 retention > 40%, Day-7 > 20%, Day-30 > 10%
+
+### Retention & Re-engagement
+
+Acquiring a user costs $3–15. Losing them and re-acquiring costs 5x more. Retention is the single most important metric after product-market fit.
+
+**Streak mechanics**: "You've matched 3 days in a row! Keep your streak alive." Streaks create a lightweight habit loop. Don't make them punishing (losing a streak shouldn't feel like losing progress).
+
+**Milestone notifications**: "You've been liked 100 times!" "Someone with 95% compatibility just joined near you." These create moments of delight and reasons to re-engage.
+
+**Win-back campaigns** (push notifications to inactive users):
+
+| Days Inactive | Hook | Example |
+|--------------|------|---------|
+| 3 days | Social proof | "12 people liked your profile while you were away" |
+| 7 days | New feature | "We just launched voice notes — try it with your matches" |
+| 14 days | Scarcity | "Your profile is about to be hidden. Open the app to stay visible" |
+| 30 days | Fresh start | "We've refreshed your recommendations. See who's new near you" |
+
+**Seasonal campaigns**: Dating app activity spikes predictably:
+- **January 1–14**: New Year's resolution dating (biggest spike of the year, +25-40%)
+- **February 1–13**: Pre-Valentine's rush
+- **September**: Back-to-school/back-to-city after summer
+- **Sunday evenings**: Highest weekly activity (7–10pm local time)
+
+**Churn prediction signals** (flag users at risk before they leave):
+- Session length declining over 2 weeks
+- Swipe volume dropping >50% week-over-week
+- No messages sent in 7+ days despite having matches
+- Subscription cancel or auto-renewal turned off
+- Uninstalled push notifications (detected by delivery failure)
+
+### Notification Strategy
+
+Notifications are your most powerful re-engagement tool and your fastest path to uninstalls. Get the balance wrong and users leave.
+
+| Type | Trigger | Timing | Priority |
+|------|---------|--------|----------|
+| **New match** | Mutual right-swipe | Immediate | High — this is the core dopamine hit |
+| **New message** | Match sends message | Immediate | High — conversation is the goal |
+| **New like** | Someone right-swiped you | Batched (every 2-4 hours) | Medium — "You have 5 new likes" drives opens |
+| **Boost reminder** | Free weekly boost unused | Sunday 6pm local | Low — feature awareness |
+| **Streak warning** | No swipe in 22 hours | 22 hours after last swipe | Low — opt-in only |
+| **Weekly summary** | Every Monday | Monday 10am local | Low — "You were liked 23 times this week" |
+
+**What drives opens**: New match (68% open rate), new message (55%), "someone liked you" (40%).
+
+**What drives uninstalls**: More than 3 notifications/day, notifications after 10pm, generic "Come back!" messages, notifications about features they didn't ask for.
+
+**Suppression rules**:
+- Max 3 push notifications per day per user
+- Quiet hours: 10pm–8am local time (no notifications except direct messages from matches)
+- If user hasn't opened last 3 notifications, reduce frequency by 50%
+- If user dismissed 5+ notifications in a row, pause for 48 hours
+- Never send push for the same event type twice within 1 hour
+
+---
+
+## 🚫 Anti-Patterns — What NOT To Do
+
+These are mistakes that have killed dating apps or severely damaged user trust. Learn from the failures of others.
+
+### 1. Aggressive Monetization That Kills the Free Experience
+
+**The mistake**: Making the free tier so frustrating that it feels like a paywall rather than a product. Limiting swipes to 5/day, hiding who liked you behind a blur, requiring payment to send messages.
+
+**Why it fails**: Users who can't experience the core value (matching, chatting) on the free tier leave before ever considering paying. Free users are also the content that paying users are paying to access.
+
+**What to do instead**: The free experience should be complete enough that someone can find a date. Paid features should enhance (unlimited swipes, seeing who liked you, profile boosts) without gating the core experience.
+
+### 2. Ignoring Gender Ratio Imbalance
+
+**The mistake**: Not actively managing the ratio of men to women (or supply/demand in any marketplace). Most dating apps skew 60-80% male, meaning women are overwhelmed with options and men get few matches.
+
+**Why it fails**: Women get flooded with low-effort messages and leave. Men get frustrated by low match rates and leave. Both sides churn for opposite reasons.
+
+**What to do instead**: Limit male swipe volume (Hinge's 8 free likes/day), make female experience higher-signal (Bumble's women-message-first), invest in features that attract and retain the scarce side.
+
+### 3. Showing Inactive or Ghost Profiles
+
+**The mistake**: Displaying profiles of users who haven't opened the app in weeks or months to inflate the apparent pool size.
+
+**Why it fails**: Users swipe right on ghost profiles, never get matches, conclude the app is dead, and leave. Even worse: matches that never respond destroy confidence in the platform.
+
+**What to do instead**: Deprioritize profiles inactive > 7 days. Hide profiles inactive > 30 days. Show a "last active" indicator. Be honest about pool size — a smaller active pool is better than a large dead one.
+
+### 4. No Content Moderation From Day One
+
+**The mistake**: Launching without automated or human content moderation, planning to "add it later."
+
+**Why it fails**: Without moderation, the app fills with spam, explicit content, scammers, and harassment within days. The first users — your most valuable early adopters — encounter this and leave permanently. You never get them back.
+
+**What to do instead**: Ship with basic ML moderation (nudity detection, spam detection) and manual review queues from day one. It doesn't need to be perfect — it needs to exist.
+
+### 5. Ignoring Privacy and Safety
+
+**The mistake**: Exposing precise user locations, not having block/report features, or storing sensitive data (sexual orientation, HIV status) without encryption.
+
+**Why it fails**: Location leaks have literally endangered lives (Grindr's distance-based triangulation vulnerability was used to locate users in countries where homosexuality is criminalized). Privacy failures become front-page news and regulatory action.
+
+**What to do instead**: Snap locations to a grid (never expose exact coordinates). Encrypt sensitive profile fields. Ship block and report in v1. Conduct a privacy threat model before launch. Follow OWASP guidelines for PII handling.
+
+### 6. Over-Optimizing for Engagement Over Genuine Connections
+
+**The mistake**: Optimizing for swipes, time-in-app, and session count at the expense of actual dates and relationships. Withholding good matches to keep users swiping longer.
+
+**Why it fails**: Users eventually realize they're spending hours swiping but not meeting people. They switch to a competitor that delivers results faster. Short-term engagement metrics go up, but long-term retention collapses.
+
+**What to do instead**: Optimize for **match-to-date conversion**. Celebrate when users leave because they found someone ("We love losing users to love"). Success stories are your best marketing.
+
+### 7. Not Having an Appeals Process for Bans
+
+**The mistake**: Auto-banning users based solely on report count or ML flags with no way to appeal.
+
+**Why it fails**: False positives are inevitable. Coordinated reporting (ex targeting an ex-partner's profile) exists. Banning paying users with no recourse leads to chargebacks, app store complaints, and social media outrage.
+
+**What to do instead**: Implement a tiered system: warning → temporary restriction → suspension → ban. Always allow appeals. Have a human review bans within 48 hours. Store the evidence (screenshots, messages) that triggered the action.
+
+### 8. Launching Everywhere at Once
+
+**The mistake**: Making the app available globally on day one to "maximize reach."
+
+**Why it fails**: 100 users spread across 50 cities means 2 users per city. Nobody matches. Nobody returns. You've burned your launch press coverage on an app that doesn't work.
+
+**What to do instead**: Launch in one city. Achieve critical mass (enough users that a new signup matches within their first session). Prove retention. Then expand city by city. Tinder, Bumble, and Hinge all launched this way.
+
+---
+
+## 📱 Modern Features You Must Ship
+
+These are the features users expect in 2024+ dating apps. Missing them puts you at a competitive disadvantage.
+
+| Feature | What It Does | Why It Matters | Complexity |
+|---------|-------------|----------------|------------|
+| **Video Verification** | User records a selfie video matching a pose prompt | Proves the person is real, reduces catfishing by 60%+ | Medium — needs ML pose matching |
+| **Voice/Video Calling** | In-app calls without sharing phone numbers | Safety (no number exchange), convenience, COVID accelerated adoption | High — WebRTC, TURN servers, moderation |
+| **Icebreaker Prompts** | "Two truths and a lie", "Best travel story" on profiles | Gives conversation starters, reduces "hey" openers | Low — just profile fields |
+| **Safety Badges** | Verified photo, verified phone, verified ID | Builds trust, verified profiles get 3x more matches | Medium — third-party ID verification |
+| **Incognito Mode** | Profile only visible to people you've liked | Privacy for public figures, people in small towns | Low — query filter |
+| **Super Like** | Signals strong interest, shown prominently to recipient | Monetization lever, 3x higher match rate than normal like | Low — event + UI treatment |
+| **Undo/Rewind** | Take back an accidental left swipe | Monetization lever, reduces regret frustration | Low — cache recent swipes |
+| **Passport/Travel Mode** | Match in a different city before arriving | Revenue driver, appeals to frequent travelers | Medium — cross-region queries |
+| **Group Activities** | Events, meetups, group date matching | Reduces pressure of 1-on-1, appeals to younger users | High — event system, group matching |
+| **AI Photo Suggestions** | ML picks your best photos and suggests ordering | Users are bad at choosing their own best photos, +15% match rate | Medium — photo quality + attractiveness models |
+
+---
+
+## 🏢 Operational Playbook
+
+Building the app is half the challenge. Operating it — keeping users safe, handling crises, managing moderators, complying with regulations — is the other half.
+
+### Trust & Safety Team Structure
+
+**Rule of thumb**: ~1 moderator per 50,000–100,000 MAU (monthly active users). This varies by user demographics and regional risk profiles.
+
+| Role | Responsibility | Ratio |
+|------|---------------|-------|
+| **Content Moderator** | Review flagged profiles, photos, messages | 1 per 50–100K MAU |
+| **T&S Lead** | Policy creation, escalation handling, training | 1 per 5–10 moderators |
+| **T&S Engineer** | Build/maintain moderation ML, tooling, dashboards | 1 per 500K MAU |
+| **Legal/Policy** | Regulatory compliance, law enforcement requests | 1 per 2–5M MAU |
+
+**Coverage requirements**:
+- 24/7 coverage for critical reports (threats, self-harm, CSAM)
+- SLA: threats reviewed < 1 hour, standard reports < 24 hours
+- Moderator well-being: rotate off disturbing content queues, provide access to counseling, limit exposure to 4 hours/day for graphic content queues
+
+### Content Moderation Pipeline
+
+```
+User Report / ML Flag
+        │
+        ▼
+┌───────────────┐
+│  ML Triage    │──── Auto-resolve (obvious spam, duplicate reports)
+│  (< 1 sec)   │
+└───────┬───────┘
+        │
+        ▼ Needs human review
+┌───────────────┐
+│  Queue        │──── Priority: Critical (threats, CSAM) > High (harassment)
+│  Assignment   │     > Medium (inappropriate content) > Low (profile disputes)
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│  Human Review │──── Moderator sees: reported content, reporter's note,
+│               │     reported user's history, ML confidence score
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│  Action       │──── Warning / Content removal / Temporary ban / Permanent ban
+│               │     + Notification to reporter ("We took action")
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│  Appeal       │──── User can appeal within 14 days
+│  (if banned)  │     Different moderator reviews (never same person)
+└───────────────┘
+```
+
+**Key SLAs**:
+- CSAM (child exploitation): Remove < 15 minutes, report to NCMEC immediately
+- Threats of violence / self-harm: Review < 1 hour, escalate to law enforcement if imminent
+- Harassment: Review < 8 hours
+- Standard reports: Review < 24 hours
+
+### Crisis Response
+
+**Media safety story** (e.g., assault reported by a user who met someone on your app):
+1. Acknowledge immediately: "We are aware of the report and take user safety extremely seriously"
+2. Cooperate fully with law enforcement
+3. Review the specific account — what signals were missed?
+4. Do NOT share user data publicly, even to "prove" you acted
+5. Post-incident: implement improvements and communicate them
+
+**Data breach response**:
+1. Contain the breach (revoke compromised credentials, patch the vulnerability)
+2. Notify affected users within 72 hours (GDPR requirement)
+3. Notify regulators (ICO, FTC, etc.) per jurisdiction requirements
+4. Offer credit monitoring if PII was exposed
+5. Post-mortem: root cause, timeline, remediation, prevention
+
+### Regulatory Landscape
+
+| Regulation | Jurisdiction | Key Requirement | Impact on Dating Apps |
+|------------|-------------|-----------------|----------------------|
+| **GDPR** | EU/UK | Right to deletion, data portability, consent | Must delete all user data on request within 30 days, including backups |
+| **CCPA/CPRA** | California | Do not sell personal info, opt-out of tracking | "Do not sell my data" toggle, detailed privacy policy |
+| **KOSA** | US (proposed) | Protect minors, duty of care | Robust age verification, parental controls for under-18 features |
+| **UK Online Safety Act** | UK | Prevent harmful content, age verification | CSAM scanning, age assurance, risk assessments |
+| **Age Verification Laws** | Various US states | Verify user age for adult content | Government ID verification or age estimation for 18+ apps |
+| **Digital Services Act** | EU | Transparency on algorithms, content moderation | Explain how the matching algorithm works, publish moderation reports |
+
+### Team Structure for Scale
+
+| Team | Size (for ~1M MAU) | Key Responsibilities |
+|------|-------------------|---------------------|
+| **Product** | 6–8 | Features, A/B testing, user research |
+| **Engineering** | 15–25 | Backend, mobile, ML, infrastructure |
+| **Trust & Safety** | 10–15 | Moderation, policy, tooling |
+| **Data/Analytics** | 4–6 | Metrics, dashboards, experimentation platform |
+| **Design** | 3–5 | UX/UI, brand, marketing creative |
+| **Marketing/Growth** | 5–8 | Acquisition, ASO, partnerships, social |
+| **Customer Support** | 5–10 | Billing issues, account recovery, bug reports |
+| **Legal** | 1–2 | Privacy, compliance, law enforcement requests |
+
+---
+
+## 📊 Metrics Dashboard — What to Track
+
+If you can't measure it, you can't improve it. These are the metrics that matter for a dating app, organized by what they tell you.
+
+### Funnel Metrics
+
+Track conversion at every step. A leak at any stage means wasted acquisition spend.
+
+| Step | Metric | Healthy Benchmark | Warning Sign |
+|------|--------|-------------------|-------------|
+| Visit → Download | Store conversion rate | 25–35% | < 15% (bad screenshots/reviews) |
+| Download → Signup | Signup completion rate | 60–75% | < 40% (onboarding too long) |
+| Signup → Profile complete | Profile completion rate | 40–60% | < 30% (not enough nudges) |
+| Profile → First swipe | Activation rate | 70–85% | < 50% (discovery feed empty/slow) |
+| First swipe → First match | Match rate | 30–50% | < 20% (algorithm or pool issue) |
+| First match → First message | Message rate | 40–60% | < 25% (no conversation starters) |
+| First message → Response | Response rate | 30–50% | < 20% (message quality or mismatch) |
+
+### Cohort Analysis
+
+Don't look at aggregate metrics — they hide problems. Always segment by:
+
+- **Signup week**: Is each new cohort retaining better than the last? If D7 retention for week 12 cohort is worse than week 8 cohort, something broke.
+- **Geography**: Retention in city A vs city B reveals where you have critical mass and where you don't
+- **Age/Gender**: Men and women have very different engagement patterns. 18–24 vs 25–34 vs 35+ have different expectations
+- **Acquisition channel**: Organic users retain 2–3x better than paid users. If paid acquisition dominates, overall metrics look worse than they are
+
+**Retention targets** (for a healthy dating app):
+
+| Timeframe | Target | Excellent | Needs Work |
+|-----------|--------|-----------|------------|
+| D1 (next day) | > 40% | > 55% | < 30% |
+| D7 (one week) | > 20% | > 30% | < 15% |
+| D30 (one month) | > 10% | > 18% | < 7% |
+| D90 (three months) | > 5% | > 10% | < 3% |
+
+### Matching Quality Metrics
+
+These tell you if your algorithm is working — not just engaging users, but creating real connections.
+
+| Metric | What It Measures | Healthy Range | What It Tells You |
+|--------|-----------------|---------------|-------------------|
+| **Like-back rate** | % of right-swipes that are reciprocated | 10–30% | Algorithm relevance — are you showing people who'd like each other? |
+| **Match-to-conversation rate** | % of matches where at least 1 message is sent | 40–60% | Match quality — are matched users genuinely interested? |
+| **Conversation depth** | Average messages per conversation | 8–15 | Engagement quality — are people connecting? |
+| **Mutual unmatch rate** | % of matches unmatched by either party | < 20% | Low = good matches. High = algorithm showing poor fits |
+| **Report rate per match** | Reports / total matches | < 0.5% | Safety and match quality |
+| **Success stories** | Self-reported dates or relationships | Track trend | The ultimate metric — are people meeting? |
+
+### Churn Predictors
+
+Build an ML model on these signals to identify at-risk users before they leave:
+
+| Signal | Weight | Threshold | Action |
+|--------|--------|-----------|--------|
+| Session length declining | High | 2-week downward trend | Show higher-quality profiles, trigger "new matches near you" |
+| No messages sent in 7+ days | High | 7 days with matches | "Your match [name] is waiting — say hi!" |
+| Swipe volume dropped >50% | Medium | Week-over-week comparison | Profile boost, "We've added new features" |
+| Subscription auto-renew off | Medium | Toggle changed | Offer discount, ask for feedback |
+| Push notifications dismissed 5x | Medium | Rolling 7-day count | Reduce notification frequency |
+| Profile photos removed | Low | Any photo deletion | "Profiles with photos get 10x more matches" |
+
+---
+
 ## Related Topics
 
-- [Social Media Platform](../social-media/README.md) - Similar real-time and engagement patterns
-- [Microservices Architecture](../../02-architectures/microservices/README.md) - Service design
-- [Database Patterns](../../02-architectures/database-patterns/README.md) - Geospatial queries
-- [Real-time Messaging](../../02-architectures/event-driven/README.md) - WebSocket implementation
-- [Recommendation Systems](../../09-ai-ml/README.md) - ML-based matching
-- [API Design](../../02-architectures/api-design/README.md) - RESTful APIs
-- [Security](../../08-security/README.md) - Privacy and safety controls
+### Prerequisites
+- [Foundations](../../00-foundations/README.md) - Networking, HTTP, and data fundamentals
+- [Programming](../../01-programming/README.md) - Python, SQL, and OOP concepts used in the code examples
+
+### Core Architecture
+- [Microservices Architecture](../../02-architectures/microservices/README.md) - How and why to decompose into services
+- [Event-Driven Architecture](../../02-architectures/event-driven/README.md) - Real-time messaging and event streaming
+- [Database Patterns](../../02-architectures/database-patterns/README.md) - Geospatial queries, indexing, and schema design
+- [API Design](../../02-architectures/api-design/README.md) - RESTful and WebSocket API patterns
+- [System Design Patterns](../../02-architectures/README.md) - Broader architecture decisions
+
+### Related Domains
+- [Social Media Platform](../social-media/README.md) - Similar real-time engagement, feeds, and notification patterns
+- [Retail / E-commerce](../retail/README.md) - Recommendation systems and marketplace dynamics
+- [Healthcare](../healthcare/README.md) - Privacy and data protection parallels
+
+### Supporting Topics
+- [Frontend Development](../../04-frontend/README.md) - React Native mobile development
+- [Backend Development](../../05-backend/README.md) - Server-side API development, caching, and databases
+- [Infrastructure & DevOps](../../06-infrastructure/README.md) - Scaling with Kubernetes and container orchestration
+- [Security & Compliance](../../08-security/README.md) - Privacy, content moderation, and user safety
+- [AI/ML](../../09-ai-ml/README.md) - Recommendation systems, ML-based matching, content moderation
+- [Case Studies](../../11-case-studies/README.md) - Real-world platform scaling decisions
+- [Development Methodologies](../../03-methodologies/README.md) - A/B testing frameworks and CI/CD for rapid iteration
+
+### Learning Resources
+- [YouTube, Books & Courses for Dating Platforms](./RESOURCES.md)
+- [Domain Examples Resources](../RESOURCES.md)
 
 ---
 

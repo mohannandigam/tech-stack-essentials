@@ -300,15 +300,26 @@ Take breaks. Draw diagrams. Build small examples. Understanding comes from multi
 
 ---
 
-## Beyond the Basics
+## Related Topics
 
-After completing this section, you'll be ready for:
+### Next Steps
+- [Programming](../01-programming/README.md) - Writing code with programming languages and paradigms
+- [System Architecture](../02-architectures/README.md) - Designing systems that scale and adapt
+- [Frontend Development](../04-frontend/README.md) - Building user interfaces in the browser
+- [Backend Development](../05-backend/README.md) - Creating server-side applications and APIs
 
-- **[01-programming](../01-programming/README.md)**: Writing code with programming languages and paradigms
-- **[02-architectures](../02-architectures/README.md)**: Designing systems that scale and adapt
-- **[04-frontend](../04-frontend/README.md)**: Building user interfaces
-- **[05-backend](../05-backend/README.md)**: Creating server-side applications
-- **[06-infrastructure](../06-infrastructure/README.md)**: Deploying and managing applications
+### Complementary Topics
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Deploying and managing the systems you build
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - AWS, GCP, Azure and cloud computing
+- [Security & Compliance](../08-security/README.md) - Protecting the systems and data you work with
+- [Development Methodologies](../03-methodologies/README.md) - How teams build software effectively
+- [AI/ML](../09-ai-ml/README.md) - Machine learning and data engineering
+- [Domain Examples](../10-domain-examples/README.md) - See foundations applied in real industries
+- [Case Studies](../11-case-studies/README.md) - Real-world architectural decisions
+- [Career Development](../12-career/README.md) - Learning roadmaps and interview preparation
+
+### Learning Resources
+- [YouTube, Books & Courses for Foundations](./RESOURCES.md)
 
 ---
 

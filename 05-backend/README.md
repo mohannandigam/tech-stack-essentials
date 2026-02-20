@@ -867,13 +867,27 @@ Each guide builds on previous knowledge while remaining self-contained enough to
 
 ## Related Topics
 
-- **02-architectures**: System design patterns that guide how backends are structured
-- **03-methodologies**: Agile, testing practices, and development workflows
-- **06-infrastructure**: Docker, Kubernetes, CI/CD for deploying backends
-- **07-cloud**: AWS, GCP, Azure services for managed backend infrastructure
-- **08-security**: Advanced security patterns, threat modeling, compliance
-- **09-ai-ml**: Integrating machine learning models into backend systems
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Networking, HTTP, TCP/IP, and how the internet works
+- [Programming](../01-programming/README.md) - Python, Java, Go, and OOP/FP paradigms
+
+### Next Steps
+- [System Architecture](../02-architectures/README.md) - Microservices, event-driven, CQRS, and other patterns
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Docker, Kubernetes, CI/CD for deploying backends
+
+### Complementary Topics
+- [Frontend Development](../04-frontend/README.md) - The client-side that consumes your APIs
+- [Development Methodologies](../03-methodologies/README.md) - Agile, TDD, and development workflows
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - AWS, GCP, Azure services for managed backend infrastructure
+- [Security & Compliance](../08-security/README.md) - Advanced security patterns, threat modeling, compliance
+- [AI/ML](../09-ai-ml/README.md) - Integrating machine learning models into backend systems
+- [Domain Examples](../10-domain-examples/README.md) - Backend patterns in real industries (banking, healthcare, dating)
+- [Case Studies](../11-case-studies/README.md) - Real-world backend scaling decisions
+- [Career Development](../12-career/README.md) - Backend interview preparation and career paths
+
+### Learning Resources
+- [YouTube, Books & Courses for Backend](./RESOURCES.md)
 
 ---
 
-**Remember**: Great backend development is invisible to users but essential to applications. Focus on security, reliability, and performance—these fundamentals never change, even as technologies evolve.
+**Remember**: Great backend development is invisible to users but essential to applications. Focus on security, reliability, and performance — these fundamentals never change, even as technologies evolve.

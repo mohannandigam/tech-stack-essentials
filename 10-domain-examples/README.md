@@ -284,6 +284,27 @@ domain-name/
 - **Medium**: Banking, Healthcare, Insurance
 - **Variable**: Energy, Retail, Dating
 
+## Related Topics
+
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Core concepts every domain builds upon
+- [Programming](../01-programming/README.md) - Languages and paradigms used across all domains
+- [System Architecture](../02-architectures/README.md) - Architecture patterns applied in each domain
+
+### Complementary Topics
+- [Development Methodologies](../03-methodologies/README.md) - How teams build domain-specific software
+- [Frontend Development](../04-frontend/README.md) - User interfaces for domain applications
+- [Backend Development](../05-backend/README.md) - APIs, databases, and server-side logic
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Deploying and scaling domain systems
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud services used across industries
+- [Security & Compliance](../08-security/README.md) - Industry-specific compliance (HIPAA, PCI-DSS, SOX, FAA)
+- [AI/ML](../09-ai-ml/README.md) - Machine learning applied in each domain
+- [Case Studies](../11-case-studies/README.md) - Real-world implementations of these domain patterns
+- [Career Development](../12-career/README.md) - Domain expertise for career specialization
+
+### Learning Resources
+- [YouTube, Books & Courses for Domain Engineering](./RESOURCES.md)
+
 ## 🚀 Next Steps
 
 1. **Choose a domain** that interests you or matches your work

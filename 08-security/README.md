@@ -665,11 +665,26 @@ Remember: **Security is not a feature you add. It's a quality you build in.**
 
 ## Related Topics
 
-- **[Infrastructure Security](../06-infrastructure/)**: Container security, CI/CD pipeline security
-- **[Cloud Security](../07-cloud/)**: Cloud-specific security considerations
-- **[Backend Development](../05-backend/)**: Secure API design
-- **[Architecture](../02-architectures/)**: Security architecture patterns
-- **[Compliance Case Studies](../11-case-studies/)**: Real-world security implementations
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Networking basics, HTTP/HTTPS, and how data travels
+- [Programming](../01-programming/README.md) - Writing secure code and understanding common vulnerability patterns
+
+### Next Steps
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Container security, CI/CD pipeline security, secrets management
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud-specific security (IAM, VPC, encryption services)
+
+### Complementary Topics
+- [System Architecture](../02-architectures/README.md) - Security architecture patterns (zero trust, defense in depth)
+- [Development Methodologies](../03-methodologies/README.md) - DevSecOps integration and security testing workflows
+- [Frontend Development](../04-frontend/README.md) - XSS prevention, CSP, and client-side security
+- [Backend Development](../05-backend/README.md) - Secure API design, authentication, authorization
+- [AI/ML](../09-ai-ml/README.md) - ML model security, adversarial attacks, data privacy
+- [Domain Examples](../10-domain-examples/README.md) - Industry-specific compliance (HIPAA, PCI-DSS, SOX)
+- [Case Studies](../11-case-studies/README.md) - Real-world security implementations and incident analysis
+- [Career Development](../12-career/README.md) - Security certifications and career paths
+
+### Learning Resources
+- [YouTube, Books & Courses for Security](./RESOURCES.md)
 
 ---
 
