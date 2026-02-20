@@ -420,10 +420,26 @@ After incidents:
 
 ## Related Topics
 
-- [Microservices](../02-architectures/microservices/README.md) - Application architecture
-- [Cloud Platforms](../07-cloud/README.md) - AWS, GCP, Azure
-- [Security](../08-security/README.md) - DevSecOps practices
-- [Case Studies](../11-case-studies/README.md) - Real-world infrastructure
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Networking, Linux basics, and how computers work
+- [Programming](../01-programming/README.md) - Scripting languages (Bash, Python) for automation
+- [Backend Development](../05-backend/README.md) - The applications you are deploying and managing
+
+### Next Steps
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - AWS, GCP, Azure — cloud-specific infrastructure services
+- [Security & Compliance](../08-security/README.md) - DevSecOps practices and infrastructure security
+
+### Complementary Topics
+- [System Architecture](../02-architectures/README.md) - Microservices, event-driven, and other patterns infrastructure supports
+- [Development Methodologies](../03-methodologies/README.md) - DevOps culture, CI/CD practices, and team workflows
+- [Frontend Development](../04-frontend/README.md) - CDN deployment and static site hosting
+- [AI/ML](../09-ai-ml/README.md) - MLOps infrastructure for model training and serving
+- [Domain Examples](../10-domain-examples/README.md) - Infrastructure patterns in real industries
+- [Case Studies](../11-case-studies/README.md) - Real-world infrastructure scaling decisions
+- [Career Development](../12-career/README.md) - DevOps and SRE career paths
+
+### Learning Resources
+- [YouTube, Books & Courses for Infrastructure](./RESOURCES.md)
 
 ---
 

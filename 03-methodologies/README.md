@@ -810,50 +810,26 @@ class Order:
 
 ## Related Topics
 
-### Within This Repository
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Understand the infrastructure and how the internet works
+- [Programming](../01-programming/README.md) - Programming concepts and paradigms
 
-**Foundations**:
-- [How the Internet Works](/home/runner/work/tech-stack-essentials/tech-stack-essentials/00-foundations/) - Understand the infrastructure
-- [Programming Paradigms](/home/runner/work/tech-stack-essentials/tech-stack-essentials/01-programming/) - Master programming concepts
+### Next Steps
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - CI/CD pipelines, containers, monitoring — core DevOps practice
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud infrastructure for DevOps workflows
 
-**Architectures**:
-- [Microservices](/home/runner/work/tech-stack-essentials/tech-stack-essentials/02-architectures/microservices/) - Agile teams often use microservices
-- [Event-Driven Architecture](/home/runner/work/tech-stack-essentials/tech-stack-essentials/02-architectures/event-driven/) - Complements DDD domain events
-- [Hexagonal Architecture](/home/runner/work/tech-stack-essentials/tech-stack-essentials/02-architectures/hexagonal/) - Aligns with DDD layering
+### Complementary Topics
+- [System Architecture](../02-architectures/README.md) - Microservices, event-driven, and other architecture patterns
+- [Frontend Development](../04-frontend/README.md) - Component-driven development and testing
+- [Backend Development](../05-backend/README.md) - APIs, databases, and server-side testing
+- [Security & Compliance](../08-security/README.md) - DevSecOps integration and security testing
+- [AI/ML](../09-ai-ml/README.md) - MLOps applies DevOps to machine learning pipelines
+- [Domain Examples](../10-domain-examples/README.md) - How methodologies apply across industries
+- [Case Studies](../11-case-studies/README.md) - Real-world team and process decisions
+- [Career Development](../12-career/README.md) - Agile and DevOps certifications for career growth
 
-**Infrastructure**:
-- [CI/CD Pipelines](/home/runner/work/tech-stack-essentials/tech-stack-essentials/06-infrastructure/) - Core DevOps practice
-- [Containerization](/home/runner/work/tech-stack-essentials/tech-stack-essentials/06-infrastructure/) - DevOps deployment strategy
-- [Monitoring & Observability](/home/runner/work/tech-stack-essentials/tech-stack-essentials/06-infrastructure/) - Essential for DevOps
-
-**Cloud Platforms**:
-- [AWS](/home/runner/work/tech-stack-essentials/tech-stack-essentials/07-cloud/aws/) - Cloud infrastructure for DevOps
-- [Kubernetes](/home/runner/work/tech-stack-essentials/tech-stack-essentials/07-cloud/) - Container orchestration for DevOps
-
-**Security**:
-- [Security Best Practices](/home/runner/work/tech-stack-essentials/tech-stack-essentials/08-security/) - DevSecOps integration
-
-### External Resources
-
-**Books**:
-- "Test Driven Development: By Example" - Kent Beck (TDD)
-- "The Cucumber Book" - Matt Wynne (BDD)
-- "Scrum Guide" - Ken Schwaber & Jeff Sutherland (Agile)
-- "Domain-Driven Design" - Eric Evans (DDD)
-- "The DevOps Handbook" - Gene Kim et al. (DevOps)
-- "Accelerate" - Nicole Forsgren et al. (DevOps metrics)
-
-**Online Resources**:
-- Agile Manifesto: agilemanifesto.org
-- Scrum Guide: scrumguides.org
-- DORA Metrics: dora.dev
-- DDD Community: dddcommunity.org
-
-**Certifications**:
-- Certified Scrum Master (CSM)
-- Professional Scrum Master (PSM)
-- AWS Certified DevOps Engineer
-- Google Cloud Professional DevOps Engineer
+### Learning Resources
+- [YouTube, Books & Courses for Methodologies](./RESOURCES.md)
 
 ## Final Thoughts: Start Your Journey
 

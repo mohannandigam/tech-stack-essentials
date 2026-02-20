@@ -289,46 +289,27 @@ A: **Library**: You call it (you're in control). **Framework**: It calls you (fr
 
 ## Related Topics
 
-### In This Repository
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Internet basics, networking, data structures, and how computers work
 
-- **00-foundations**: Internet basics, networking, data fundamentals
-- **02-architectures**: System design, microservices, event-driven architectures
-- **05-backend**: APIs, databases, server-side development
-- **09-ai-ml**: Machine learning, data engineering, model deployment
+### Next Steps
+- [System Architecture](../02-architectures/README.md) - Learn how to design larger systems
+- [Frontend Development](../04-frontend/README.md) - Deep dive into user interfaces and web development
+- [Backend Development](../05-backend/README.md) - Build robust server-side applications and APIs
 
-### External Resources
+### Complementary Topics
+- [Development Methodologies](../03-methodologies/README.md) - Agile, TDD, code review practices
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Deploy and scale your applications
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud services for hosting and scaling
+- [Security & Compliance](../08-security/README.md) - Writing secure code and protecting data
+- [AI/ML](../09-ai-ml/README.md) - Machine learning, data engineering, model deployment
+- [Domain Examples](../10-domain-examples/README.md) - See programming concepts applied in real industries
+- [Case Studies](../11-case-studies/README.md) - Real-world engineering decisions
+- [Career Development](../12-career/README.md) - Interview preparation and career growth
 
-**Books:**
-- "Clean Code" by Robert C. Martin (writing maintainable code)
-- "Design Patterns" by Gang of Four (classic patterns reference)
-- "Pragmatic Programmer" by Hunt & Thomas (professional development)
-- "Structure and Interpretation of Computer Programs" (SICP) (fundamentals)
-
-**Online:**
-- LeetCode / HackerRank (practice programming problems)
-- Exercism (learn languages through exercises with mentoring)
-- Codecademy / freeCodeCamp (interactive learning)
-- "Awesome" lists on GitHub (curated resources per language)
-
-**Practice Projects:**
-- CLI tool (file manipulation, API client)
-- Web scraper (HTTP requests, parsing)
-- REST API (backend, database)
-- Todo app (frontend, state management)
-- Chat application (real-time, WebSockets)
+### Learning Resources
+- [YouTube, Books & Courses for Programming](./RESOURCES.md)
 
 ---
 
-## What's Next?
-
-After mastering programming fundamentals:
-
-- **02-architectures**: Learn how to design larger systems
-- **03-methodologies**: Understand Agile, TDD, code review practices
-- **04-frontend**: Deep dive into user interfaces and web development
-- **05-backend**: Build robust server-side applications
-- **06-infrastructure**: Deploy and scale your applications
-
----
-
-Programming is the foundation of all software engineering. Master these concepts, and you'll have the skills to build anything—from simple scripts to complex distributed systems. Start with the basics, practice consistently, and gradually increase complexity. Happy coding!
+Programming is the foundation of all software engineering. Master these concepts, and you'll have the skills to build anything — from simple scripts to complex distributed systems. Start with the basics, practice consistently, and gradually increase complexity. Happy coding!

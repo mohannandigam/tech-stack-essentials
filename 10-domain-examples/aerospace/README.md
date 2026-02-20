@@ -781,21 +781,203 @@ def test_collision_detection():
 - **Input**: Historical bookings, seasonality, events, economic indicators
 - **Output**: Passenger demand by route, dynamic pricing recommendations
 
-## 🔗 Related Patterns
+## 🎓 Expert Knowledge
 
-- [Event-Driven Architecture](../../02-architectures/event-driven/README.md)
-- [Real-Time Processing](../../02-architectures/microservices/README.md)
-- [Time-Series Data](../energy/README.md)
-- [IoT Integration](../manufacturing/README.md)
+### Space Mission Types
+
+Different orbits serve different purposes — the altitude and path of a satellite determine what it can do:
+
+| Orbit Type | Altitude | Period | Use Cases |
+|-----------|----------|--------|-----------|
+| **LEO** (Low Earth Orbit) | 160–2,000 km | 90–120 min | ISS, Earth observation, Starlink internet, spy satellites |
+| **MEO** (Medium Earth Orbit) | 2,000–35,786 km | 2–24 hours | GPS (20,200 km), Galileo navigation, O3b internet |
+| **GEO** (Geostationary Orbit) | 35,786 km | 24 hours (stays "fixed" above one spot) | Weather satellites, TV broadcast, communications |
+| **HEO** (Highly Elliptical Orbit) | 500–40,000 km | Varies | Molniya (Russian comms over polar regions), Sirius radio |
+| **Deep Space** | Beyond Earth orbit | Days to years | Mars missions, Voyager, James Webb (L2 point at 1.5M km) |
+
+**Simple analogy**: Think of orbits like lanes on a track. The inner lane (LEO) is fast and close — great for quick laps and seeing details on the ground. The outer lane (GEO) is so far out that you appear to stand still relative to the track — perfect for broadcasting to a fixed area. Deep space is leaving the stadium entirely.
+
+### Orbital Mechanics Basics
+
+**Why orbits work**: A satellite in orbit is falling toward Earth but moving forward fast enough that the curvature of Earth "falls away" beneath it at the same rate. It is in constant free fall — just always missing the ground.
+
+**Kepler's Three Laws (in plain English)**:
+
+1. **Law of Ellipses**: Orbits are oval-shaped (ellipses), not perfect circles. Earth sits at one focus of the ellipse, not the center. This means satellites are sometimes closer (perigee) and sometimes farther (apogee) from Earth.
+
+2. **Law of Equal Areas**: A satellite moves faster when it is closer to Earth and slower when farther away. Imagine swinging a ball on a string — pull the string shorter and it whips around faster. This is the same principle.
+
+3. **Law of Periods**: The farther out a satellite orbits, the longer it takes to go around. LEO satellites orbit in ~90 minutes. The Moon (at ~384,000 km) takes ~27 days. The math: orbital period squared is proportional to the semi-major axis cubed (T² ∝ a³).
+
+**Delta-v**: The "currency" of space travel. Every maneuver costs delta-v (change in velocity). Engineers budget delta-v the way accountants budget money — you only have so much fuel, so every burn must count.
+
+### Aircraft Systems Overview
+
+Modern aircraft are flying data centers. Here are the key systems software engineers interact with:
+
+- **Avionics**: The electronic systems on an aircraft. Includes flight instruments, navigation, communication, and autopilot. Modern avionics use ARINC 429/664 data buses to share data between systems.
+
+- **FMS (Flight Management System)**: The "brain" of the aircraft. Pilots enter a flight plan, and the FMS calculates the optimal route, fuel burn, descent profile, and sends commands to autopilot. Think of it as GPS navigation for airplanes, but with 3D routing and fuel optimization.
+
+- **TCAS (Traffic Collision Avoidance System)**: An independent safety system that tracks nearby aircraft via transponder signals. If two planes get too close, TCAS issues a **TA** (Traffic Advisory — "hey, look out") then an **RA** (Resolution Advisory — "CLIMB NOW" or "DESCEND NOW"). Pilots must follow TCAS RAs even if ATC says otherwise.
+
+- **EGPWS (Enhanced Ground Proximity Warning System)**: Compares the aircraft's position and trajectory against a terrain database. If the plane is flying toward a mountain, EGPWS shouts "TERRAIN, TERRAIN — PULL UP!" This system has nearly eliminated controlled flight into terrain (CFIT) accidents.
+
+- **ACARS (Aircraft Communications Addressing and Reporting System)**: A text-messaging system between aircraft and ground. Sends maintenance data, weather updates, gate assignments, and position reports. Think of it as email for airplanes — automatic and crew-initiated messages.
+
+- **ADS-B (Automatic Dependent Surveillance–Broadcast)**: Aircraft broadcast their GPS position, altitude, speed, and identity every second. Anyone with a receiver can see them (that is how Flightradar24 works). Replacing radar as the primary surveillance method.
+
+### Air Traffic Management Layers
+
+Air traffic control operates in layers, each handling different phases of flight:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Oceanic Control (over oceans — no radar, use ADS-B │
+│  and HF radio, 10-minute position reports)          │
+├─────────────────────────────────────────────────────┤
+│  En-Route / Area Control (cruise altitude)          │
+│  Centers like ZNY, ZLA manage large sectors         │
+│  Radar + ADS-B, vertical separation 1000ft          │
+├─────────────────────────────────────────────────────┤
+│  Approach / TRACON (Terminal Radar Approach Control) │
+│  30-50 mile radius around major airports            │
+│  Sequence arrivals, manage departures               │
+├─────────────────────────────────────────────────────┤
+│  Tower Control (airport surface + immediate airspace)│
+│  Clears takeoffs, landings, runway crossings        │
+├─────────────────────────────────────────────────────┤
+│  Ground Control (taxiways and gates)                │
+│  "Taxi to runway 28L via Alpha, Bravo"              │
+└─────────────────────────────────────────────────────┘
+```
+
+Each handoff between layers is a critical moment — the receiving controller must acknowledge and accept responsibility for the aircraft.
+
+### Space Debris Tracking and Collision Avoidance
+
+**The Problem**: There are ~36,000 tracked objects larger than 10 cm in orbit, plus hundreds of millions of smaller pieces. At orbital speeds (7.8 km/s in LEO), even a 1 cm paint flake hits with the energy of a hand grenade.
+
+**Kessler Syndrome**: A theoretical chain reaction where one collision creates debris that causes more collisions, eventually making certain orbits unusable. Named after NASA scientist Donald Kessler who predicted it in 1978. Some scientists believe it has already begun in certain LEO bands.
+
+**How tracking works**:
+1. **Detection**: Ground-based radar (US Space Fence) and optical telescopes track objects
+2. **Cataloging**: NORAD assigns each object an ID and maintains TLE (Two-Line Element) data
+3. **Prediction**: Software propagates orbits forward to find close approaches (conjunction events)
+4. **Warning**: If two objects will pass within a dangerous threshold, operators receive a CDM (Conjunction Data Message)
+5. **Avoidance**: Spacecraft with propulsion can perform a collision avoidance maneuver (typically days before the event)
+
+**Software challenge**: Predicting orbits is hard because of atmospheric drag (variable), solar radiation pressure, gravitational perturbations from the Moon and Sun, and imprecise measurements. The uncertainty grows over time — a 10-meter prediction error today becomes kilometers of uncertainty in a week.
+
+## 🌍 Real-World Examples
+
+### How SpaceX Landing Software Works (Simplified)
+
+SpaceX Falcon 9 boosters land themselves using a system called the **Autonomous Flight Safety System (AFSS)** and guidance algorithms. Here is the simplified flow:
+
+1. **Boostback Burn**: After stage separation, the booster flips and fires engines to reverse course toward the landing zone. The guidance computer calculates the optimal trajectory in real time using convex optimization (finding the best path given fuel constraints).
+
+2. **Grid Fins Deploy**: Four titanium grid fins steer the booster through the atmosphere. The flight computer adjusts fin angles thousands of times per second to keep the booster on course.
+
+3. **Entry Burn**: Three engines fire to slow the booster from supersonic speeds and protect it from aerodynamic heating. Timing is calculated based on remaining fuel and atmospheric density.
+
+4. **Landing Burn**: A single engine fires at the last moment for a "hoverslam" — the booster cannot hover (thrust-to-weight ratio > 1 even at minimum throttle), so it must time the burn so that velocity reaches zero exactly at ground level. The margin for error is less than a second.
+
+5. **Feedback Loop**: Throughout the descent, the computer runs hundreds of trajectory optimizations per second, adjusting for wind, engine performance variations, and position errors. It uses sensor fusion from GPS, IMU (inertial measurement unit), and radar altimeter.
+
+**Key insight**: The software must find optimal solutions to constrained problems in real time. SpaceX uses a technique called "powered descent guidance" based on research originally done for Mars landing — the same math that could land a rocket on Mars lands boosters on drone ships in the ocean.
+
+### How Airlines Handle Flight Disruptions (IROPS)
+
+**IROPS** = Irregular Operations. When weather, mechanical issues, or crew problems disrupt the schedule, airlines must solve a massive optimization problem in real time:
+
+1. **The Cascade Effect**: One delayed flight means the aircraft, crew, and passengers miss their connections. A single cancellation at a hub can affect 50+ downstream flights.
+
+2. **The Optimization Problem**: Airlines must simultaneously re-solve:
+   - **Aircraft routing**: Which planes go where? (Each aircraft has a maintenance schedule)
+   - **Crew scheduling**: Pilots have legal duty-time limits (FAA Part 117) — you cannot just add hours
+   - **Passenger rebooking**: Thousands of passengers need new itineraries, prioritized by status, connection urgency, and fare class
+   - **Gate assignment**: Gates must be shuffled to accommodate new arrival/departure times
+
+3. **Software Systems**: Airlines use operations control centers (OCC) running systems like Jeppesen, Sabre, or proprietary tools. These systems use constraint-satisfaction algorithms and mixed-integer programming to find the "least bad" solution — minimizing total delay, passenger misconnections, and cost.
+
+4. **Scale**: Major airlines operate 3,000–5,000 flights per day. During a major weather event, the rebooking system may process 100,000+ passenger itinerary changes in hours.
+
+### How GPS Satellites Maintain Time Sync
+
+GPS depends on incredibly precise timing — a 1-nanosecond clock error translates to ~30 cm of position error. Here is how the system stays synchronized:
+
+1. **Atomic Clocks**: Each GPS satellite carries 2–4 atomic clocks (rubidium and cesium). These drift by about 1 second every 100,000 years.
+
+2. **Relativistic Corrections**: Einstein's relativity causes two effects:
+   - **Special relativity**: Satellite clocks run ~7 microseconds/day slow (because they move fast)
+   - **General relativity**: Satellite clocks run ~45 microseconds/day fast (because gravity is weaker at altitude)
+   - **Net effect**: Clocks run ~38 microseconds/day fast. Without correction, GPS would drift ~11 km/day
+   - The correction is pre-programmed into the satellite clock frequency (10.22999999543 MHz instead of 10.23 MHz)
+
+3. **Ground Monitoring**: The US Air Force monitors satellite clocks from ground stations worldwide and uploads corrections twice daily.
+
+4. **Software Impact**: GPS receivers must apply these corrections, ephemeris data (satellite position), and atmospheric delay models. The math is a system of equations solved for 4 unknowns: x, y, z position plus receiver clock offset (which is why you need minimum 4 satellites).
+
+### How MRO (Maintenance, Repair, Overhaul) Scheduling Works
+
+Aircraft maintenance is not "fix it when it breaks" — it follows strict scheduled intervals defined by the manufacturer and regulator:
+
+1. **Check Types**:
+   - **Line Check**: Every flight or daily — walk-around inspection, fluid levels, tire condition (~1 hour)
+   - **A Check**: Every 400–600 flight hours — detailed inspection of systems and components (~1–2 days)
+   - **C Check**: Every 18–24 months — heavy inspection, structural checks, system overhauls (~1–2 weeks, aircraft out of service)
+   - **D Check**: Every 6–12 years — the aircraft is essentially taken apart and rebuilt (~2 months, cost $2–5 million)
+
+2. **MEL (Minimum Equipment List)**: Not everything must work for the aircraft to fly. The MEL defines what can be deferred. For example, one of two coffee makers can be broken, but not one of two engines. Deferred items have repair deadlines (A = 3 days, B = 3 days, C = 10 days, D = 120 days).
+
+3. **Scheduling Software**: MRO systems (AMOS, TRAX, Maintenix) track:
+   - Flight hours, cycles (takeoff + landing = 1 cycle), and calendar time for every component
+   - Parts inventory across warehouses worldwide
+   - Hangar availability at maintenance facilities
+   - Technician skills and certification
+
+4. **Optimization Challenge**: Airlines must schedule heavy checks during low-demand periods, route aircraft to maintenance bases without dead-heading (flying empty), and coordinate parts procurement months in advance. This is a resource-constrained scheduling problem solved with operations research techniques.
+
+## 🔗 Related Topics
+
+### Prerequisites
+- [Foundations](../../00-foundations/README.md) - Networking, data structures, and how the internet works
+- [Programming](../../01-programming/README.md) - Python, TypeScript, and real-time programming concepts
+
+### Core Architecture
+- [Event-Driven Architecture](../../02-architectures/event-driven/README.md) - The primary pattern for aerospace real-time systems
+- [Microservices Architecture](../../02-architectures/microservices/README.md) - Service decomposition for flight systems
+- [System Design Patterns](../../02-architectures/README.md) - Broader architecture decisions
+
+### Related Domains
+- [Energy & Utilities](../energy/README.md) - Similar time-series data patterns and SCADA systems
+- [Manufacturing](../manufacturing/README.md) - IoT integration and predictive maintenance parallels
+- [Healthcare](../healthcare/README.md) - Safety-critical systems and regulatory compliance patterns
+- [Logistics](../logistics/README.md) - Route optimization and real-time tracking
+
+### Supporting Topics
+- [Infrastructure & DevOps](../../06-infrastructure/README.md) - Container orchestration for ground systems
+- [Security & Compliance](../../08-security/README.md) - Aviation cybersecurity and data protection
+- [AI/ML](../../09-ai-ml/README.md) - Predictive maintenance, route optimization, anomaly detection
+- [Backend Development](../../05-backend/README.md) - API design for aviation data services
+- [Case Studies](../../11-case-studies/README.md) - Real-world aerospace system implementations
+
+### Learning Resources
+- [YouTube, Books & Courses for Aerospace](./RESOURCES.md)
+- [Domain Examples Resources](../RESOURCES.md)
 
 ## 📚 Industry Standards & Protocols
 
-- **ARINC 429**: Aircraft data bus
-- **ACARS**: Aircraft Communications Addressing and Reporting System
-- **ADS-B**: Automatic Dependent Surveillance-Broadcast
-- **DO-178C**: Software considerations in airborne systems
-- **DO-254**: Hardware design assurance
-- **ICAO**: International Civil Aviation Organization standards
+- **ARINC 429**: Aircraft data bus — a one-way broadcast protocol carrying avionics data (speed, altitude, heading) between systems at 12.5 or 100 kbit/s
+- **ARINC 664 (AFDX)**: Avionics Full-Duplex Switched Ethernet — modern replacement for ARINC 429, used in Airbus A380 and Boeing 787
+- **ACARS**: Aircraft Communications Addressing and Reporting System — text-based air-ground messaging for operations, maintenance, and ATC
+- **ADS-B**: Automatic Dependent Surveillance-Broadcast — GPS-based position broadcasting, mandatory in most controlled airspace since 2020
+- **DO-178C**: Software Considerations in Airborne Systems and Equipment Certification — the standard for safety-critical aviation software (5 levels: A=catastrophic to E=no effect)
+- **DO-254**: Design Assurance Guidance for Airborne Electronic Hardware
+- **DO-326A**: Airworthiness Security Process Specification — cybersecurity for aircraft systems
+- **ICAO**: International Civil Aviation Organization — sets global aviation standards (Annexes 1–19)
+- **SWIM**: System Wide Information Management — FAA's framework for sharing aviation data between stakeholders
 
 ## 🌐 Integration Points
 
@@ -804,6 +986,57 @@ def test_collision_detection():
 - **Air Traffic Control**: FAA SWIM, Eurocontrol Network Manager
 - **Maintenance Systems**: AMOS, TRAX, Maintenix
 - **Satellite Operators**: NORAD, Space-Track.org
+
+## 📖 Aerospace Jargon Glossary
+
+Every acronym and term used in this guide, defined:
+
+| Acronym/Term | Full Name | What It Means |
+|-------------|-----------|---------------|
+| **ACARS** | Aircraft Communications Addressing and Reporting System | Text messaging between aircraft and ground stations |
+| **ADS-B** | Automatic Dependent Surveillance-Broadcast | GPS position broadcasting by aircraft |
+| **AFDX** | Avionics Full-Duplex Switched Ethernet | Modern aircraft data network (ARINC 664) |
+| **AGL** | Above Ground Level | Altitude measured from the terrain below |
+| **AOS** | Acquisition of Signal | When a ground station first contacts a satellite in a pass |
+| **ARINC** | Aeronautical Radio, Incorporated | Organization that sets avionics data standards |
+| **ATC** | Air Traffic Control | The service managing aircraft separation and flow |
+| **CDM** | Conjunction Data Message | Warning that two space objects may collide |
+| **CFIT** | Controlled Flight Into Terrain | When a functioning aircraft flies into ground |
+| **DO-178C** | (Document number) | Software certification standard for airborne systems |
+| **DO-254** | (Document number) | Hardware certification standard for airborne systems |
+| **EASA** | European Union Aviation Safety Agency | Europe's aviation regulator |
+| **ECI** | Earth-Centered Inertial | Coordinate system fixed relative to stars |
+| **ECF** | Earth-Centered Fixed | Coordinate system that rotates with Earth |
+| **EGT** | Exhaust Gas Temperature | Key engine health indicator |
+| **EGPWS** | Enhanced Ground Proximity Warning System | Terrain collision avoidance using GPS + terrain database |
+| **FAA** | Federal Aviation Administration | US aviation regulator |
+| **FMS** | Flight Management System | Onboard computer that manages the flight plan |
+| **GEO** | Geostationary Earth Orbit | Orbit where satellite appears stationary (35,786 km) |
+| **GMST** | Greenwich Mean Sidereal Time | Time system used for satellite coordinate conversion |
+| **HEO** | Highly Elliptical Orbit | Elongated orbit for high-latitude coverage |
+| **ICAO** | International Civil Aviation Organization | UN agency setting global aviation standards |
+| **IMU** | Inertial Measurement Unit | Sensor measuring acceleration and rotation |
+| **IROPS** | Irregular Operations | Industry term for schedule disruptions |
+| **LEO** | Low Earth Orbit | Orbit below 2,000 km altitude |
+| **LOS** | Loss of Signal | When a ground station loses contact with a satellite |
+| **MEL** | Minimum Equipment List | List of items that can be inoperative for flight |
+| **MEO** | Medium Earth Orbit | Orbit between 2,000 and 35,786 km |
+| **METAR** | Meteorological Terminal Air Report | Standardized weather observation for airports |
+| **MRO** | Maintenance, Repair, and Overhaul | Heavy aircraft maintenance industry |
+| **MSL** | Mean Sea Level | Standard altitude reference |
+| **N1** | (Engine parameter) | Fan speed — primary thrust indicator |
+| **N2** | (Engine parameter) | Core compressor speed |
+| **NORAD** | North American Aerospace Defense Command | Tracks all objects in Earth orbit |
+| **OCC** | Operations Control Center | Airline's central operations hub |
+| **RA** | Resolution Advisory | TCAS command to climb or descend immediately |
+| **SGP4** | Simplified General Perturbations 4 | Algorithm for predicting satellite positions from TLEs |
+| **SWIM** | System Wide Information Management | FAA's data-sharing framework |
+| **TA** | Traffic Advisory | TCAS alert about nearby traffic |
+| **TAF** | Terminal Aerodrome Forecast | Weather forecast for airports |
+| **TCAS** | Traffic Collision Avoidance System | Independent system that prevents mid-air collisions |
+| **TLE** | Two-Line Element Set | Standard format for describing a satellite's orbit |
+| **TRACON** | Terminal Radar Approach Control | ATC facility handling arrivals and departures |
+| **WGS84** | World Geodetic System 1984 | The coordinate system GPS uses |
 
 ---
 

@@ -969,11 +969,27 @@ Passing props through many component layers.
 
 ## Related Topics
 
-- [Backend Development](../05-backend/README.md) - Server-side counterpart
-- [System Architecture](../02-architectures/README.md) - How frontend fits in larger systems
-- [Infrastructure](../06-infrastructure/README.md) - Deployment and DevOps
-- [Security](../08-security/README.md) - Security best practices
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - How the internet works, HTTP, DNS, and browser rendering
+- [Programming](../01-programming/README.md) - JavaScript, TypeScript, and programming fundamentals
+
+### Next Steps
+- [Backend Development](../05-backend/README.md) - Server-side counterpart — APIs your frontend consumes
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Deploying and hosting frontend applications
+
+### Complementary Topics
+- [System Architecture](../02-architectures/README.md) - How frontend fits in larger systems (micro-frontends, BFF pattern)
+- [Development Methodologies](../03-methodologies/README.md) - Agile workflows, TDD for frontend code
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - CDNs, static hosting, and serverless functions
+- [Security & Compliance](../08-security/README.md) - XSS, CSRF, CSP, and frontend security best practices
+- [AI/ML](../09-ai-ml/README.md) - ML in the browser (TensorFlow.js), AI-powered UI
+- [Domain Examples](../10-domain-examples/README.md) - Frontend patterns in real industries (dating, social media, retail)
+- [Case Studies](../11-case-studies/README.md) - Real-world frontend architecture decisions
+- [Career Development](../12-career/README.md) - Frontend interview preparation and career paths
+
+### Learning Resources
+- [YouTube, Books & Courses for Frontend](./RESOURCES.md)
 
 ---
 
-**Remember:** Frontend development is both an art and a science. Focus on fundamentals first—HTML, CSS, JavaScript—before diving into frameworks. Every framework comes and goes, but core web technologies remain constant. Build things, break things, and keep learning.
+**Remember:** Frontend development is both an art and a science. Focus on fundamentals first — HTML, CSS, JavaScript — before diving into frameworks. Every framework comes and goes, but core web technologies remain constant. Build things, break things, and keep learning.

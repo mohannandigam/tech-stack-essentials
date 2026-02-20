@@ -197,6 +197,27 @@ Each case study includes:
 - **Lessons Learned**: What worked, what didn't
 - **Related Concepts**: Links to relevant architecture guides
 
+## Related Topics
+
+### Prerequisites
+- [System Architecture](../02-architectures/README.md) - Understand the patterns before studying how companies apply them
+- [Backend Development](../05-backend/README.md) - Server-side fundamentals that case studies build upon
+
+### Complementary Topics
+- [Foundations](../00-foundations/README.md) - Networking and computing concepts referenced in case studies
+- [Programming](../01-programming/README.md) - Languages and patterns used in real-world systems
+- [Development Methodologies](../03-methodologies/README.md) - How teams and processes shaped these decisions
+- [Frontend Development](../04-frontend/README.md) - Frontend architecture in case study systems
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Deployment and scaling in production systems
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - Cloud migrations and cloud-native case studies
+- [Security & Compliance](../08-security/README.md) - Security incidents and compliance implementations
+- [AI/ML](../09-ai-ml/README.md) - ML system case studies and MLOps decisions
+- [Domain Examples](../10-domain-examples/README.md) - Domain-specific implementations you can study hands-on
+- [Career Development](../12-career/README.md) - Use case studies to prepare for system design interviews
+
+### Learning Resources
+- [YouTube, Books & Courses for Case Studies](./RESOURCES.md)
+
 ## Contributing
 
 These case studies are based on:

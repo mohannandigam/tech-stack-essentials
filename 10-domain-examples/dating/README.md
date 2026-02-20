@@ -1184,15 +1184,224 @@ metrics.gauge('matches.pool_size', len(candidates))
 | **Scale Target** | 10M+ users, 1B+ matches |
 | **Team Size** | 15-30 engineers |
 
+## 🎓 Expert Knowledge
+
+### How Tinder's ELO / Gale-Shapley Algorithm Works
+
+**The ELO System (Tinder's original approach)**:
+
+Borrowed from chess, where every player has a numeric rating. In dating:
+
+1. Every user starts with a base score (say 1000)
+2. When a high-rated user swipes right on you, your score increases more than if a low-rated user does
+3. When a high-rated user swipes left on you, your score decreases more
+4. The system shows you profiles with similar ELO scores — the idea being that mutual interest is more likely between people of similar "desirability"
+
+**Why Tinder moved away from pure ELO**: It created a rigid hierarchy. Users who got cold-started with low scores were trapped. Tinder now uses a more complex ML-based system they do not fully disclose, but the principle remains — behavioral signals (who swipes on you, who you match with) feed the ranking.
+
+**The Gale-Shapley Algorithm (Stable Matching)**:
+
+Originally designed to match medical residents to hospitals. The algorithm guarantees a "stable" matching — no two people would prefer to switch to each other over their current matches.
+
+Think of it like a school dance:
+1. In round 1, every person "proposes" to their top choice
+2. Each person receiving proposals keeps their favorite and rejects the rest
+3. Rejected people propose to their next choice
+4. Repeat until everyone is matched
+
+Hinge uses a variant of this — their "Most Compatible" feature runs a modified Gale-Shapley to find pairs most likely to mutually match, then surfaces them once per day.
+
+### Two-Sided Marketplace Dynamics
+
+**Simple analogy**: A dating app is like a farmer's market. Farmers (supply) want customers (demand), and customers want farmers. The market operator (the app) must:
+
+- **Attract both sides**: If there are no farmers, customers leave. If there are no customers, farmers leave. This is the "chicken-and-egg" problem every marketplace faces.
+- **Balance the ratio**: Too many of one gender on a heterosexual app means the minority group gets overwhelmed with attention while the majority gets ignored. This drives churn on both sides for different reasons.
+- **Manage quality**: If the market fills with low-quality produce (fake profiles, inactive users), buyers stop coming. Trust is the marketplace's most valuable asset.
+
+**Key metrics for marketplace health**:
+- **Liquidity**: The probability that a user finds a match. If liquidity is low, users leave.
+- **Supply/demand ratio**: Ideally 1:1 for heterosexual apps. Deviations create experience problems.
+- **Time to first match**: How quickly a new user gets their first match. This is the most critical onboarding metric.
+- **Match-to-conversation rate**: Are matches leading to conversations? If not, the matching algorithm is not finding truly compatible pairs.
+
+### Psychology of Swiping
+
+**Paradox of Choice**: Research by psychologist Barry Schwartz shows that more options lead to less satisfaction. On a dating app with millions of users, this manifests as:
+- Users swipe through hundreds of profiles without committing to conversations
+- The "grass is always greener" effect — why settle when there might be someone better one swipe away?
+- Decision fatigue — after too many swipes, users default to snap judgments based on photos alone
+
+**Decision Fatigue**: Studies show swiping behavior changes throughout a session:
+- Early swipes: More selective, more time spent per profile
+- Late swipes: Less selective (swipe right on everyone) or completely disengaged (swipe left on everyone)
+- Design response: Apps limit daily swipes (both to combat fatigue and drive monetization)
+
+**The Dopamine Loop**: The variable reward of "will this be a match?" triggers the same dopamine response as slot machines. This is what makes the swiping gesture so addictive — and why app designers must balance engagement with user wellbeing.
+
+### How Hinge's "Most Compatible" Uses ML
+
+Hinge's system works in three stages:
+
+1. **Preference Learning**: The model learns your preferences not just from stated filters (age, distance) but from behavioral signals — who you like, who you skip, how long you spend on a profile, what prompt answers you engage with.
+
+2. **Collaborative Filtering**: "Users with similar taste to you also liked these profiles." This surfaces profiles you would not have found through basic filters alone.
+
+3. **Stable Matching (Gale-Shapley variant)**: Once the model knows who you would like, it also knows who would like you. The "Most Compatible" feature pairs two users where both sides have a high predicted likelihood of mutual interest. This is shown as a single daily recommendation — scarcity makes users take it seriously.
+
+### Photo Scoring and Attractiveness Prediction — Ethics
+
+Some platforms use ML to score profile photos for attractiveness or quality. This raises serious ethical questions:
+
+- **Bias**: Models trained on historical data inherit societal biases about attractiveness (racial bias, body type bias, age bias). A model that learns "users swipe right more on [group X]" will surface [group X] more, creating a feedback loop.
+- **Transparency**: Users are rarely told their photos are being scored. They experience the effects (more or fewer matches) without understanding why.
+- **Alternative approach**: Instead of scoring attractiveness, some platforms score photo quality (lighting, resolution, face visible) — which improves the experience without making subjective judgments about people.
+- **Best practice**: If using photo scoring, audit the model for demographic bias, disclose the practice in terms of service, and allow users to opt out.
+
+### Fake Profile Detection
+
+Fake profiles (bots, catfish, scammers) are the biggest threat to trust. Detection uses multiple signals:
+
+1. **Photo Analysis**: Reverse image search against known stock photos, GAN-generated face detection (AI-generated faces have subtle artifacts), metadata analysis (was the photo taken recently or is it years old?)
+
+2. **Behavioral Analysis**: Real users browse and swipe at human speeds. Bots exhibit patterns:
+   - Unnaturally fast swiping (100+ right-swipes per minute)
+   - Identical message templates sent to every match
+   - Immediate request to move conversation to external platform
+   - Login from data center IP addresses instead of residential/mobile
+
+3. **Network Analysis**: Fake accounts often share creation patterns — registered at similar times, from similar IP ranges, with similar profile structures. Graph analysis can identify clusters.
+
+4. **Verification**: Phone number verification (each number can only create one account), photo verification (take a selfie matching a pose), ID verification (for premium features)
+
+### Trust & Safety at Scale
+
+How major platforms handle reports and safety:
+
+- **Report Pipeline**: User reports flow through automated triage (ML classifies severity) → urgent cases (threats, minors) escalated to humans immediately → non-urgent cases queued for review → action taken (warning, suspension, ban)
+- **Volume**: Tinder processes ~100,000 reports per day. At that scale, ML-assisted moderation is not optional — it is essential.
+- **False Positive Problem**: Aggressive moderation catches bad actors but also bans legitimate users. Most platforms err slightly toward caution (let some bad actors through rather than ban good users).
+- **Appeals Process**: Every platform needs an appeals process. ML makes mistakes. Humans make mistakes. The system must be correctable.
+- **Proactive Detection**: The best safety systems do not wait for reports. They proactively scan for dangerous behavior patterns (underage users lying about age, known sex offender profiles, sextortion patterns).
+
+## 💰 Monetization Deep Dive
+
+### Freemium Conversion Funnel
+
+Dating apps follow a specific monetization pattern — give enough value for free to build the habit, then charge for features that accelerate the experience:
+
+```
+Free Users (100%)
+    │
+    ├── Engaged Free Users (40%)    ← Use daily, see value
+    │       │
+    │       ├── Hit a Friction Point (25%)   ← "I'm out of likes" / "Who liked me?"
+    │       │       │
+    │       │       └── Convert to Paid (5-10%)   ← Purchase subscription
+    │       │
+    │       └── Continue Free (15%)   ← Satisfied with free tier
+    │
+    └── Churned Free Users (60%)    ← Never engaged enough
+```
+
+**The key insight**: The free tier must be good enough to demonstrate value but limited enough to create desire for more. If the free tier is too good, nobody pays. If it is too restrictive, users leave.
+
+### Feature Gating Strategies
+
+| Feature | Free | Plus ($) | Gold ($$) | Platinum ($$$) |
+|---------|------|----------|-----------|----------------|
+| Daily Swipes | Limited (100) | Unlimited | Unlimited | Unlimited |
+| See Who Likes You | Hidden (blur) | Hidden | Full access | Full access |
+| Super Like | 1/week | 5/week | 5/week | 5/week + priority |
+| Boost (top of deck) | None | 1/month | 1/week | 1/week |
+| Passport (change location) | No | Yes | Yes | Yes |
+| Rewind (undo swipe) | No | Yes | Yes | Yes |
+| Message Before Match | No | No | No | Yes |
+| Priority Likes | No | No | No | Yes |
+
+### Subscription Tiers and Pricing Psychology
+
+- **Anchoring**: Show the most expensive tier first. When users see Platinum at $40/month, Gold at $25/month looks like a deal.
+- **Monthly vs. Annual**: Offer 6-month and 12-month plans at steep discounts (50-60% off monthly price). Users perceive savings even though they are committing to a longer period.
+- **Age-based pricing**: Tinder famously charges users over 30 more than users under 30. The reasoning: younger users have less disposable income, and price sensitivity varies by age.
+- **Regional pricing**: A subscription in India costs 1/5th what it costs in the US. Purchasing power parity.
+- **Free trials**: 7-day free trial of Gold converts at ~15%. Users experience premium features and develop attachment (loss aversion drives conversion).
+
+### Revenue Metrics
+
+| Metric | Definition | Healthy Target |
+|--------|-----------|----------------|
+| **ARPU** (Average Revenue Per User) | Total revenue / Total users | $0.50-2.00/month |
+| **ARPPU** (Average Revenue Per Paying User) | Revenue / Paying users | $15-25/month |
+| **LTV** (Lifetime Value) | Average revenue per user over their entire time on platform | $50-200 |
+| **CAC** (Customer Acquisition Cost) | Marketing spend / New users acquired | $2-10 |
+| **LTV:CAC Ratio** | LTV / CAC | > 3:1 for viability |
+| **Churn Rate** | % of paying users who cancel per month | 5-10% (monthly) |
+| **Conversion Rate** | % of free users who become paid | 5-15% |
+| **Paywall Interaction Rate** | % of users who see a paywall prompt | 30-50% |
+
+## 🏗️ Scale Challenges
+
+### Handling 2B+ Swipes Per Day (Tinder Scale)
+
+Tinder processes over 2 billion swipes per day. Here is how this works at scale:
+
+1. **Swipe Storage**: Each swipe is a small write (user_id, target_id, action, timestamp). At 2B/day, that is ~23,000 writes/second sustained, with peaks 3-5x higher during evening hours. Solution: Write-optimized stores (Cassandra, DynamoDB) with time-series partitioning.
+
+2. **Match Detection**: Every right-swipe triggers a check: "Did this person already swipe right on me?" This requires a fast lookup. Solution: Store recent right-swipes in Redis as a set per user. Check is O(1). Match detection runs in < 1ms.
+
+3. **Discovery Feed Generation**: Pre-compute discovery feeds in batches during off-peak hours. When a user opens the app, they get a pre-computed feed from cache. New swipes invalidate portions of the feed. This avoids running expensive geospatial + ML queries on every app open.
+
+4. **Event Pipeline**: Every swipe, match, message, and profile view flows through Kafka to analytics, ML training pipelines, and notification services. The event pipeline handles 50,000+ events/second.
+
+### The Hot-Spot Problem in Dense Cities
+
+In Manhattan, 500,000+ active users may be within a 5km radius. This creates:
+
+- **Query overload**: A single user's discovery query returns too many candidates. Fetching 100 candidates from 500K is fine — but the WHERE clause filters (age, gender, not-already-seen) must evaluate against all 500K rows.
+- **Solution 1: Shard by geohash**: Split the database into geographic partitions. Manhattan gets its own shard (or multiple shards). This localizes queries.
+- **Solution 2: Pre-filtered candidate pools**: Batch job creates pre-filtered pools (e.g., "women aged 25-30 in Manhattan") in Redis. Discovery queries read from pools instead of the main database.
+- **Solution 3: Progressive loading**: Show the nearest 20 profiles first, then progressively load more as the user swipes. Do not pre-compute the full candidate list.
+
+### Cross-Region Matching for Travel Mode
+
+"Passport" or "Travel Mode" lets users match in a different city before they arrive. Engineering challenges:
+
+- **Multi-region data**: User profiles live in the region where they signed up. Travel mode queries must reach across regions. Solution: Read replicas in each region, or a global profile index with minimal data (just enough for discovery).
+- **Latency**: A user in New York swiping in Tokyo adds 200ms of network latency per query. Solution: Replicate the Tokyo candidate pool to a CDN or cache layer accessible from New York.
+- **Consistency**: When a Tokyo user swipes right on a New York traveler, the match must be detected. Solution: A global match-detection service (or cross-region event propagation via Kafka MirrorMaker) that ensures swipe data is eventually consistent across regions.
+- **Fraud prevention**: Travel mode is sometimes abused for spam (bots "travel" to every city). Solution: Rate-limit location changes, require account age > 7 days for Travel Mode, flag accounts that change location more than 3x/day.
+
 ## Related Topics
 
-- [Social Media Platform](../social-media/README.md) - Similar real-time and engagement patterns
-- [Microservices Architecture](../../02-architectures/microservices/README.md) - Service design
-- [Database Patterns](../../02-architectures/database-patterns/README.md) - Geospatial queries
-- [Real-time Messaging](../../02-architectures/event-driven/README.md) - WebSocket implementation
-- [Recommendation Systems](../../09-ai-ml/README.md) - ML-based matching
-- [API Design](../../02-architectures/api-design/README.md) - RESTful APIs
-- [Security](../../08-security/README.md) - Privacy and safety controls
+### Prerequisites
+- [Foundations](../../00-foundations/README.md) - Networking, HTTP, and data fundamentals
+- [Programming](../../01-programming/README.md) - Python, SQL, and OOP concepts used in the code examples
+
+### Core Architecture
+- [Microservices Architecture](../../02-architectures/microservices/README.md) - How and why to decompose into services
+- [Event-Driven Architecture](../../02-architectures/event-driven/README.md) - Real-time messaging and event streaming
+- [Database Patterns](../../02-architectures/database-patterns/README.md) - Geospatial queries, indexing, and schema design
+- [API Design](../../02-architectures/api-design/README.md) - RESTful and WebSocket API patterns
+- [System Design Patterns](../../02-architectures/README.md) - Broader architecture decisions
+
+### Related Domains
+- [Social Media Platform](../social-media/README.md) - Similar real-time engagement, feeds, and notification patterns
+- [Retail / E-commerce](../retail/README.md) - Recommendation systems and marketplace dynamics
+- [Healthcare](../healthcare/README.md) - Privacy and data protection parallels
+
+### Supporting Topics
+- [Frontend Development](../../04-frontend/README.md) - React Native mobile development
+- [Backend Development](../../05-backend/README.md) - Server-side API development, caching, and databases
+- [Infrastructure & DevOps](../../06-infrastructure/README.md) - Scaling with Kubernetes and container orchestration
+- [Security & Compliance](../../08-security/README.md) - Privacy, content moderation, and user safety
+- [AI/ML](../../09-ai-ml/README.md) - Recommendation systems, ML-based matching, content moderation
+- [Case Studies](../../11-case-studies/README.md) - Real-world platform scaling decisions
+- [Development Methodologies](../../03-methodologies/README.md) - A/B testing frameworks and CI/CD for rapid iteration
+
+### Learning Resources
+- [YouTube, Books & Courses for Dating Platforms](./RESOURCES.md)
+- [Domain Examples Resources](../RESOURCES.md)
 
 ---
 

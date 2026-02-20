@@ -1241,9 +1241,26 @@ def monitor_predictions():
     log_metric('model_f1', f1)
 ```
 
-## 🔗 Related Resources
+## 🔗 Related Topics
 
-- **Domain Examples**: See specific ML applications in each [domain example](../10-domain-examples/)
-- **Architecture**: [Event-Driven](../02-architectures/event-driven/) and [Microservices](../02-architectures/microservices/) patterns
-- **Infrastructure**: [Kubernetes](../06-infrastructure/kubernetes/), [CI/CD](../06-infrastructure/cicd/) for MLOps
-- **Quick Reference**: [Technology Stack Guide](../quick-reference/) for tool selection
+### Prerequisites
+- [Foundations](../00-foundations/README.md) - Data structures, algorithms, and linear algebra basics
+- [Programming](../01-programming/README.md) - Python programming and software engineering fundamentals
+- [Backend Development](../05-backend/README.md) - APIs and databases for serving ML models
+
+### Next Steps
+- [Domain Examples](../10-domain-examples/README.md) - See ML applied in healthcare, finance, aerospace, and more
+- [Case Studies](../11-case-studies/README.md) - Real-world ML system decisions and trade-offs
+
+### Complementary Topics
+- [System Architecture](../02-architectures/README.md) - Event-driven and microservices patterns for ML pipelines
+- [Development Methodologies](../03-methodologies/README.md) - CI/CD and testing practices for MLOps
+- [Frontend Development](../04-frontend/README.md) - Building dashboards and ML-powered UIs
+- [Infrastructure & DevOps](../06-infrastructure/README.md) - Kubernetes, Docker, and CI/CD for model deployment
+- [Cloud Platforms](../07-cloud/RESOURCES.md) - AWS SageMaker, GCP Vertex AI, Azure ML cloud services
+- [Security & Compliance](../08-security/README.md) - Data privacy, model security, and responsible AI
+- [Career Development](../12-career/README.md) - ML engineer and data scientist career paths
+
+### Learning Resources
+- [YouTube, Books & Courses for AI/ML](./RESOURCES.md)
+- [Quick Reference](../quick-reference/) - Technology stack guide for tool selection
