@@ -79,7 +79,7 @@ Structured roadmaps to guide you from beginner to job-ready in frontend, backend
   - [Monitoring](./06-infrastructure/monitoring/README.md) - Observability
 
 ### ☁️ Cloud Platforms
-- **[07-Cloud](./07-cloud/README.md)** - AWS, GCP, Azure
+- **[07-Cloud](./07-cloud/README.md)** - Cloud computing overview, provider comparison, decision guide
   - [AWS](./07-cloud/aws/README.md) - Amazon Web Services
   - [GCP](./07-cloud/gcp/README.md) - Google Cloud Platform
   - [Azure](./07-cloud/azure/README.md) - Microsoft Azure

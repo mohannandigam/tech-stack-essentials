@@ -4,11 +4,12 @@
 
 This comprehensive guide provides practical knowledge for building, deploying, and operating AI/ML systems across different industries. It covers:
 
+- **[E2E AI Company Stack](./AI_COMPANY_STACK.md)** — How AI companies (Anthropic, OpenAI, Liquid AI) actually work end-to-end: training data, pre-training, RLHF/alignment, evaluation, deployment, and monetization
 - Model development lifecycle from data preparation to production deployment
 - MLOps patterns for different use cases (anomaly detection, NLP, computer vision, recommendation systems)
 - Data platform architecture (Snowflake, Databricks, data lakes)
 - Domain-specific AI applications across 16 industries
-- QA strategies and testing approaches for ML systems
+- QA strategies and testing approaches for ML systems — including QA's role in the AI company stack
 - Full-stack architecture guidance from data ingestion to model serving
 - **Best practices for safety, quality assurance, and logging/observability**
 

@@ -1783,6 +1783,1387 @@ Build an ML model on these signals to identify at-risk users before they leave:
 
 ---
 
+---
+
+## 🎨 Product Design Deep Dive: Tinder, Bumble, Hinge, OKCupid
+
+Understanding how the top apps made their product decisions is essential before you build your own. Each made different bets on the same fundamental problem — getting two people together — and those bets drove completely different architectures.
+
+### The Four Design Philosophies
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                  DATING APP DESIGN PHILOSOPHIES                     │
+├───────────────┬───────────────┬───────────────┬─────────────────────┤
+│   TINDER      │    BUMBLE     │    HINGE      │    OKCUPID          │
+├───────────────┼───────────────┼───────────────┼─────────────────────┤
+│ "Volume"      │ "Women first" │ "Designed to  │ "Compatibility      │
+│               │               │ be deleted"   │ first"              │
+├───────────────┼───────────────┼───────────────┼─────────────────────┤
+│ Gamification  │ Safety and    │ Relationships │ Data-driven         │
+│ above all     │ control       │ not hookups   │ matching            │
+├───────────────┼───────────────┼───────────────┼─────────────────────┤
+│ Swipe UI      │ Swipe UI with │ Scroll cards  │ Detailed profiles   │
+│               │ 24h first msg │ + prompts     │ + questionnaires    │
+├───────────────┼───────────────┼───────────────┼─────────────────────┤
+│ Casual to     │ Broad (women  │ Serious       │ 35+ age group,      │
+│ serious, 18-35│ in control)   │ relationships │ personality-driven  │
+├───────────────┼───────────────┼───────────────┼─────────────────────┤
+│ 50M+ users    │ 50M+ users    │ 23M+ users    │ 50M+ users          │
+└───────────────┴───────────────┴───────────────┴─────────────────────┘
+```
+
+### Tinder — The Volume Model
+
+**Core Bet**: Dating is fundamentally about discovery. Make discovery as fast and frictionless as possible — the swipe card UI is the product.
+
+**Key Product Decisions**:
+
+```
+1. SWIPE CARD UI (2012 innovation)
+   Why: Mobile-native gesture. One finger, one decision. Zero friction.
+   Tradeoff: Optimizes for volume of decisions, not quality.
+   Result: Gamification. Users swipe 1.6 billion times per day.
+
+2. MUTUAL MATCH REQUIRED BEFORE MESSAGING
+   Why: Reduces harassment (nobody gets a message from someone they rejected).
+   Tradeoff: Creates "match anxiety" — many matches never convert to messages.
+   Result: High match count → low conversation rate (industry avg: 10-20%)
+
+3. ELO-STYLE DESIRABILITY SCORE (originally)
+   Why: Match desirable users with desirable users. Lower-rated users matched
+        with lower-rated users. Called the "Elo score" internally.
+   Tradeoff: Created stratified experience. Some users almost never matched.
+   Result: Evolved to a more complex ML system (not pure Elo) after backlash.
+
+4. FREE WITH PREMIUM UNLOCK
+   Why: Lower barrier to entry maximizes top-of-funnel.
+   Tradeoff: Free users see limited swipes, ads.
+   Revenue drivers:
+   - Tinder Gold ($15-29/mo): See who liked you before matching
+   - Boosts ($1-4 each): 30 minutes of boosted visibility
+   - Super Likes (limited free): Signal strong interest
+```
+
+**Technical Implications of Tinder's Model**:
+- Needs to serve thousands of card swipes per second per user
+- Discovery feed must refresh quickly (few hundred ms)
+- Infinite scroll = cold-start problem × geographic density problem
+- Elo-style scoring = needs writes on every like (expensive at 1.6B swipes/day)
+
+### Bumble — The Control Model
+
+**Core Bet**: Safety is the #1 reason women leave dating apps. Give women control, and you win the market.
+
+**Key Product Decisions**:
+
+```
+1. WOMEN INITIATE ONLY (heterosexual matches)
+   Why: Removes the harassment problem at the product level.
+   Tradeoff: Higher friction for matches (24h expiry pressure for women).
+   Implementation: After a het match, only the woman can send first message.
+                   If no message in 24h, match expires.
+                   Man can "extend" once (signals he's genuinely interested).
+
+2. 24-HOUR EXPIRY CREATES URGENCY
+   Why: Prevents "match collecting" without intent.
+   Tradeoff: Anxiety-inducing for users. Creates pressure.
+   Result: Higher conversation rates than Tinder (because there's a deadline).
+
+3. COMPLIMENTS (send before matching)
+   Why: Lets users signal interest on specific profile elements.
+   Tradeoff: Requires curation — system shows compliments to recipient.
+   Result: Conversion tool (users who receive compliments match more often).
+
+4. BUMBLE BFF + BUMBLE BIZZ
+   Why: Expands TAM beyond romantic connections.
+   Tradeoff: Product complexity, different moderation needs.
+   Result: Diversified revenue, lower CAC through existing user base.
+```
+
+**Technical Implications of Bumble's Model**:
+- Time-based expiry on matches requires a job queue (e.g., Redis TTL + Celery)
+- The "who can message" permission system is a state machine
+- Bumble's filters are more granular than Tinder's (height, education, etc.)
+
+```python
+# Match state machine — Bumble's core permission logic
+from enum import Enum
+from datetime import datetime, timedelta
+
+class MatchState(Enum):
+    MATCHED = "matched"           # Just matched, waiting for first message
+    WOMAN_MESSAGED = "active"     # Woman sent first message, normal convo
+    EXPIRED = "expired"           # 24h passed, no message sent
+    EXTENDED = "extended"         # Man extended 24h window (1x allowed)
+
+class BumbleMatch:
+    """
+    Bumble's core matching constraint:
+    - In het matches: only woman can send first message
+    - Match expires after 24h if no message sent
+    - Man can extend once (adds another 24h)
+    """
+    EXPIRY_HOURS = 24
+
+    def __init__(self, user_a, user_b, matched_at):
+        # Determine who has first-message permission
+        # For het matches: the woman has permission
+        # For same-sex: either person can message first
+        self.user_a = user_a
+        self.user_b = user_b
+        self.matched_at = matched_at
+        self.expires_at = matched_at + timedelta(hours=self.EXPIRY_HOURS)
+        self.state = MatchState.MATCHED
+        self.extension_used = False
+
+    def who_can_message_first(self) -> str:
+        """
+        Returns user_id of who can send the opening message.
+        Returns None if match is expired.
+        """
+        if self.state == MatchState.EXPIRED:
+            return None
+        if self.state == MatchState.ACTIVE:
+            return "both"  # After first message, anyone can reply
+
+        # First-message logic: woman goes first in het matches
+        if self.user_a.gender == "woman" and self.user_b.gender == "man":
+            return self.user_a.user_id
+        elif self.user_b.gender == "woman" and self.user_a.gender == "man":
+            return self.user_b.user_id
+        else:
+            return "both"  # Same-sex matches: either person
+
+    def check_expiry(self):
+        if self.state == MatchState.MATCHED and datetime.utcnow() > self.expires_at:
+            self.state = MatchState.EXPIRED
+            return True
+        return False
+
+    def extend_match(self, requesting_user_id: str) -> bool:
+        """Man can extend the 24h window once."""
+        if self.extension_used:
+            return False
+        if requesting_user_id not in [self.user_a.user_id, self.user_b.user_id]:
+            return False
+        self.expires_at = datetime.utcnow() + timedelta(hours=self.EXPIRY_HOURS)
+        self.extension_used = True
+        return True
+```
+
+### Hinge — The Relationship Model
+
+**Core Bet**: The swipe model creates bad habits. Replace quantity with quality — design for real relationships, not endless scrolling.
+
+**Key Product Decisions**:
+
+```
+1. "DESIGNED TO BE DELETED" — THE ANTI-TINDER
+   Why: Brand positioning. Users who succeed become ambassadors.
+   Tradeoff: You're explicitly trying to churn your users (into relationships).
+   Result: Hinge became the fastest-growing dating app 2019-2023.
+
+2. PROMPTS INSTEAD OF (JUST) PHOTOS
+   Why: Give conversation starters. Reduce the "hey" dead end.
+   How: Users answer 3 prompts from 80+ options:
+        "The one thing I'd like to know about you is..."
+        "My simple pleasures..."
+        "I'll know it's time to delete Hinge when..."
+   Technical: Each prompt answer is a separate "card" — users can like
+              individual photos OR specific prompt answers, with a comment.
+
+3. LIKE + COMMENT REQUIRED TO MATCH
+   Why: Forces intentionality. "I liked your photo" with no context → spam.
+   How: You can't just "like" — you must like a specific photo or prompt
+        AND leave a comment. Recipient sees: what you liked + your comment.
+   Result: Much higher conversation conversion rate than Tinder.
+
+4. DAILY LIKES LIMIT
+   Why: Prevents "mass swiping" behavior. Forces deliberate choices.
+   How: Free users get 8 likes/day. Premium (Hinge+) gets unlimited.
+   Result: Higher signal-to-noise, better UX for recipients.
+
+5. "YOUR TURN" PROMPTS
+   Why: Conversations stall because one person is waiting for the other.
+   How: App nudges the person who hasn't responded in X hours.
+
+6. "MOST COMPATIBLE" FEATURE (Gale-Shapley algorithm)
+   Why: One daily AI recommendation — the person Hinge thinks is your best match.
+   How: Uses machine learning on behavioral data to surface high-quality picks.
+   Technical: Implemented as a deferred batch job, runs nightly.
+```
+
+**Hinge's Data Model Difference**: Because you can like individual photos or prompt answers (not just the whole profile), their like/interaction schema is more granular than Tinder's:
+
+```python
+# Hinge-style interaction model
+# More granular than Tinder's simple "like/pass on a profile"
+
+class InteractionTarget:
+    """What specifically was liked within a profile."""
+    TYPES = ["profile_photo", "prompt_answer", "profile_video"]
+
+class HingeInteraction:
+    """
+    A like on Hinge targets a specific card (photo or prompt).
+    The comment is mandatory — can't like without context.
+    """
+    def __init__(
+        self,
+        from_user_id: str,
+        to_user_id: str,
+        target_type: str,          # "profile_photo" or "prompt_answer"
+        target_id: str,            # ID of the specific photo or prompt
+        comment: str               # Mandatory comment (min 1 char, max 300)
+    ):
+        if not comment or not comment.strip():
+            raise ValueError("Comment is required on Hinge")
+        if len(comment) > 300:
+            raise ValueError("Comment max 300 characters")
+
+        self.from_user_id = from_user_id
+        self.to_user_id = to_user_id
+        self.target_type = target_type
+        self.target_id = target_id
+        self.comment = comment.strip()
+        self.created_at = datetime.utcnow()
+```
+
+### OKCupid — The Compatibility Model
+
+**Core Bet**: Chemistry is predictable from self-reported data. Deep questionnaires beat shallow profile browsing.
+
+**Key Product Decisions**:
+
+```
+1. THOUSANDS OF QUESTIONS
+   Why: More data = better matching = more successful relationships.
+   How: Users answer questions like "Is jealousy healthy in relationships?"
+        "Do you smoke?" "Would you date someone who has depression?"
+        Each answer has: Your answer, Acceptable answers, Importance level.
+   Technical: Match percentage = weighted agreement across shared questions.
+
+2. MATCH PERCENTAGE
+   Why: Give users a number to anchor on. "92% match" triggers curiosity.
+   Formula (simplified):
+     For each shared question:
+       score = (importance_weight * (your_answer IN partner_acceptable_answers))
+     match_pct = sqrt(avg_score_you_for_them * avg_score_them_for_you)
+   Note: Uses geometric mean (not arithmetic) to prevent one-sided high scores.
+
+3. SEARCH AND BROWSE (not just algorithmic feed)
+   Why: Some users know what they want. Let them search.
+   How: Users can filter by all profile fields + match percentage.
+   Tradeoff: Creates "shopping" behavior, can be overwhelming.
+
+4. ESSAYS (long-form profile sections)
+   Why: Self-expression. Signals intelligence and thoughtfulness.
+   How: 8+ open-ended sections: "My self-summary", "What I'm doing with my life", etc.
+   Tradeoff: High barrier to profile completion. Attracts thoughtful users,
+             repels casual ones.
+
+5. DOUBLЕТAKE (swipe mode for existing users)
+   Why: Added swipe as secondary mode when Tinder exploded.
+   Tradeoff: Diluted the brand. Shows the tension between acquisition and retention.
+```
+
+### Building Your Own: Design Decisions to Make First
+
+Before writing a line of code, answer these questions. Your answers determine your entire architecture:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              PRODUCT DESIGN DECISIONS — DECIDE FIRST                │
+├────────────────────────────┬────────────────────────────────────────┤
+│ Decision                   │ Options and Implications               │
+├────────────────────────────┼────────────────────────────────────────┤
+│ Who goes first in matches? │ Anyone (Tinder model) → simpler       │
+│                            │ Women only (Bumble model) → state      │
+│                            │ machine, expiry logic                  │
+├────────────────────────────┼────────────────────────────────────────┤
+│ How do users express       │ Swipe (volume) → simple, gamified      │
+│ interest?                  │ Like + comment (Hinge) → more tables,  │
+│                            │ higher intent signal                   │
+│                            │ Compatibility score (OKCupid) →        │
+│                            │ complex questionnaire system           │
+├────────────────────────────┼────────────────────────────────────────┤
+│ What's your matching       │ Location only (Grindr model)           │
+│ algorithm?                 │ Elo-style desirability (Tinder)        │
+│                            │ Behavioral ML (Hinge)                  │
+│                            │ Questionnaire compatibility (OKCupid)  │
+├────────────────────────────┼────────────────────────────────────────┤
+│ What's the conversation    │ Free to open → spam risk               │
+│ model?                     │ Match required → mutual consent        │
+│                            │ Prompts/icebreakers → higher reply     │
+├────────────────────────────┼────────────────────────────────────────┤
+│ Audience                   │ Casual (Tinder) → simpler profiles     │
+│                            │ Serious (Hinge, Bumble) → more fields  │
+│                            │ Niche (JDate, Grindr) → tighter schema │
+├────────────────────────────┼────────────────────────────────────────┤
+│ Gender dynamics            │ No rules → simpler                     │
+│                            │ Women-first → state machine            │
+│                            │ Inclusive → non-binary gender options  │
+│                            │ (27+ options, like Tinder/OKCupid)     │
+└────────────────────────────┴────────────────────────────────────────┘
+```
+
+---
+
+## 🚢 Deployment: From Local to Production
+
+### Phase 1: Local Development (Week 1–4)
+
+Start with Docker Compose — everything on your laptop, no cloud costs.
+
+```yaml
+# docker-compose.yml — Full local stack
+version: "3.9"
+
+services:
+  # ── Databases ───────────────────────────────────────────
+  postgres:
+    image: postgis/postgis:15-3.3  # PostgreSQL + PostGIS for geospatial
+    environment:
+      POSTGRES_DB: dating_db
+      POSTGRES_USER: dating_user
+      POSTGRES_PASSWORD: local_dev_password  # Never use in production
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_DATABASE: chat_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes  # Persistence
+
+  # ── Application Services ─────────────────────────────────
+  profile_service:
+    build: ./services/profile
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://dating_user:local_dev_password@postgres:5432/dating_db
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./services/profile:/app  # Hot reload during development
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8001
+
+  matching_service:
+    build: ./services/matching
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgresql://dating_user:local_dev_password@postgres:5432/dating_db
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  chat_service:
+    build: ./services/chat
+    ports:
+      - "8003:8003"
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/chat_db
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+
+  # ── API Gateway ─────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/local.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - profile_service
+      - matching_service
+      - chat_service
+
+  # ── Development tools ───────────────────────────────────
+  adminer:       # Web UI for PostgreSQL
+    image: adminer
+    ports:
+      - "8080:8080"
+
+  mongo-express:  # Web UI for MongoDB
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+
+volumes:
+  postgres_data:
+  mongo_data:
+```
+
+```
+# Start everything locally:
+docker compose up -d
+
+# Run database migrations:
+docker compose exec profile_service alembic upgrade head
+
+# Check logs:
+docker compose logs -f matching_service
+
+# Stop:
+docker compose down
+```
+
+### Phase 2: Cloud Setup — First Deployment (Month 1–2)
+
+Start with a single server, managed databases. This handles your first 0–10,000 users cheaply.
+
+```
+Architecture for Phase 2 (< 10K users):
+─────────────────────────────────────────
+  Users → CloudFront (CDN for photos) → EC2/GCE t3.medium ($30/mo)
+                                      ├── Nginx (reverse proxy)
+                                      ├── Profile service (uvicorn)
+                                      ├── Matching service (uvicorn)
+                                      └── Chat service (uvicorn + WebSocket)
+
+  Data:
+  ├── RDS PostgreSQL + PostGIS ($50-100/mo)
+  ├── MongoDB Atlas M10 cluster ($60/mo)
+  ├── Redis ElastiCache t3.micro ($15/mo)
+  └── S3 + CloudFront for photos ($10-30/mo)
+
+  Total: ~$200-300/month
+  Capacity: ~10,000 active users, ~100 concurrent WebSocket connections
+
+AWS Quickstart:
+  1. Create RDS PostgreSQL instance (enable PostGIS extension)
+  2. Create ElastiCache Redis (cluster mode off for simplicity)
+  3. Create S3 bucket for photos (block all public access, use pre-signed URLs)
+  4. Create CloudFront distribution pointing to S3
+  5. Create EC2 t3.medium (Ubuntu 22.04)
+  6. Install Docker + Docker Compose on EC2
+  7. Copy your docker-compose.yml (without the dev databases — use managed ones)
+  8. Set environment variables via AWS Parameter Store
+```
+
+```bash
+# EC2 setup script (run once)
+#!/bin/bash
+set -e
+
+# Install Docker
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+
+# Install Docker Compose
+sudo curl -L \
+  "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Install AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+unzip awscliv2.zip && sudo ./aws/install
+
+# SSL certificate (free with Let's Encrypt)
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdatingapp.com -d www.yourdatingapp.com
+# Auto-renewal is configured automatically
+```
+
+### Phase 3: Kubernetes — Production Scale (Month 3–6, >10K users)
+
+Once you have product-market fit and >10K MAU, move to Kubernetes for auto-scaling, rolling deployments, and resilience.
+
+```yaml
+# kubernetes/profile-service.yaml
+# This is the production deployment for the profile service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-service
+  namespace: dating-prod
+spec:
+  replicas: 3                    # 3 instances minimum
+  selector:
+    matchLabels:
+      app: profile-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1                # Add 1 new pod before removing old ones
+      maxUnavailable: 0          # Never take pods offline during deploy
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      containers:
+      - name: profile-service
+        image: your-registry/profile-service:v1.2.3   # Pin versions, never use :latest
+        ports:
+        - containerPort: 8001
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:              # Pull from Kubernetes Secret (never hardcode)
+              name: db-credentials
+              key: postgres-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: redis-credentials
+              key: redis-url
+        resources:
+          requests:
+            cpu: "250m"                # 0.25 CPU cores guaranteed
+            memory: "256Mi"            # 256MB RAM guaranteed
+          limits:
+            cpu: "500m"                # Never use more than 0.5 CPU
+            memory: "512Mi"            # Never use more than 512MB RAM
+        readinessProbe:                # Don't send traffic until healthy
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:                 # Restart if unhealthy
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3         # Restart after 3 consecutive failures
+
+---
+# Auto-scaling based on CPU load
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: profile-service-hpa
+  namespace: dating-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: profile-service
+  minReplicas: 3
+  maxReplicas: 20                    # Scale up to 20 instances under load
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70       # Scale up when CPU > 70%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+```yaml
+# CI/CD Pipeline — GitHub Actions
+# .github/workflows/deploy.yml
+
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]    # Deploy on every merge to main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run tests
+      run: |
+        docker compose -f docker-compose.test.yml up --abort-on-container-exit
+        docker compose -f docker-compose.test.yml down
+
+  build-and-push:
+    needs: test          # Only build if tests pass
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ secrets.REGISTRY }}/profile-service:${{ github.sha }} \
+          ./services/profile
+        docker push ${{ secrets.REGISTRY }}/profile-service:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Kubernetes
+      run: |
+        # Update the image tag in the deployment
+        kubectl set image deployment/profile-service \
+          profile-service=${{ secrets.REGISTRY }}/profile-service:${{ github.sha }} \
+          --namespace=dating-prod
+
+        # Wait for rollout to complete (or rollback if it fails)
+        kubectl rollout status deployment/profile-service \
+          --namespace=dating-prod \
+          --timeout=5m
+
+    - name: Run smoke tests
+      run: |
+        # Hit a few critical endpoints after deployment
+        curl -f https://api.yourdatingapp.com/health
+        curl -f https://api.yourdatingapp.com/v1/status
+```
+
+### Scale Thresholds: When to Upgrade
+
+```
+0 → 1,000 MAU:     Single EC2 + managed DBs. Keep it simple. Focus on product.
+1,000 → 10,000:    Add Redis caching, CDN for photos, basic monitoring.
+10,000 → 100,000:  Move to Kubernetes. Add read replicas for PostgreSQL.
+                   Separate services into distinct containers.
+100,000 → 1M:      Database sharding or move to Vitess (MySQL sharding proxy).
+                   Add Elasticsearch for profile search.
+                   Dedicated Kafka for event streaming.
+1M+:               Multi-region deployment. Edge caching.
+                   Specialized hardware for ML serving.
+                   Dedicated SRE team.
+```
+
+---
+
+## 🔐 Security: Complete Implementation Guide
+
+Dating apps are high-value security targets. They hold sensitive personal data, location information, private photos, and intimate conversations. A breach is catastrophic for user trust.
+
+### Authentication Security
+
+```python
+# Secure authentication implementation
+import secrets
+import hashlib
+import hmac
+from datetime import datetime, timedelta
+import jwt  # PyJWT library
+from argon2 import PasswordHasher  # Use Argon2, not bcrypt (Argon2 is stronger)
+
+# ── Password Hashing ─────────────────────────────────────────────────
+# Argon2 is the winner of the Password Hashing Competition (2015)
+# It's the current best practice — stronger than bcrypt and scrypt
+ph = PasswordHasher(
+    time_cost=2,       # Number of iterations (higher = slower = more secure)
+    memory_cost=65536, # Memory usage in KB (64MB makes GPU cracking expensive)
+    parallelism=1,     # Number of parallel threads
+    hash_len=32,       # Output length in bytes
+    salt_len=16        # Salt length in bytes
+)
+
+def hash_password(raw_password: str) -> str:
+    """
+    Always hash passwords before storing.
+    Never store plain text passwords.
+    """
+    return ph.hash(raw_password)
+
+def verify_password(stored_hash: str, raw_password: str) -> bool:
+    """
+    Constant-time comparison prevents timing attacks.
+    Timing attack: attacker measures response time to infer if hash matches.
+    """
+    try:
+        return ph.verify(stored_hash, raw_password)
+    except Exception:
+        return False
+
+# ── JWT Token Management ─────────────────────────────────────────────
+SECRET_KEY = secrets.token_hex(32)  # 256-bit random key
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30    # Short-lived access tokens
+REFRESH_TOKEN_EXPIRE_DAYS = 30      # Long-lived refresh tokens
+
+def create_access_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "type": "access",
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def create_refresh_token(user_id: str, device_id: str) -> str:
+    """
+    Refresh tokens are bound to a device.
+    If a device is compromised, only that device's token is revoked.
+    Stored in database for revocation capability.
+    """
+    token_id = secrets.token_hex(16)  # Unique ID for this token
+    payload = {
+        "sub": user_id,
+        "jti": token_id,              # JWT ID — used for revocation
+        "device_id": device_id,
+        "type": "refresh",
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    }
+    # Store token_id in DB so we can revoke it
+    # db.refresh_tokens.insert(token_id=token_id, user_id=user_id, device_id=device_id)
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise AuthError("Token expired")
+    except jwt.JWTError:
+        raise AuthError("Invalid token")
+
+# ── Rate Limiting ────────────────────────────────────────────────────
+# Prevents brute force, credential stuffing, and API abuse
+import redis
+from functools import wraps
+
+redis_client = redis.Redis.from_url(settings.REDIS_URL)
+
+def rate_limit(max_requests: int, window_seconds: int, key_prefix: str = "rl"):
+    """
+    Sliding window rate limiter using Redis.
+    More accurate than fixed window (prevents burst at window boundary).
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Use IP + endpoint as the rate limit key
+            request = kwargs.get("request") or args[0]
+            client_ip = request.client.host
+            key = f"{key_prefix}:{client_ip}:{func.__name__}"
+
+            now = datetime.utcnow().timestamp()
+            window_start = now - window_seconds
+
+            # Remove old requests outside the window
+            redis_client.zremrangebyscore(key, 0, window_start)
+
+            # Count requests in the current window
+            current_count = redis_client.zcard(key)
+
+            if current_count >= max_requests:
+                raise HTTPException(
+                    status_code=429,
+                    detail={
+                        "error": "rate_limit_exceeded",
+                        "retry_after": window_seconds,
+                        "limit": max_requests,
+                        "window_seconds": window_seconds
+                    }
+                )
+
+            # Record this request
+            redis_client.zadd(key, {str(now): now})
+            redis_client.expire(key, window_seconds)
+
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+# Apply rate limiting to sensitive endpoints
+@rate_limit(max_requests=5, window_seconds=300, key_prefix="login")  # 5 login attempts per 5 min
+async def login(credentials: LoginCredentials):
+    ...
+
+@rate_limit(max_requests=10, window_seconds=60, key_prefix="verify")  # 10 OTPs per minute
+async def verify_phone(otp_request: OTPRequest):
+    ...
+```
+
+### Location Data Security
+
+Location is the most sensitive data in a dating app. Mishandled, it enables stalking.
+
+```python
+# Location security implementation
+
+import math
+from dataclasses import dataclass
+
+@dataclass
+class FuzzyLocation:
+    """
+    Never expose exact user coordinates.
+    Fuzz location to nearest 0.5-1km for display purposes.
+    """
+    FUZZ_METERS = 500  # Fuzz to nearest 500m
+
+    lat: float
+    lon: float
+
+    def to_display(self) -> dict:
+        """Return fuzzed coordinates for public display."""
+        # Add random noise within FUZZ_METERS radius
+        noise_meters = self.FUZZ_METERS
+        earth_radius = 6_371_000  # meters
+
+        # Convert fuzz to degrees
+        lat_noise = (noise_meters / earth_radius) * (180 / math.pi) * (2 * random() - 1)
+        lon_noise = (noise_meters / (earth_radius * math.cos(math.radians(self.lat)))) \
+                    * (180 / math.pi) * (2 * random() - 1)
+
+        return {
+            "lat": round(self.lat + lat_noise, 4),  # Round to 4 decimal places (~11m precision)
+            "lon": round(self.lon + lon_noise, 4)
+        }
+
+    def distance_display(self, other_lat: float, other_lon: float) -> str:
+        """
+        Return approximate distance as text, not exact.
+        "2 miles away" not "1.87 miles away"
+        """
+        exact_distance_km = self._haversine(other_lat, other_lon)
+
+        # Round to nearest meaningful increment
+        if exact_distance_km < 1:
+            return "Less than 1 km away"
+        elif exact_distance_km < 10:
+            return f"{round(exact_distance_km)} km away"
+        elif exact_distance_km < 50:
+            return f"{round(exact_distance_km / 5) * 5} km away"  # Round to 5km
+        else:
+            return f"{round(exact_distance_km / 10) * 10} km away"  # Round to 10km
+
+    def _haversine(self, lat2: float, lon2: float) -> float:
+        R = 6371
+        phi1, phi2 = math.radians(self.lat), math.radians(lat2)
+        d_phi = math.radians(lat2 - self.lat)
+        d_lambda = math.radians(lon2 - self.lon)
+        a = math.sin(d_phi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(d_lambda/2)**2
+        return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+
+# Location storage rules:
+# 1. Store exact lat/lon in the database (needed for distance queries)
+# 2. NEVER return exact lat/lon in any API response
+# 3. Only return fuzzed display location or distance text
+# 4. Delete location history after 30 days (don't keep a movement log)
+# 5. Require explicit permission before accessing location (mobile OS-level)
+# 6. Offer "Last seen near X" instead of live location tracking
+```
+
+### Photo Security
+
+```python
+# Photo handling security
+import boto3
+import magic  # python-magic library for MIME type detection
+import hashlib
+from PIL import Image
+import io
+
+s3_client = boto3.client("s3", region_name="us-east-1")
+BUCKET = "dating-app-photos-prod"
+
+class PhotoUploader:
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB max
+    ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/webp"}
+    MAX_DIMENSION = 4096  # Max width or height in pixels
+
+    def validate_and_process(self, file_bytes: bytes, user_id: str) -> str:
+        """
+        Security validation before accepting any uploaded photo.
+
+        Attacks prevented:
+        1. File type spoofing: Check actual MIME type, not just extension
+        2. Image bombs: Check dimensions before loading fully
+        3. Malicious metadata: Strip EXIF data (removes GPS coordinates)
+        4. Content injection: Verify it's actually an image, not a PHP file
+        """
+        # Check 1: File size
+        if len(file_bytes) > self.MAX_FILE_SIZE:
+            raise ValueError(f"File too large. Max {self.MAX_FILE_SIZE // 1024 // 1024}MB")
+
+        # Check 2: Actual MIME type (not trusting the extension or Content-Type header)
+        actual_mime = magic.from_buffer(file_bytes, mime=True)
+        if actual_mime not in self.ALLOWED_MIME_TYPES:
+            raise ValueError(f"Invalid file type: {actual_mime}")
+
+        # Check 3: Open image, verify it's valid, check dimensions
+        try:
+            image = Image.open(io.BytesIO(file_bytes))
+            width, height = image.size
+        except Exception:
+            raise ValueError("Cannot parse as image")
+
+        if width > self.MAX_DIMENSION or height > self.MAX_DIMENSION:
+            raise ValueError(f"Image too large. Max {self.MAX_DIMENSION}px")
+
+        # Check 4: Strip EXIF metadata (CRITICAL — EXIF contains GPS coordinates!)
+        # This prevents leaking where the photo was taken
+        stripped_image = Image.new(image.mode, image.size)
+        stripped_image.putdata(list(image.getdata()))  # Copy pixel data, no metadata
+
+        # Normalize: convert to JPEG, resize if needed
+        output = io.BytesIO()
+        max_size = (1080, 1080)  # Cap at 1080x1080 for storage efficiency
+        stripped_image.thumbnail(max_size, Image.Resampling.LANCZOS)
+        stripped_image.save(output, format="JPEG", quality=85, optimize=True)
+
+        # Generate a deterministic but unpredictable S3 key
+        # Use a UUID prefix so URLs are not guessable
+        content_hash = hashlib.sha256(file_bytes).hexdigest()[:16]
+        import uuid
+        s3_key = f"photos/{user_id}/{uuid.uuid4()}-{content_hash}.jpg"
+
+        # Upload to S3 (private bucket — no public access)
+        s3_client.put_object(
+            Bucket=BUCKET,
+            Key=s3_key,
+            Body=output.getvalue(),
+            ContentType="image/jpeg",
+            # Server-side encryption
+            ServerSideEncryption="aws:kms",
+            SSEKMSKeyId="alias/dating-photos-key"
+        )
+
+        return s3_key
+
+    def get_presigned_url(self, s3_key: str, user_id: str, expires_in: int = 3600) -> str:
+        """
+        Generate a temporary, signed URL for accessing a photo.
+        Photos are NEVER publicly accessible — always through signed URLs.
+        This lets us revoke access when accounts are banned.
+        """
+        return s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET, "Key": s3_key},
+            ExpiresIn=expires_in  # URL expires in 1 hour by default
+        )
+```
+
+### GDPR and Privacy Compliance
+
+```python
+# GDPR compliance implementation
+# Key requirements: right to access, right to delete, data portability
+
+class GDPRComplianceService:
+    """
+    Implements GDPR rights:
+    - Article 15: Right of access (download your data)
+    - Article 17: Right to erasure ("right to be forgotten")
+    - Article 20: Data portability (export your data)
+    """
+
+    def export_user_data(self, user_id: str) -> dict:
+        """
+        Produces a complete export of all data we hold about this user.
+        Must be provided within 30 days of request.
+        """
+        return {
+            "personal_info": self._get_profile_data(user_id),
+            "location_history": self._get_location_data(user_id),
+            "matches": self._get_matches(user_id),
+            "messages": self._get_messages(user_id),
+            "likes_sent": self._get_likes_sent(user_id),
+            "likes_received": self._get_likes_received(user_id),
+            "photos": self._get_photo_metadata(user_id),
+            "subscription_history": self._get_payments(user_id),
+            "report_history": self._get_reports_filed(user_id),
+            "exported_at": datetime.utcnow().isoformat()
+        }
+
+    def delete_user_data(self, user_id: str, reason: str = "user_request"):
+        """
+        Hard delete all user data.
+        Must complete within 30 days (GDPR requirement).
+
+        Exceptions to full deletion:
+        - Financial records: Keep for 7 years (tax law)
+        - Reports filed by/against this user: Keep anonymized (safety)
+        - Conversations: Delete user's messages, but leave the other person's
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"GDPR deletion initiated for user {user_id}", extra={
+            "user_id": user_id,
+            "reason": reason,
+            "requested_at": datetime.utcnow().isoformat()
+        })
+
+        # Delete in dependency order (foreign keys)
+        self._delete_messages(user_id)          # Delete message content
+        self._delete_matches(user_id)           # Delete match records
+        self._delete_likes(user_id)             # Delete swipe history
+        self._delete_photos(user_id)            # Delete photos from S3 + DB
+        self._anonymize_reports(user_id)        # Anonymize, don't delete (safety)
+        self._delete_location_history(user_id)  # Delete location history
+        self._delete_profile(user_id)           # Delete profile last
+
+        # Mark account as deleted (for audit trail)
+        self._mark_deleted(user_id, reason)
+
+        logger.info(f"GDPR deletion complete for user {user_id}")
+
+    def _anonymize_reports(self, user_id: str):
+        """
+        Don't delete safety reports — we need them to identify bad actors
+        who create new accounts. But anonymize the reporter's identity.
+        """
+        # Replace user_id with a consistent pseudonym
+        # So we can still track patterns without knowing who reported
+        pseudonym = hashlib.sha256(f"anon_{user_id}".encode()).hexdigest()[:16]
+        db.reports.update_many(
+            {"reporter_user_id": user_id},
+            {"$set": {"reporter_user_id": f"anonymized_{pseudonym}"}}
+        )
+```
+
+### Security Checklist
+
+```
+AUTHENTICATION & ACCESS CONTROL
+  ✅ Passwords hashed with Argon2id (not MD5, SHA1, or even bcrypt)
+  ✅ JWT access tokens expire in 30 minutes
+  ✅ Refresh tokens stored in DB for revocation
+  ✅ Rate limiting on all auth endpoints (5 attempts / 5 min)
+  ✅ Phone number OTP as second factor
+  ✅ Account lockout after 10 failed attempts (15-min lockout)
+  ✅ Secure cookie flags: HttpOnly, Secure, SameSite=Strict
+
+DATA PROTECTION
+  ✅ All data encrypted in transit (TLS 1.2+ only, no TLS 1.0/1.1)
+  ✅ All data encrypted at rest (AES-256 via AWS KMS)
+  ✅ EXIF metadata stripped from all uploaded photos
+  ✅ Location fuzzed before returning to clients
+  ✅ Photos stored in private S3 bucket, accessed via presigned URLs
+  ✅ PII encrypted in database (email, phone number fields)
+  ✅ Logs scrubbed of PII before storing
+
+API SECURITY
+  ✅ Rate limiting per IP and per user on all endpoints
+  ✅ Input validation and sanitization on all inputs
+  ✅ SQL injection prevented via parameterized queries (never string concatenation)
+  ✅ Output encoding to prevent XSS in any web components
+  ✅ CORS configured to allow only your app domains
+  ✅ API versioning (allows deprecating insecure endpoints)
+  ✅ No sensitive data in URLs (tokens, IDs in query params)
+  ✅ Request size limits (prevent request smuggling / DoS)
+
+CONTENT & PHOTO SECURITY
+  ✅ MIME type validation (check actual file type, not just extension)
+  ✅ Image dimensions validated before processing
+  ✅ Photos scanned with PhotoDNA (Microsoft) or CSAI Match (Meta) for CSAM
+  ✅ Nudity detection via ML before photos go live
+  ✅ Photo IDs are UUIDs (not sequential integers — prevents enumeration)
+
+INFRASTRUCTURE SECURITY
+  ✅ Databases in private VPC subnet (not internet-accessible)
+  ✅ Secrets in AWS Secrets Manager / Parameter Store (not env files)
+  ✅ Principle of least privilege for all IAM roles
+  ✅ VPC flow logs and CloudTrail enabled
+  ✅ WAF (Web Application Firewall) in front of API
+  ✅ DDoS protection (AWS Shield Standard at minimum)
+  ✅ Security groups: databases accept connections only from app tier
+  ✅ Regular security patches on all dependencies (automated via Dependabot)
+
+COMPLIANCE
+  ✅ GDPR: Right to access, delete, portability implemented
+  ✅ CCPA: California users can request deletion
+  ✅ COPPA: Age verification (no users under 18)
+  ✅ NCMEC: CSAM reporting pipeline in place
+  ✅ Privacy policy clearly explains data collection and use
+```
+
+---
+
+## 🤖 Advanced AI Features
+
+Modern dating apps in 2025 use AI far beyond basic profile sorting. Here are the advanced features that differentiate the best apps:
+
+### AI-Powered Photo Selection
+
+```python
+# AI picks your best photos
+# This runs when a user uploads photos and suggests which to use / which order
+
+import tensorflow as tf
+from PIL import Image
+import numpy as np
+
+class PhotoQualityScorer:
+    """
+    Scores photos on multiple dimensions:
+    1. Technical quality: blur, brightness, composition
+    2. Social signals: face visibility, smile, eye contact
+    3. Attraction proxy: likes received / profile views ratio (A/B data)
+    """
+
+    def score_photo(self, image_path: str) -> dict:
+        image = Image.open(image_path).convert("RGB")
+        img_array = np.array(image.resize((224, 224))) / 255.0
+
+        return {
+            "blur_score": self._compute_blur_score(img_array),
+            "brightness_score": self._compute_brightness(img_array),
+            "face_score": self._detect_face_quality(img_array),
+            "composition_score": self._rule_of_thirds_score(img_array),
+            "overall_score": None  # Computed below
+        }
+
+    def _compute_blur_score(self, img_array) -> float:
+        """Laplacian variance — low variance = blurry"""
+        grayscale = np.mean(img_array, axis=2)
+        laplacian = self._laplacian_filter(grayscale)
+        variance = np.var(laplacian)
+        return min(1.0, variance / 500)  # Normalize to 0-1
+
+    def rank_photos(self, photos: list) -> list:
+        """Return photos in recommended order (best photo first)."""
+        scored = [(photo, self.score_photo(photo)) for photo in photos]
+        return sorted(scored, key=lambda x: x[1]["overall_score"], reverse=True)
+```
+
+### Conversation AI — Icebreaker Generator
+
+```python
+# Generate personalized conversation starters based on profile content
+# This increases first-message reply rates significantly
+
+import anthropic
+
+client = anthropic.Anthropic()
+
+def generate_icebreaker(user_profile: dict, match_profile: dict) -> str:
+    """
+    Generate a personalized icebreaker message based on:
+    - Match's prompt answers
+    - Shared interests between the two users
+    - Match's photos (hobbies, activities visible)
+
+    Why this works: Messages that reference specific profile content
+    get 3x higher reply rates than generic "hey" messages.
+    """
+    shared_interests = set(user_profile.get("interests", [])) & \
+                       set(match_profile.get("interests", []))
+
+    prompt_answers = match_profile.get("prompt_answers", [])
+    top_prompt = prompt_answers[0] if prompt_answers else None
+
+    system_prompt = """You are a dating app assistant helping users start conversations.
+Generate 3 short, personalized, genuine icebreaker messages (1-2 sentences each).
+Rules:
+- Reference something SPECIFIC from their profile (not generic compliments)
+- Be warm and curious, not pick-up-line-y
+- End with a question to invite response
+- Keep it casual and authentic
+- Never be sexual or inappropriate"""
+
+    user_message = f"""
+Match's name: {match_profile['first_name']}
+Match's prompt: "{top_prompt['question']}" → "{top_prompt['answer']}"
+Shared interests: {', '.join(shared_interests) if shared_interests else 'none explicitly shared'}
+Match's bio: {match_profile.get('bio', 'No bio')}
+
+Generate 3 icebreaker options."""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",  # Fast and cheap for this use case
+        max_tokens=300,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_message}]
+    )
+
+    return response.content[0].text
+```
+
+### Compatibility Scoring with ML
+
+```python
+# Advanced compatibility scoring beyond simple attribute matching
+# Learns from behavioral signals: who replies, who goes on dates, who deletes together
+
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import GradientBoostingClassifier
+import pandas as pd
+
+class CompatibilityModel:
+    """
+    Predicts likelihood of a meaningful connection (not just a match, but a conversation
+    or date) based on:
+    - Profile similarity features
+    - Behavioral compatibility (communication style, activity patterns)
+    - Historical success patterns (similar pairings that led to conversations/dates)
+    """
+
+    def build_feature_vector(self, user_a: dict, user_b: dict) -> dict:
+        """
+        Build features that predict connection quality.
+        These go far beyond simple attribute matching.
+        """
+        return {
+            # Age compatibility
+            "age_gap": abs(user_a["age"] - user_b["age"]),
+            "age_gap_within_prefs": int(
+                user_b["age"] >= user_a["pref_age_min"] and
+                user_b["age"] <= user_a["pref_age_max"]
+            ),
+
+            # Interest overlap
+            "jaccard_interests": self._jaccard(
+                set(user_a["interests"]), set(user_b["interests"])
+            ),
+            "shared_interest_count": len(
+                set(user_a["interests"]) & set(user_b["interests"])
+            ),
+
+            # Communication style match (from past conversation data)
+            "avg_message_length_a": user_a.get("avg_message_length", 50),
+            "avg_message_length_b": user_b.get("avg_message_length", 50),
+            "message_length_ratio": user_a.get("avg_message_length", 50) /
+                                    max(user_b.get("avg_message_length", 50), 1),
+
+            # Activity pattern overlap (when they're online)
+            "peak_hour_overlap": self._hour_overlap(
+                user_a.get("peak_active_hours", []),
+                user_b.get("peak_active_hours", [])
+            ),
+
+            # Response rate signals
+            "user_a_reply_rate": user_a.get("message_reply_rate", 0.5),
+            "user_b_reply_rate": user_b.get("message_reply_rate", 0.5),
+
+            # Distance
+            "distance_km": self._haversine(
+                user_a["lat"], user_a["lon"],
+                user_b["lat"], user_b["lon"]
+            ),
+            "within_user_a_pref": int(
+                self._haversine(user_a["lat"], user_a["lon"],
+                                user_b["lat"], user_b["lon"]) <= user_a["pref_distance_km"]
+            ),
+        }
+
+    def _jaccard(self, set_a: set, set_b: set) -> float:
+        if not set_a and not set_b:
+            return 0.0
+        return len(set_a & set_b) / len(set_a | set_b)
+
+    def predict_match_quality(self, user_a: dict, user_b: dict) -> float:
+        """Returns probability (0-1) that this pairing leads to a conversation."""
+        features = self.build_feature_vector(user_a, user_b)
+        feature_df = pd.DataFrame([features])
+        return float(self.model.predict_proba(feature_df)[0][1])
+```
+
+### Safety AI — Real-Time Message Scanning
+
+```python
+# Real-time message safety system
+# Runs on every message before delivery
+
+class MessageSafetyScanner:
+    """
+    Scans messages for:
+    1. Personal information (phone numbers, emails, addresses)
+    2. Threats and harassment
+    3. Explicit/inappropriate content
+    4. Known scam patterns (money requests, crypto, gift cards)
+    """
+
+    # Patterns that indicate information sharing (protective intervention)
+    PHONE_PATTERN = r'\b(\+?1[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})\b'
+    EMAIL_PATTERN = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    SOCIAL_PATTERN = r'\b(instagram|snapchat|telegram|whatsapp|kik|line)\b'
+
+    # High-risk scam keywords
+    SCAM_PATTERNS = [
+        r'\bgift\s*card\b',
+        r'\bitunes\s*card\b',
+        r'\bcrypto\b.*\binvest\b',
+        r'\bsend\s*money\b',
+        r'\bwire\s*transfer\b',
+        r'\bwestern\s*union\b',
+    ]
+
+    def scan(self, message_text: str, sender_id: str, recipient_id: str) -> dict:
+        """
+        Returns:
+        - allow: bool — should this message be delivered?
+        - flags: list of issues detected
+        - interventions: what to show the user
+        """
+        flags = []
+        interventions = []
+
+        import re
+
+        # Check for phone numbers
+        if re.search(self.PHONE_PATTERN, message_text):
+            flags.append("contains_phone_number")
+            interventions.append({
+                "type": "safety_tip",
+                "message": "Heads up: We noticed you shared a phone number. Stay safe — we recommend keeping conversations in the app until you're comfortable."
+            })
+
+        # Check for social media handles
+        if re.search(self.SOCIAL_PATTERN, message_text, re.IGNORECASE):
+            flags.append("contains_social_handle")
+            interventions.append({
+                "type": "safety_tip",
+                "message": "Moving to social media? Make sure you know this person well first."
+            })
+
+        # Check for scam patterns
+        for pattern in self.SCAM_PATTERNS:
+            if re.search(pattern, message_text, re.IGNORECASE):
+                flags.append("potential_scam")
+                interventions.append({
+                    "type": "scam_warning",
+                    "message": "⚠️ This message has patterns we associate with scams. Never send money to someone you haven't met in person."
+                })
+                break  # One scam warning is enough
+
+        # Run ML classifier for threats/harassment
+        toxicity_score = self.toxicity_classifier.predict(message_text)
+        if toxicity_score > 0.9:
+            flags.append("high_toxicity")
+            # Block delivery, flag for review
+            return {
+                "allow": False,
+                "flags": flags,
+                "interventions": [],
+                "reason": "Message blocked: violates community guidelines"
+            }
+
+        # Allow with any applicable interventions
+        return {
+            "allow": True,
+            "flags": flags,
+            "interventions": interventions
+        }
+```
+
+---
+
 ## Related Topics
 
 ### Prerequisites
