@@ -35,9 +35,10 @@ This comprehensive guide explains how AI/ML teams work together to build product
 
 Read the executive summaries and code snippets:
 
-1. [Team Structure Overview](./TEAM_STRUCTURE.md#team-structure-and-roles) - 10 min
-2. [Data Flow Diagram](./TEAM_STRUCTURE.md#data-flow-from-raw-data-to-production-models) - 5 min
-3. [Example: E-Commerce Recommendations](./TEAM_STRUCTURE_PART3.md#example-1-e-commerce---product-recommendation-system) - 15 min
+1. **[E2E AI Company Stack](./AI_COMPANY_STACK.md)** - How AI companies (Anthropic, OpenAI, Liquid AI) build, train, deploy, and monetize AI models - 20 min overview
+2. [Team Structure Overview](./TEAM_STRUCTURE.md#team-structure-and-roles) - 10 min
+3. [Data Flow Diagram](./TEAM_STRUCTURE.md#data-flow-from-raw-data-to-production-models) - 5 min
+4. [Example: E-Commerce Recommendations](./TEAM_STRUCTURE_PART3.md#example-1-e-commerce---product-recommendation-system) - 15 min
 
 #### 📚 **Deep Dive (2-3 hours)**
 
@@ -59,6 +60,13 @@ Follow the complete journey from data to production:
    - Analyze business impact
 
 #### 🎓 **Role-Specific Learning**
+
+**For QA Engineers:**
+
+- [QA Role in the AI Stack](./AI_COMPANY_STACK.md#qa-engineers-role-in-the-ai-stack) — QA across every phase
+- [Data Quality Testing](./AI_COMPANY_STACK.md#phase-1-data-quality-qa) — Data validation and PII checks
+- [API & Deployment Testing](./AI_COMPANY_STACK.md#phase-5-deployment--api-qa) — Load testing, contract testing
+- [QA Career Path in AI](./AI_COMPANY_STACK.md#qa-career-path-in-ai) — From analyst to lead
 
 **For Data Engineers:**
 
@@ -87,7 +95,17 @@ Follow the complete journey from data to production:
 ## 🗺️ Content Map
 
 ```
-AI/ML Team Structure Guide
+AI/ML Guide
+│
+├── E2E AI Company Stack (NEW)
+│   ├── Training Data (collection, cleaning, tokenization)
+│   ├── Pre-Training (transformers, GPU clusters, cost)
+│   ├── Alignment (SFT, RLHF, RLAIF, DPO)
+│   ├── Evaluation & Red-Teaming
+│   ├── Inference & Deployment
+│   ├── Monetization (API pricing, subscriptions, enterprise)
+│   ├── Company Deep Dives (Anthropic, OpenAI, Liquid AI)
+│   └── QA Engineer's Role in AI Stack
 │
 ├── Part 1: Team Structure and Roles
 │   ├── Role Definitions (Data Engineer, Data Scientist, ML Engineer)
@@ -226,6 +244,7 @@ After reading this guide, you will be able to:
 
 ## 📚 Related Resources
 
+- **[E2E AI Company Stack](./AI_COMPANY_STACK.md)**: How AI companies work end-to-end — training, RLHF, deployment, monetization
 - **[Main AI Stack Guide](./README.md)**: MLOps patterns, QA strategies, domain-specific applications
 - **[Architecture Patterns](../02-architectures/)**: Microservices, Event-Driven, Serverless
 - **[Infrastructure Guides](../06-infrastructure/)**: Kubernetes, Docker, CI/CD
